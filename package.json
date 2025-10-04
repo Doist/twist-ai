@@ -1,0 +1,47 @@
+{
+    "name": "@doist/twist-ai",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "mcpName": "net.twist/mcp",
+    "bin": {
+        "twist-ai": "dist/main.js"
+    },
+    "files": [
+        "dist",
+        "package.json",
+        "LICENSE",
+        "README.md"
+    ],
+    "license": "MIT",
+    "description": "A collection of tools for Twist using AI",
+    "scripts": {
+        "build": "rimraf dist && npx tsc --project tsconfig.json",
+        "postbuild": "chmod +x dist/main.js",
+        "start": "npm run build && npx @modelcontextprotocol/inspector node dist/main.js",
+        "dev": "concurrently \"npx tsc --watch\" \"npx @modelcontextprotocol/inspector npx nodemon --quiet --watch dist --ext js --exec node dist/main.js\"",
+        "type-check": "npx tsc --noEmit",
+        "biome:sort-imports": "biome check --formatter-enabled=false --linter-enabled=false --organize-imports-enabled=true --write .",
+        "lint:check": "biome lint",
+        "lint:write": "biome lint --write",
+        "format:check": "biome format",
+        "format:write": "biome format --write",
+        "check": "biome check",
+        "check:fix": "biome check --fix --unsafe"
+    },
+    "dependencies": {
+        "@doist/twist-sdk": "file:../twist-sdk-typescript",
+        "@modelcontextprotocol/sdk": "^1.11.1",
+        "dotenv": "^16.5.0",
+        "zod": "^3.25.7"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.2.4",
+        "@types/node": "^22.15.17",
+        "concurrently": "^9.0.0",
+        "nodemon": "^3.1.10",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.8.3"
+    }
+}

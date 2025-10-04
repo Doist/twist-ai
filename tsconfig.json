@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        /* Language and Environment */
+        "target": "es2021",
+        "lib": ["es2021"],
+
+        /* Modules */
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "allowImportingTsExtensions": false,
+        "rootDir": "src",
+        "outDir": "dist",
+        "resolveJsonModule": true,
+
+        /* Type Checking */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+
+        /* Interop */
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "verbatimModuleSyntax": false,
+        "isolatedModules": true,
+
+        /* Other */
+        "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true
+    },
+    "include": ["src"]
+}

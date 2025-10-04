@@ -18,9 +18,10 @@ const ArgsSchema = {
         .int()
         .min(1)
         .max(100)
+        .optional()
         .default(50)
         .describe('Maximum number of items to return.'),
-    onlyUnread: z.boolean().default(false).describe('Only return unread items.'),
+    onlyUnread: z.boolean().optional().default(false).describe('Only return unread items.'),
 }
 
 type FetchInboxStructured = {

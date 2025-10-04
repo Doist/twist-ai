@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`load_thread tool loading threads successfully should filter comments by date 1`] = `
+"# Thread: Test Thread
+
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Workspace ID:** 11111
+**Creator:** 22222
+**Posted:** 2024-01-01T00:00:00.000Z
+**Comments:** 0
+**Archived:** No
+**In Inbox:** Yes
+
+## Content
+
+Test thread content
+
+## Comments (0)
+
+## Participants
+
+22222"
+`;
+
+exports[`load_thread tool loading threads successfully should handle thread with no comments 1`] = `
+"# Thread: Test Thread
+
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Workspace ID:** 11111
+**Creator:** 22222
+**Posted:** 2024-01-01T00:00:00.000Z
+**Comments:** 0
+**Archived:** No
+**In Inbox:** Yes
+
+## Content
+
+Test thread content
+
+## Comments (0)
+
+## Participants
+
+22222"
+`;
+
+exports[`load_thread tool loading threads successfully should load thread with comments and participants 1`] = `
+"# Thread: Test Thread
+
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Workspace ID:** 11111
+**Creator:** 22222
+**Posted:** 2024-01-01T00:00:00.000Z
+**Comments:** 0
+**Archived:** No
+**In Inbox:** Yes
+
+## Content
+
+Test thread content
+
+## Comments (2)
+
+### Comment 54321
+**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
+
+Test comment content
+
+### Comment 54322
+**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
+
+Test comment content
+
+## Participants
+
+22222, 44444"
+`;
+
+exports[`load_thread tool loading threads successfully should load thread without participants when includeParticipants is false 1`] = `
+"# Thread: Test Thread
+
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Workspace ID:** 11111
+**Creator:** 22222
+**Posted:** 2024-01-01T00:00:00.000Z
+**Comments:** 0
+**Archived:** No
+**In Inbox:** Yes
+
+## Content
+
+Test thread content
+
+## Comments (0)
+"
+`;

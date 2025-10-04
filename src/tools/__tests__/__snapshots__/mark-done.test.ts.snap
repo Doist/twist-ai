@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`mark_done tool marking conversations as done should handle conversation not found error 1`] = `
+"# Mark Conversations Done
+
+**Total Requested:** 1
+**Successful:** 0
+**Failed:** 1
+**Mark Read:** Yes
+**Archive:** No
+
+## Failed
+
+- conversation 33333: Conversation not found
+
+## Next Steps
+
+Review failed items and retry if needed."
+`;
+
+exports[`mark_done tool marking conversations as done should mark all conversations as done successfully 1`] = `
+"# Mark Conversations Done
+
+**Total Requested:** 2
+**Successful:** 2
+**Failed:** 0
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Completed
+
+33333, 33334
+
+## Next Steps
+
+All conversations marked as done successfully. Check your conversations for remaining unread messages."
+`;
+
+exports[`mark_done tool marking threads as done should archive thread only 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 1
+**Successful:** 1
+**Failed:** 0
+**Mark Read:** No
+**Archive:** Yes
+
+## Completed
+
+12345
+
+## Next Steps
+
+All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool marking threads as done should handle all threads failing 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 2
+**Successful:** 0
+**Failed:** 2
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Failed
+
+- thread 12345: API Error: Network timeout
+- thread 12346: API Error: Network timeout
+
+## Next Steps
+
+Review failed items and retry if needed."
+`;
+
+exports[`mark_done tool marking threads as done should handle partial failures gracefully 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 3
+**Successful:** 2
+**Failed:** 1
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Completed
+
+12345, 12347
+
+## Failed
+
+- thread 12346: Thread not found
+
+## Next Steps
+
+Review failed items and retry if needed."
+`;
+
+exports[`mark_done tool marking threads as done should mark all threads as done successfully 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 3
+**Successful:** 3
+**Failed:** 0
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Completed
+
+12345, 12346, 12347
+
+## Next Steps
+
+All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool marking threads as done should mark thread as read only 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 1
+**Successful:** 1
+**Failed:** 0
+**Mark Read:** Yes
+**Archive:** No
+
+## Completed
+
+12345
+
+## Next Steps
+
+All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool next steps logic validation should suggest fetch_inbox when all threads complete successfully 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 2
+**Successful:** 2
+**Failed:** 0
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Completed
+
+12345, 12346
+
+## Next Steps
+
+All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool next steps logic validation should suggest reviewing failures when mixed results 1`] = `
+"# Mark Threads Done
+
+**Total Requested:** 2
+**Successful:** 1
+**Failed:** 1
+**Mark Read:** Yes
+**Archive:** Yes
+
+## Completed
+
+12345
+
+## Failed
+
+- thread 12346: Thread not found
+
+## Next Steps
+
+Review failed items and retry if needed."
+`;

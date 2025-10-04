@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`reply tool replying to conversations should post a message to a conversation 1`] = `
+"# Reply Posted
+
+**Target:** Conversation 33333
+**Reply ID:** 98765
+**Created:** 2024-01-01T00:00:00.000Z
+
+## Content
+
+This is my message"
+`;
+
+exports[`reply tool replying to threads should post a comment to a thread 1`] = `
+"# Reply Posted
+
+**Target:** Thread 12345
+**Reply ID:** 54321
+**Created:** 2024-01-01T00:00:00.000Z
+
+## Content
+
+This is my reply"
+`;
+
+exports[`reply tool replying to threads should post a comment with recipients 1`] = `
+"# Reply Posted
+
+**Target:** Thread 12345
+**Reply ID:** 54321
+**Created:** 2024-01-01T00:00:00.000Z
+
+## Content
+
+Notifying users"
+`;

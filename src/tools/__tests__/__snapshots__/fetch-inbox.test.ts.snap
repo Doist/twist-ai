@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with threads and conversations 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Unread:** 5
+**Unread Threads:** 1
+**Unread Conversations:** 1
+
+## Threads (2)
+
+- **12345**: Test Thread 1 🔵 (Channel 67890, 3 unread)
+- **12346**: Test Thread 2 ⭐ (Channel 67890, 0 unread)
+
+## Conversations (1)
+
+- **33333**: Test Conversation 🔵 (2 unread)
+
+## Next Steps
+
+- Use \`load_thread\` to read specific threads with their comments
+- Use \`load_conversation\` to read specific conversations with their messages
+- Use \`mark_done\` to mark items as read and archive them"
+`;
+
+exports[`fetch_inbox tool fetching inbox successfully should filter by date range 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Unread:** 0
+**Unread Threads:** 0
+**Unread Conversations:** 0
+
+## Threads (0)
+
+_No threads in inbox_
+
+## Conversations (0)
+
+_No conversations in inbox_
+"
+`;
+
+exports[`fetch_inbox tool fetching inbox successfully should filter only unread items when requested 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Unread:** 1
+**Unread Threads:** 1
+**Unread Conversations:** 0
+
+## Threads (1)
+
+- **12345**: Unread Thread 🔵 (Channel 67890, 3 unread)
+
+## Conversations (0)
+
+_No conversations in inbox_
+
+## Next Steps
+
+- Use \`load_thread\` to read specific threads with their comments
+- Use \`load_conversation\` to read specific conversations with their messages
+- Use \`mark_done\` to mark items as read and archive them"
+`;
+
+exports[`fetch_inbox tool fetching inbox successfully should handle empty inbox 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Unread:** 0
+**Unread Threads:** 0
+**Unread Conversations:** 0
+
+## Threads (0)
+
+_No threads in inbox_
+
+## Conversations (0)
+
+_No conversations in inbox_
+"
+`;

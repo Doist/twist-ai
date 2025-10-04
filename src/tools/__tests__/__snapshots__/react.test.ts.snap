@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`react tool adding reactions should add reaction to a comment 1`] = `
+"# Reaction Added
+
+**Target:** comment 54321
+**Emoji:** ❤️
+**Operation:** add"
+`;
+
+exports[`react tool adding reactions should add reaction to a message 1`] = `
+"# Reaction Added
+
+**Target:** message 98765
+**Emoji:** 🎉
+**Operation:** add"
+`;
+
+exports[`react tool adding reactions should add reaction to a thread 1`] = `
+"# Reaction Added
+
+**Target:** thread 12345
+**Emoji:** 👍
+**Operation:** add"
+`;
+
+exports[`react tool removing reactions should remove reaction from a comment 1`] = `
+"# Reaction Removed
+
+**Target:** comment 54321
+**Emoji:** ❤️
+**Operation:** remove"
+`;
+
+exports[`react tool removing reactions should remove reaction from a message 1`] = `
+"# Reaction Removed
+
+**Target:** message 98765
+**Emoji:** 🎉
+**Operation:** remove"
+`;
+
+exports[`react tool removing reactions should remove reaction from a thread 1`] = `
+"# Reaction Removed
+
+**Target:** thread 12345
+**Emoji:** 👍
+**Operation:** remove"
+`;

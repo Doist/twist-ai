@@ -17,6 +17,7 @@
     "license": "MIT",
     "description": "A collection of tools for Twist using AI",
     "scripts": {
+        "test": "jest",
         "build": "rimraf dist && npx tsc --project tsconfig.json",
         "postbuild": "chmod +x dist/main.js",
         "start": "npm run build && npx @modelcontextprotocol/inspector node dist/main.js",
@@ -38,10 +39,13 @@
     },
     "devDependencies": {
         "@biomejs/biome": "2.2.4",
+        "@types/jest": "30.0.0",
         "@types/node": "^22.15.17",
         "concurrently": "^9.0.0",
+        "jest": "30.2.0",
         "nodemon": "^3.1.10",
         "rimraf": "^6.0.1",
+        "ts-jest": "29.4.4",
         "typescript": "^5.8.3"
     }
 }

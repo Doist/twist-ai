@@ -6,9 +6,11 @@ import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
     query: z.string().min(1).describe('The search query string.'),
-    scope: SearchScopeSchema.default('workspace').describe(
-        'Search scope: workspace (global), thread (comments), or conversation (messages).',
-    ),
+    scope: SearchScopeSchema.optional()
+        .default('workspace')
+        .describe(
+            'Search scope: workspace (global), thread (comments), or conversation (messages).',
+        ),
     objectId: z
         .number()
         .describe(
@@ -39,6 +41,7 @@ const ArgsSchema = {
         .int()
         .min(1)
         .max(100)
+        .optional()
         .default(50)
         .describe('Maximum number of results to return.'),
     cursor: z.string().optional().describe('Cursor for pagination.'),

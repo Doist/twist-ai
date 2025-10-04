@@ -18,10 +18,12 @@ const ArgsSchema = {
         .int()
         .min(1)
         .max(100)
+        .optional()
         .default(50)
         .describe('Maximum number of messages to return.'),
     includeParticipants: z
         .boolean()
+        .optional()
         .default(true)
         .describe('Include participant user IDs in the response.'),
 }

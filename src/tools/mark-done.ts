@@ -10,8 +10,8 @@ const ArgsSchema = {
         .array(z.number())
         .min(1)
         .describe('The IDs of threads or conversations to mark as done.'),
-    markRead: z.boolean().default(true).describe('Mark items as read.'),
-    archive: z.boolean().default(true).describe('Archive items in the inbox.'),
+    markRead: z.boolean().optional().default(true).describe('Mark items as read.'),
+    archive: z.boolean().optional().default(true).describe('Archive items in the inbox.'),
 }
 
 type MarkDoneStructured = {

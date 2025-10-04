@@ -10,9 +10,9 @@ type TwistObjectType = 'thread' | 'comment' | 'message' | 'conversation' | 'work
  * Requires at least 2 values (Zod enum requirement).
  * Only allows valid Twist object types.
  */
-function createEnumSchema<const T extends readonly [TwistObjectType, TwistObjectType, ...TwistObjectType[]]>(
-    values: T,
-) {
+function createEnumSchema<
+    const T extends readonly [TwistObjectType, TwistObjectType, ...TwistObjectType[]],
+>(values: T) {
     return {
         values,
         schema: z.enum(values),

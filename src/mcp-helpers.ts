@@ -5,10 +5,10 @@ import type { TwistTool } from './twist-tool.js'
 import { removeNullFields } from './utils/sanitize-data.js'
 
 /**
- * Wether to return the structured content directly, vs. in the `content` part of the output.
+ * Whether to return the structured content directly, vs. in the `content` part of the output.
  *
  * The `structuredContent` part of the output is relatively new in the spec, and it's not yet
- * supported by all clients. This flag controls wether we return the structured content using this
+ * supported by all clients. This flag controls whether we return the structured content using this
  * new feature of the MCP protocol or not.
  *
  * If `false`, the `structuredContent` will be returned as stringified JSON in one of the `content`
@@ -26,7 +26,7 @@ const USE_STRUCTURED_CONTENT =
  * @param textContent - The text content to return.
  * @param structuredContent - The structured content to return.
  * @returns The output payload.
- * @see USE_STRUCTURED_CONTENT - Wether to use the structured content feature of the MCP protocol.
+ * @see USE_STRUCTURED_CONTENT - Whether to use the structured content feature of the MCP protocol.
  */
 function getToolOutput<StructuredContent extends Record<string, unknown>>({
     textContent,

@@ -1,5 +1,14 @@
-// import { TwistApi } from '@doist/twist-sdk'
+import { TwistApi } from '@doist/twist-sdk'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { registerTool } from './mcp-helpers.js'
+import { fetchInbox } from './tools/fetch-inbox.js'
+import { loadConversation } from './tools/load-conversation.js'
+import { loadThread } from './tools/load-thread.js'
+import { markDone } from './tools/mark-done.js'
+import { react } from './tools/react.js'
+import { reply } from './tools/reply.js'
+import { searchContent } from './tools/search-content.js'
+import { userInfo } from './tools/user-info.js'
 
 const instructions = `
 ## Twist Communication Tools
@@ -29,10 +38,10 @@ Always provide clear context and maintain professional communication standards.
 
 /**
  * Create the MCP server.
- * @param _twistApiKey - The API key for the Twist account (unused until tools are added).
+ * @param twistApiKey - The API key for the Twist account.
  * @returns the MCP server.
  */
-function getMcpServer({ twistApiKey: _twistApiKey }: { twistApiKey: string }) {
+function getMcpServer({ twistApiKey }: { twistApiKey: string }) {
     const server = new McpServer(
         { name: 'twist-mcp-server', version: '0.1.0' },
         {
@@ -43,10 +52,17 @@ function getMcpServer({ twistApiKey: _twistApiKey }: { twistApiKey: string }) {
         },
     )
 
-    // Tools will be registered here as they are implemented
-    // Once tools are added, initialize the Twist API client:
-    // const twist = new TwistApi(twistApiKey)
-    // Then use it in registerTool calls
+    const twist = new TwistApi(twistApiKey)
+
+    // Register tools
+    registerTool(userInfo, server, twist)
+    registerTool(fetchInbox, server, twist)
+    registerTool(loadThread, server, twist)
+    registerTool(loadConversation, server, twist)
+    registerTool(searchContent, server, twist)
+    registerTool(reply, server, twist)
+    registerTool(react, server, twist)
+    registerTool(markDone, server, twist)
 
     return server
 }

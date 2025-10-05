@@ -120,7 +120,7 @@ const loadThread = {
                 commentCount: thread.commentCount,
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
-                participants: includeParticipants ? thread.participants : undefined,
+                participants: includeParticipants ? (thread.participants ?? undefined) : undefined,
             },
             comments: comments.map((c) => ({
                 id: c.id,

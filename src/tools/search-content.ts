@@ -111,7 +111,12 @@ const searchContent = {
                 limit,
                 cursor,
             })
-            results = response.results
+            results = response.results.map((r) => ({
+                ...r,
+                threadId: r.threadId ?? undefined,
+                conversationId: r.conversationId ?? undefined,
+                channelId: r.channelId ?? undefined,
+            }))
             hasMore = response.hasMore
             responseCursor = response.cursor
         } else if (scope === 'conversation') {
@@ -122,7 +127,12 @@ const searchContent = {
                 limit,
                 cursor,
             })
-            results = response.results
+            results = response.results.map((r) => ({
+                ...r,
+                threadId: r.threadId ?? undefined,
+                conversationId: r.conversationId ?? undefined,
+                channelId: r.channelId ?? undefined,
+            }))
             hasMore = response.hasMore
             responseCursor = response.cursor
         } else {
@@ -139,7 +149,12 @@ const searchContent = {
                 limit,
                 cursor,
             })
-            results = response.results
+            results = response.results.map((r) => ({
+                ...r,
+                threadId: r.threadId ?? undefined,
+                conversationId: r.conversationId ?? undefined,
+                channelId: r.channelId ?? undefined,
+            }))
             hasMore = response.hasMore
             responseCursor = response.cursor
         }

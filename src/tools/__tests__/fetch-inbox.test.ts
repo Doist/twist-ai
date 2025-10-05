@@ -13,9 +13,6 @@ const mockTwistApi = {
     threads: {
         getUnread: jest.fn(),
     },
-    conversations: {
-        getUnread: jest.fn(),
-    },
 } as unknown as jest.Mocked<TwistApi>
 
 const { FETCH_INBOX } = ToolNames
@@ -26,47 +23,49 @@ describe(`${FETCH_INBOX} tool`, () => {
     })
 
     describe('fetching inbox successfully', () => {
-        it('should fetch inbox with threads and conversations', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue({
-                threads: [
-                    {
-                        id: TEST_IDS.THREAD_1,
-                        title: 'Test Thread 1',
-                        channelId: TEST_IDS.CHANNEL_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                        creatorId: TEST_IDS.USER_1,
-                        isUnread: true,
-                        isStarred: false,
-                        newestObjIndex: 100,
-                        oldestObjIndex: 1,
-                        unreadCount: 3,
-                    },
-                    {
-                        id: TEST_IDS.THREAD_2,
-                        title: 'Test Thread 2',
-                        channelId: TEST_IDS.CHANNEL_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                        creatorId: TEST_IDS.USER_2,
-                        isUnread: false,
-                        isStarred: true,
-                        newestObjIndex: 50,
-                        oldestObjIndex: 1,
-                        unreadCount: 0,
-                    },
-                ],
-                conversations: [
-                    {
-                        id: TEST_IDS.CONVERSATION_1,
-                        title: 'Test Conversation',
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                        isUnread: true,
-                        unreadCount: 2,
-                    },
-                ],
-            })
+        it('should fetch inbox with threads', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([
+                {
+                    id: TEST_IDS.THREAD_1,
+                    title: 'Test Thread 1',
+                    content: 'Thread content 1',
+                    creator: TEST_IDS.USER_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 3,
+                    lastUpdatedTs: Date.now(),
+                    postedTs: Date.now(),
+                    snippet: 'Thread snippet 1',
+                    snippetCreator: TEST_IDS.USER_1,
+                    starred: false,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                },
+                {
+                    id: TEST_IDS.THREAD_2,
+                    title: 'Test Thread 2',
+                    content: 'Thread content 2',
+                    creator: TEST_IDS.USER_2,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 0,
+                    lastUpdatedTs: Date.now(),
+                    postedTs: Date.now(),
+                    snippet: 'Thread snippet 2',
+                    snippetCreator: TEST_IDS.USER_2,
+                    starred: true,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                },
+            ])
             mockTwistApi.inbox.getCount.mockResolvedValue(5)
-            mockTwistApi.threads.getUnread.mockResolvedValue([TEST_IDS.THREAD_1])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([TEST_IDS.CONVERSATION_1])
+            mockTwistApi.threads.getUnread.mockResolvedValue([
+                { threadId: TEST_IDS.THREAD_1, channelId: TEST_IDS.CHANNEL_1, objIndex: 100, directMention: false },
+            ])
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
@@ -81,44 +80,53 @@ describe(`${FETCH_INBOX} tool`, () => {
             })
             expect(mockTwistApi.inbox.getCount).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
             expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
-            expect(mockTwistApi.conversations.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
 
         it('should filter only unread items when requested', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue({
-                threads: [
-                    {
-                        id: TEST_IDS.THREAD_1,
-                        title: 'Unread Thread',
-                        channelId: TEST_IDS.CHANNEL_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                        creatorId: TEST_IDS.USER_1,
-                        isUnread: true,
-                        isStarred: false,
-                        newestObjIndex: 100,
-                        oldestObjIndex: 1,
-                        unreadCount: 3,
-                    },
-                    {
-                        id: TEST_IDS.THREAD_2,
-                        title: 'Read Thread',
-                        channelId: TEST_IDS.CHANNEL_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                        creatorId: TEST_IDS.USER_2,
-                        isUnread: false,
-                        isStarred: false,
-                        newestObjIndex: 50,
-                        oldestObjIndex: 1,
-                        unreadCount: 0,
-                    },
-                ],
-                conversations: [],
-            })
+            mockTwistApi.inbox.getInbox.mockResolvedValue([
+                {
+                    id: TEST_IDS.THREAD_1,
+                    title: 'Unread Thread',
+                    content: 'Unread content',
+                    creator: TEST_IDS.USER_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 3,
+                    lastUpdatedTs: Date.now(),
+                    postedTs: Date.now(),
+                    snippet: 'Unread snippet',
+                    snippetCreator: TEST_IDS.USER_1,
+                    starred: false,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                },
+                {
+                    id: TEST_IDS.THREAD_2,
+                    title: 'Read Thread',
+                    content: 'Read content',
+                    creator: TEST_IDS.USER_2,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 0,
+                    lastUpdatedTs: Date.now(),
+                    postedTs: Date.now(),
+                    snippet: 'Read snippet',
+                    snippetCreator: TEST_IDS.USER_2,
+                    starred: false,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                },
+            ])
             mockTwistApi.inbox.getCount.mockResolvedValue(1)
-            mockTwistApi.threads.getUnread.mockResolvedValue([TEST_IDS.THREAD_1])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+            mockTwistApi.threads.getUnread.mockResolvedValue([
+                { threadId: TEST_IDS.THREAD_1, channelId: TEST_IDS.CHANNEL_1, objIndex: 100, directMention: false },
+            ])
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: true },
@@ -131,13 +139,9 @@ describe(`${FETCH_INBOX} tool`, () => {
         })
 
         it('should handle empty inbox', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue({
-                threads: [],
-                conversations: [],
-            })
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
             mockTwistApi.inbox.getCount.mockResolvedValue(0)
             mockTwistApi.threads.getUnread.mockResolvedValue([])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
@@ -148,13 +152,9 @@ describe(`${FETCH_INBOX} tool`, () => {
         })
 
         it('should filter by date range', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue({
-                threads: [],
-                conversations: [],
-            })
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
             mockTwistApi.inbox.getCount.mockResolvedValue(0)
             mockTwistApi.threads.getUnread.mockResolvedValue([])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
 
             const result = await fetchInbox.execute(
                 {

@@ -1,3 +1,4 @@
+import type { Thread } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -34,20 +35,10 @@ type FetchInboxStructured = {
         creatorId: number
         isUnread: boolean
         isStarred: boolean
-        unreadCount: number
-    }>
-    conversations: Array<{
-        id: number
-        title: string
-        workspaceId: number
-        isUnread: boolean
-        unreadCount: number
     }>
     unreadCount: number
-    unreadThreadIds: number[]
-    unreadConversationIds: number[]
+    unreadThreads: Thread[]
     totalThreads: number
-    totalConversations: number
 }
 
 const fetchInbox = {
@@ -59,7 +50,7 @@ const fetchInbox = {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
 
         // Call all 4 endpoints in parallel for complete inbox picture
-        const [inboxData, unreadCount, unreadThreadIds, unreadConversationIds] = await Promise.all([
+        const [inboxThreads, unreadCount, unreadThreadsData] = await Promise.all([
             client.inbox.getInbox({
                 workspaceId,
                 since: sinceDate ? new Date(sinceDate) : undefined,
@@ -68,25 +59,26 @@ const fetchInbox = {
             }),
             client.inbox.getCount(workspaceId),
             client.threads.getUnread(workspaceId),
-            client.conversations.getUnread(workspaceId),
         ])
 
         // Filter by unread if requested
-        let threads = inboxData.threads
-        let conversations = inboxData.conversations
+        let threads = inboxThreads.map((thread) => ({
+            ...thread,
+            isUnread: unreadThreadsData.some((ut) => ut.threadId === thread.id),
+        }))
+
+        const unreadThreads = threads.filter((t) => t.isUnread)
 
         if (onlyUnread) {
-            threads = threads.filter((t) => t.isUnread)
-            conversations = conversations.filter((c) => c.isUnread)
+            threads = unreadThreads
         }
 
         // Build text content
         const lines: string[] = [
             `# Inbox for Workspace ${workspaceId}`,
             '',
-            `**Total Unread:** ${unreadCount}`,
-            `**Unread Threads:** ${unreadThreadIds.length}`,
-            `**Unread Conversations:** ${unreadConversationIds.length}`,
+            `**Total Threads:** ${unreadCount}`,
+            `**Unread Threads:** ${unreadThreads.length}`,
             '',
             `## Threads (${threads.length})`,
             '',
@@ -98,25 +90,9 @@ const fetchInbox = {
         } else {
             for (const thread of threads) {
                 const unreadBadge = thread.isUnread ? ' 🔵' : ''
-                const starBadge = thread.isStarred ? ' ⭐' : ''
+                const starBadge = thread.starred ? ' ⭐' : ''
                 lines.push(
-                    `- **${thread.id}**: ${thread.title}${unreadBadge}${starBadge} (Channel ${thread.channelId}, ${thread.unreadCount} unread)`,
-                )
-            }
-            lines.push('')
-        }
-
-        lines.push(`## Conversations (${conversations.length})`)
-        lines.push('')
-
-        if (conversations.length === 0) {
-            lines.push('_No conversations in inbox_')
-            lines.push('')
-        } else {
-            for (const conversation of conversations) {
-                const unreadBadge = conversation.isUnread ? ' 🔵' : ''
-                lines.push(
-                    `- **${conversation.id}**: ${conversation.title}${unreadBadge} (${conversation.unreadCount} unread)`,
+                    `- **${thread.id}**: ${thread.title}${unreadBadge}${starBadge} (Channel ${thread.channelId})`,
                 )
             }
             lines.push('')
@@ -139,23 +115,13 @@ const fetchInbox = {
                 id: t.id,
                 title: t.title,
                 channelId: t.channelId,
-                creatorId: t.creatorId,
+                creatorId: t.creator,
                 isUnread: t.isUnread,
-                isStarred: t.isStarred,
-                unreadCount: t.unreadCount,
-            })),
-            conversations: conversations.map((c) => ({
-                id: c.id,
-                title: c.title,
-                workspaceId: c.workspaceId,
-                isUnread: c.isUnread,
-                unreadCount: c.unreadCount,
+                isStarred: t.starred,
             })),
             unreadCount,
-            unreadThreadIds,
-            unreadConversationIds,
+            unreadThreads: unreadThreads,
             totalThreads: threads.length,
-            totalConversations: conversations.length,
         }
 
         return getToolOutput({

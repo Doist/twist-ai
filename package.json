@@ -23,7 +23,6 @@
         "start": "npm run build && npx @modelcontextprotocol/inspector node dist/main.js",
         "dev": "concurrently \"npx tsc --watch\" \"npx @modelcontextprotocol/inspector npx nodemon --quiet --watch dist --ext js --exec node dist/main.js\"",
         "type-check": "npx tsc --noEmit",
-        "biome:sort-imports": "biome check --formatter-enabled=false --linter-enabled=false --organize-imports-enabled=true --write .",
         "lint:check": "biome lint",
         "lint:write": "biome lint --write",
         "format:check": "biome format",

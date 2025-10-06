@@ -64,7 +64,12 @@ describe(`${FETCH_INBOX} tool`, () => {
             ])
             mockTwistApi.inbox.getCount.mockResolvedValue(5)
             mockTwistApi.threads.getUnread.mockResolvedValue([
-                { threadId: TEST_IDS.THREAD_1, channelId: TEST_IDS.CHANNEL_1, objIndex: 100, directMention: false },
+                {
+                    threadId: TEST_IDS.THREAD_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    objIndex: 100,
+                    directMention: false,
+                },
             ])
 
             const result = await fetchInbox.execute(
@@ -125,7 +130,12 @@ describe(`${FETCH_INBOX} tool`, () => {
             ])
             mockTwistApi.inbox.getCount.mockResolvedValue(1)
             mockTwistApi.threads.getUnread.mockResolvedValue([
-                { threadId: TEST_IDS.THREAD_1, channelId: TEST_IDS.CHANNEL_1, objIndex: 100, directMention: false },
+                {
+                    threadId: TEST_IDS.THREAD_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    objIndex: 100,
+                    directMention: false,
+                },
             ])
 
             const result = await fetchInbox.execute(

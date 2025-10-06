@@ -7,4 +7,5 @@ export const ToolNames = {
     REPLY: 'reply',
     REACT: 'react',
     MARK_DONE: 'mark_done',
+    BUILD_LINK: 'build_link',
 } as const

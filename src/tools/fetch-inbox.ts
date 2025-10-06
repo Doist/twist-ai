@@ -1,4 +1,4 @@
-import type { Thread } from '@doist/twist-sdk'
+import type { InboxThread } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -37,7 +37,7 @@ type FetchInboxStructured = {
         isStarred: boolean
     }>
     unreadCount: number
-    unreadThreads: Thread[]
+    unreadThreads: InboxThread[]
     totalThreads: number
 }
 
@@ -68,6 +68,9 @@ const fetchInbox = {
         }))
 
         const unreadThreads = threads.filter((t) => t.isUnread)
+        const unreadThreadsOriginal = inboxThreads.filter((thread) =>
+            unreadThreadsData.some((ut) => ut.threadId === thread.id),
+        )
 
         if (onlyUnread) {
             threads = unreadThreads
@@ -120,7 +123,7 @@ const fetchInbox = {
                 isStarred: t.starred,
             })),
             unreadCount,
-            unreadThreads: unreadThreads,
+            unreadThreads: unreadThreadsOriginal,
             totalThreads: threads.length,
         }
 

@@ -5,18 +5,43 @@ import { type MarkDoneType, MarkDoneTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
-    type: MarkDoneTypeSchema.describe('The type of items to mark as done.'),
+    type: MarkDoneTypeSchema.describe('The type of items to mark as done: thread or conversation.'),
+
+    // Individual IDs
     ids: z
         .array(z.number())
-        .min(1)
-        .describe('The IDs of threads or conversations to mark as done.'),
-    markRead: z.boolean().optional().default(true).describe('Mark items as read.'),
-    archive: z.boolean().optional().default(true).describe('Archive items in the inbox.'),
+        .optional()
+        .describe('Specific thread or conversation IDs to mark as done. Use this OR bulk selectors.'),
+
+    // Bulk selectors (for threads only)
+    workspaceId: z
+        .number()
+        .optional()
+        .describe('Mark all threads in this workspace as done (threads only).'),
+    channelId: z
+        .number()
+        .optional()
+        .describe('Mark all threads in this channel as done (threads only).'),
+
+    // Operations
+    markRead: z
+        .boolean()
+        .optional()
+        .describe('Mark items as read (default: true).'),
+    archive: z
+        .boolean()
+        .optional()
+        .describe('Archive items in the inbox (threads only, default: true).'),
+    clearUnread: z
+        .boolean()
+        .optional()
+        .describe('Clear all unread markers for workspace (threads only, requires workspaceId, default: false).'),
 }
 
 type MarkDoneStructured = {
     type: 'mark_done_result'
     itemType: MarkDoneType
+    mode: 'individual' | 'bulk'
     completed: number[]
     failed: Array<{ item: number; error: string }>
     totalRequested: number
@@ -25,53 +50,117 @@ type MarkDoneStructured = {
     operations: {
         markRead: boolean
         archive: boolean
+        clearUnread: boolean
+    }
+    selectors?: {
+        workspaceId?: number
+        channelId?: number
     }
 }
 
 const markDone = {
     name: ToolNames.MARK_DONE,
     description:
-        'Mark threads or conversations as done by marking them as read and/or archiving them. Supports bulk operations.',
+        'Mark threads or conversations as done. Supports individual IDs or bulk operations (mark all in workspace/channel). For threads: can mark as read, archive in inbox, or clear all unread. For conversations: can mark as read and archive.',
     parameters: ArgsSchema,
     async execute(args, client) {
-        const { type, ids, markRead, archive } = args
+        const {
+            type,
+            ids,
+            workspaceId,
+            channelId,
+            markRead = true,
+            archive = true,
+            clearUnread = false,
+        } = args
 
         const completed: number[] = []
         const failed: Array<{ item: number; error: string }> = []
+        let mode: 'individual' | 'bulk' = 'individual'
 
-        for (const id of ids) {
-            try {
-                if (type === 'thread') {
-                    // Mark thread as read
-                    if (markRead) {
-                        await client.threads.markRead(id)
-                    }
+        // Validate arguments
+        if (!ids && !workspaceId && !channelId) {
+            throw new Error('Must provide either ids, workspaceId, or channelId')
+        }
 
-                    // Archive thread in inbox
-                    if (archive) {
-                        await client.inbox.archiveThread(id)
-                    }
+        if (type === 'conversation' && (workspaceId || channelId || clearUnread)) {
+            throw new Error(
+                'Bulk operations (workspaceId, channelId, clearUnread) are only supported for threads',
+            )
+        }
+
+        try {
+            // Bulk operations (threads only)
+            if (type === 'thread' && (workspaceId || channelId)) {
+                mode = 'bulk'
+
+                // Clear unread takes precedence
+                if (clearUnread && workspaceId) {
+                    await client.threads.clearUnread(workspaceId)
                 } else {
-                    // Mark conversation as read
+                    // Mark all read
                     if (markRead) {
-                        await client.conversations.markRead(id)
+                        if (workspaceId) {
+                            await client.threads.markAllRead({ workspaceId })
+                        } else if (channelId) {
+                            await client.threads.markAllRead({ channelId })
+                        }
                     }
 
-                    // Note: Conversations don't have a separate inbox archive operation
-                    // They are archived via the conversations client
+                    // Archive all (inbox operations)
                     if (archive) {
-                        await client.conversations.archiveConversation(id)
+                        if (workspaceId) {
+                            await client.inbox.archiveAll({ workspaceId })
+                        } else if (channelId) {
+                            await client.inbox.archiveAll({ workspaceId: 0, channelIds: [channelId] })
+                        }
                     }
                 }
 
-                completed.push(id)
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-                failed.push({
-                    item: id,
-                    error: errorMessage,
-                })
+                // We don't get individual IDs back from bulk operations
+                // Just indicate success
+            } else if (ids && ids.length > 0) {
+                // Individual operations
+                mode = 'individual'
+
+                for (const id of ids) {
+                    try {
+                        if (type === 'thread') {
+                            // Mark thread as read
+                            if (markRead) {
+                                await client.threads.markRead(id, 0)
+                            }
+
+                            // Archive thread in inbox
+                            if (archive) {
+                                await client.inbox.archiveThread(id)
+                            }
+                        } else {
+                            // Mark conversation as read
+                            if (markRead) {
+                                await client.conversations.markRead({ id })
+                            }
+
+                            // Archive conversation
+                            if (archive) {
+                                await client.conversations.archiveConversation(id)
+                            }
+                        }
+
+                        completed.push(id)
+                    } catch (error) {
+                        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+                        failed.push({
+                            item: id,
+                            error: errorMessage,
+                        })
+                    }
+                }
             }
+        } catch (error) {
+            // Bulk operation failed entirely
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            throw new Error(`Bulk operation failed: ${errorMessage}`)
         }
 
         // Build text content
@@ -80,54 +169,82 @@ const markDone = {
             '',
         ]
 
-        lines.push(`**Total Requested:** ${ids.length}`)
-        lines.push(`**Successful:** ${completed.length}`)
-        lines.push(`**Failed:** ${failed.length}`)
-        lines.push(`**Mark Read:** ${markRead ? 'Yes' : 'No'}`)
-        lines.push(`**Archive:** ${archive ? 'Yes' : 'No'}`)
-        lines.push('')
+        lines.push(`**Mode:** ${mode === 'bulk' ? 'Bulk Operation' : 'Individual IDs'}`)
 
-        if (completed.length > 0) {
-            lines.push('## Completed')
-            lines.push('')
-            lines.push(completed.join(', '))
-            lines.push('')
-        }
-
-        if (failed.length > 0) {
-            lines.push('## Failed')
-            lines.push('')
-            for (const failure of failed) {
-                lines.push(`- ${type} ${failure.item}: ${failure.error}`)
+        if (mode === 'bulk') {
+            if (workspaceId) {
+                lines.push(`**Workspace ID:** ${workspaceId}`)
+            }
+            if (channelId) {
+                lines.push(`**Channel ID:** ${channelId}`)
+            }
+            if (clearUnread) {
+                lines.push('**Operation:** Clear all unread markers')
+            } else {
+                lines.push(`**Mark Read:** ${markRead ? 'Yes' : 'No'}`)
+                lines.push(`**Archive:** ${archive ? 'Yes' : 'No'}`)
             }
             lines.push('')
+            lines.push('✅ Bulk operation completed successfully')
+        } else {
+            lines.push(`**Total Requested:** ${ids?.length ?? 0}`)
+            lines.push(`**Successful:** ${completed.length}`)
+            lines.push(`**Failed:** ${failed.length}`)
+            lines.push(`**Mark Read:** ${markRead ? 'Yes' : 'No'}`)
+            lines.push(`**Archive:** ${archive ? 'Yes' : 'No'}`)
+            lines.push('')
+
+            if (completed.length > 0) {
+                lines.push('## Completed')
+                lines.push('')
+                lines.push(completed.join(', '))
+                lines.push('')
+            }
+
+            if (failed.length > 0) {
+                lines.push('## Failed')
+                lines.push('')
+                for (const failure of failed) {
+                    lines.push(`- ${type} ${failure.item}: ${failure.error}`)
+                }
+                lines.push('')
+            }
         }
 
         // Add next steps
-        if (failed.length === 0 && completed.length > 0) {
-            lines.push('## Next Steps')
-            lines.push('')
+        lines.push('## Next Steps')
+        lines.push('')
+        if (mode === 'bulk' || (failed.length === 0 && completed.length > 0)) {
             lines.push(
-                `All ${type}s marked as done successfully. ${type === 'thread' ? 'Use fetch_inbox to see remaining unread threads.' : 'Check your conversations for remaining unread messages.'}`,
+                type === 'thread'
+                    ? 'Use fetch_inbox to see remaining unread threads.'
+                    : 'Check your conversations for remaining unread messages.',
             )
         } else if (failed.length > 0) {
-            lines.push('## Next Steps')
-            lines.push('')
             lines.push('Review failed items and retry if needed.')
         }
 
         const structuredContent: MarkDoneStructured = {
             type: 'mark_done_result',
             itemType: type,
+            mode,
             completed,
             failed,
-            totalRequested: ids.length,
+            totalRequested: ids?.length ?? 0,
             successCount: completed.length,
             failureCount: failed.length,
             operations: {
                 markRead,
                 archive,
+                clearUnread,
             },
+            selectors:
+                workspaceId || channelId
+                    ? {
+                          workspaceId,
+                          channelId,
+                      }
+                    : undefined,
         }
 
         return getToolOutput({

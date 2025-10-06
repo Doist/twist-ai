@@ -13,8 +13,8 @@ export function createMockThread(overrides: Partial<Thread> = {}): Thread {
         channelId: 67890,
         workspaceId: 11111,
         creator: 22222,
-        postedTs: 1704067200, // 2024-01-01 00:00:00 UTC
-        lastUpdatedTs: 1704067200,
+        posted: new Date('2024-01-01T00:00:00Z'),
+        lastUpdated: new Date('2024-01-01T00:00:00Z'),
         pinned: false,
         snippet: 'Test thread content',
         snippetCreator: 22222,
@@ -42,7 +42,7 @@ export function createMockComment(overrides: Partial<Comment> = {}): Comment {
         content: 'Test comment content',
         threadId: 12345,
         creator: 22222,
-        postedTs: 1704067200, // 2024-01-01 00:00:00 UTC
+        posted: new Date('2024-01-01T00:00:00Z'),
         systemMessage: null,
         attachments: [],
         reactions: {},
@@ -65,8 +65,9 @@ export function createMockConversation(overrides: Partial<Conversation> = {}): C
         snippet: '',
         snippetCreators: [],
         archived: false,
-        createdTs: 1704067200,
-        lastActiveTs: 1704067200, // 2024-01-01 00:00:00 UTC
+        creator: 22222,
+        created: new Date('2024-01-01T00:00:00Z'),
+        lastActive: new Date('2024-01-01T00:00:00Z'),
         ...overrides,
     }
 }
@@ -83,12 +84,12 @@ export function createMockConversationMessage(
         content: 'Test message content',
         creatorId: 22222,
         conversationId: 33333,
-        createdTs: 1704067200, // 2024-01-01 00:00:00 UTC
+        created: new Date('2024-01-01T00:00:00Z'),
         systemMessage: null,
         attachments: [],
         reactions: {},
         objIndex: 1,
-        lastEditedTs: null,
+        lastEdited: null,
         ...overrides,
     }
 }

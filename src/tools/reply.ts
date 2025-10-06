@@ -45,7 +45,7 @@ const reply = {
                 recipients,
             })
             replyId = comment.id
-            createdTs = comment.postedTs
+            createdTs = Math.floor(comment.posted.getTime() / 1000)
         } else {
             // Reply to conversation (add message)
             const message = await client.conversationMessages.createMessage({
@@ -53,7 +53,7 @@ const reply = {
                 content,
             })
             replyId = message.id
-            createdTs = message.createdTs
+            createdTs = message.created ? Math.floor(message.created.getTime() / 1000) : 0
         }
 
         const lines: string[] = [

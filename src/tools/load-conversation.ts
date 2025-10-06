@@ -75,7 +75,7 @@ const loadConversation = {
             `**Workspace ID:** ${conversation.workspaceId}`,
             `**Messages:** ${conversation.messageCount}`,
             `**Archived:** ${conversation.archived ? 'Yes' : 'No'}`,
-            `**Last Active:** ${new Date(conversation.lastActiveTs * 1000).toISOString()}`,
+            `**Last Active:** ${conversation.lastActive.toISOString()}`,
             '',
         ]
 
@@ -90,7 +90,7 @@ const loadConversation = {
         lines.push('')
 
         for (const message of messages) {
-            const messageDate = new Date(message.createdTs * 1000).toISOString()
+            const messageDate = message.created ? message.created.toISOString() : 'Unknown'
             lines.push(`### Message ${message.id}`)
             lines.push(`**Creator:** ${message.creatorId} | **Created:** ${messageDate}`)
             lines.push('')
@@ -104,18 +104,18 @@ const loadConversation = {
                 id: conversation.id,
                 workspaceId: conversation.workspaceId,
                 userIds: includeParticipants ? conversation.userIds : [],
-                messageCount: conversation.messageCount,
+                messageCount: conversation.messageCount ?? 0,
                 archived: conversation.archived,
-                lastActiveTs: conversation.lastActiveTs,
+                lastActiveTs: Math.floor(conversation.lastActive.getTime() / 1000),
             },
             messages: messages.map((m) => ({
                 id: m.id,
                 content: m.content,
-                creatorId: m.creatorId,
+                creatorId: m.creatorId ?? m.creator ?? 0,
                 conversationId: m.conversationId,
-                createdTs: m.createdTs,
+                createdTs: m.created ? Math.floor(m.created.getTime() / 1000) : 0,
             })),
-            totalMessages: conversation.messageCount,
+            totalMessages: conversation.messageCount ?? 0,
         }
 
         return getToolOutput({

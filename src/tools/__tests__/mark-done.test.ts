@@ -8,6 +8,8 @@ import { markDone } from '../mark-done.js'
 const mockTwistApi = {
     threads: {
         markRead: jest.fn(),
+        markAllRead: jest.fn(),
+        clearUnread: jest.fn(),
     },
     conversations: {
         markRead: jest.fn(),
@@ -15,6 +17,7 @@ const mockTwistApi = {
     },
     inbox: {
         archiveThread: jest.fn(),
+        archiveAll: jest.fn(),
     },
 } as unknown as jest.Mocked<TwistApi>
 
@@ -42,9 +45,9 @@ describe(`${MARK_DONE} tool`, () => {
 
             // Verify API was called for each thread
             expect(mockTwistApi.threads.markRead).toHaveBeenCalledTimes(3)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(1, TEST_IDS.THREAD_1)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(2, TEST_IDS.THREAD_2)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(3, TEST_IDS.THREAD_3)
+            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(1, TEST_IDS.THREAD_1, 0)
+            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(2, TEST_IDS.THREAD_2, 0)
+            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(3, TEST_IDS.THREAD_3, 0)
 
             expect(mockTwistApi.inbox.archiveThread).toHaveBeenCalledTimes(3)
             expect(mockTwistApi.inbox.archiveThread).toHaveBeenNthCalledWith(1, TEST_IDS.THREAD_1)
@@ -58,7 +61,9 @@ describe(`${MARK_DONE} tool`, () => {
             const { structuredContent } = result
             expect(structuredContent).toEqual(
                 expect.objectContaining({
+                    type: 'mark_done_result',
                     itemType: 'thread',
+                    mode: 'individual',
                     completed: [TEST_IDS.THREAD_1, TEST_IDS.THREAD_2, TEST_IDS.THREAD_3],
                     failed: [],
                     totalRequested: 3,
@@ -67,6 +72,7 @@ describe(`${MARK_DONE} tool`, () => {
                     operations: {
                         markRead: true,
                         archive: true,
+                        clearUnread: false,
                     },
                 }),
             )
@@ -186,14 +192,12 @@ describe(`${MARK_DONE} tool`, () => {
 
             // Verify API was called for each conversation
             expect(mockTwistApi.conversations.markRead).toHaveBeenCalledTimes(2)
-            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(
-                1,
-                TEST_IDS.CONVERSATION_1,
-            )
-            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(
-                2,
-                TEST_IDS.CONVERSATION_2,
-            )
+            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(1, {
+                id: TEST_IDS.CONVERSATION_1,
+            })
+            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(2, {
+                id: TEST_IDS.CONVERSATION_2,
+            })
 
             expect(mockTwistApi.conversations.archiveConversation).toHaveBeenCalledTimes(2)
             expect(mockTwistApi.conversations.archiveConversation).toHaveBeenNthCalledWith(
@@ -237,6 +241,185 @@ describe(`${MARK_DONE} tool`, () => {
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+        })
+    })
+
+    describe('bulk thread operations', () => {
+        it('should mark all threads as read and archive in a workspace', async () => {
+            mockTwistApi.threads.markAllRead.mockResolvedValue(undefined)
+            mockTwistApi.inbox.archiveAll.mockResolvedValue(undefined)
+
+            const result = await markDone.execute(
+                {
+                    type: 'thread',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.markAllRead).toHaveBeenCalledWith({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+            })
+            expect(mockTwistApi.inbox.archiveAll).toHaveBeenCalledWith({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+            })
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'mark_done_result',
+                    mode: 'bulk',
+                    itemType: 'thread',
+                    selectors: {
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        channelId: undefined,
+                    },
+                    operations: {
+                        markRead: true,
+                        archive: true,
+                        clearUnread: false,
+                    },
+                }),
+            )
+        })
+
+        it('should mark all threads as read and archive in a channel', async () => {
+            mockTwistApi.threads.markAllRead.mockResolvedValue(undefined)
+            mockTwistApi.inbox.archiveAll.mockResolvedValue(undefined)
+
+            const result = await markDone.execute(
+                {
+                    type: 'thread',
+                    channelId: TEST_IDS.CHANNEL_1,
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.markAllRead).toHaveBeenCalledWith({
+                channelId: TEST_IDS.CHANNEL_1,
+            })
+            expect(mockTwistApi.inbox.archiveAll).toHaveBeenCalledWith({
+                workspaceId: 0,
+                channelIds: [TEST_IDS.CHANNEL_1],
+            })
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should clear all unread markers in a workspace', async () => {
+            mockTwistApi.threads.clearUnread.mockResolvedValue(undefined)
+
+            const result = await markDone.execute(
+                {
+                    type: 'thread',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    clearUnread: true,
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.clearUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
+            expect(mockTwistApi.threads.markAllRead).not.toHaveBeenCalled()
+            expect(mockTwistApi.inbox.archiveAll).not.toHaveBeenCalled()
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should mark all as read without archiving in workspace', async () => {
+            mockTwistApi.threads.markAllRead.mockResolvedValue(undefined)
+
+            const result = await markDone.execute(
+                {
+                    type: 'thread',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    archive: false,
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.markAllRead).toHaveBeenCalledWith({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+            })
+            expect(mockTwistApi.inbox.archiveAll).not.toHaveBeenCalled()
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should archive all without marking as read in workspace', async () => {
+            mockTwistApi.inbox.archiveAll.mockResolvedValue(undefined)
+
+            const result = await markDone.execute(
+                {
+                    type: 'thread',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    markRead: false,
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.markAllRead).not.toHaveBeenCalled()
+            expect(mockTwistApi.inbox.archiveAll).toHaveBeenCalledWith({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+            })
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should throw error if bulk operations used with conversations', async () => {
+            await expect(
+                markDone.execute(
+                    {
+                        type: 'conversation',
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow(
+                'Bulk operations (workspaceId, channelId, clearUnread) are only supported for threads',
+            )
+        })
+
+        it('should throw error if clearUnread used with conversations', async () => {
+            await expect(
+                markDone.execute(
+                    {
+                        type: 'conversation',
+                        ids: [TEST_IDS.CONVERSATION_1],
+                        clearUnread: true,
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow(
+                'Bulk operations (workspaceId, channelId, clearUnread) are only supported for threads',
+            )
+        })
+
+        it('should propagate bulk operation errors', async () => {
+            const apiError = new Error('Workspace not found')
+            mockTwistApi.threads.markAllRead.mockRejectedValue(apiError)
+
+            await expect(
+                markDone.execute(
+                    {
+                        type: 'thread',
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('Bulk operation failed: Workspace not found')
+        })
+
+        it('should throw error if no ids or selectors provided', async () => {
+            await expect(
+                markDone.execute(
+                    {
+                        type: 'thread',
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('Must provide either ids, workspaceId, or channelId')
         })
     })
 

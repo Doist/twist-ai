@@ -37,16 +37,16 @@ const react = {
         const apiParams: {
             threadId?: number
             commentId?: number
-            conversationMessageId?: number
-            emoji: string
-        } = { emoji }
+            messageId?: number
+            reaction: string
+        } = { reaction: emoji }
 
         if (targetType === 'thread') {
             apiParams.threadId = targetId
         } else if (targetType === 'comment') {
             apiParams.commentId = targetId
         } else {
-            apiParams.conversationMessageId = targetId
+            apiParams.messageId = targetId
         }
 
         // Perform the reaction operation

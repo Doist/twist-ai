@@ -8,8 +8,6 @@ import { searchContent } from '../search-content.js'
 const mockTwistApi = {
     search: {
         search: jest.fn(),
-        searchComments: jest.fn(),
-        searchMessages: jest.fn(),
     },
 } as unknown as jest.Mocked<TwistApi>
 
@@ -20,37 +18,41 @@ describe(`${SEARCH_CONTENT} tool`, () => {
         jest.clearAllMocks()
     })
 
-    describe('workspace (global) search', () => {
+    describe('workspace search', () => {
         it('should search across workspace with results', async () => {
             mockTwistApi.search.search.mockResolvedValue({
-                results: [
+                items: [
                     {
-                        id: TEST_IDS.THREAD_1,
-                        type: 'thread',
-                        content: 'Test thread matching query',
-                        creatorId: TEST_IDS.USER_1,
-                        createdTs: 1704067200,
+                        id: 'thread-123',
+                        type: 'thread' as const,
+                        snippet: 'Test thread matching query',
+                        snippetCreatorId: TEST_IDS.USER_1,
+                        snippetLastUpdated: new Date('2024-01-01T00:00:00Z'),
                         channelId: TEST_IDS.CHANNEL_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        threadId: TEST_IDS.THREAD_1,
+                        channelName: 'Test Channel',
+                        channelColor: 1,
+                        title: 'Test Thread',
+                        closed: false,
                     },
                     {
-                        id: TEST_IDS.COMMENT_1,
-                        type: 'comment',
-                        content: 'Test comment matching query',
-                        creatorId: TEST_IDS.USER_1,
-                        createdTs: 1704067200,
+                        id: 'comment-456',
+                        type: 'comment' as const,
+                        snippet: 'Test comment matching query',
+                        snippetCreatorId: TEST_IDS.USER_1,
+                        snippetLastUpdated: new Date('2024-01-01T00:00:00Z'),
                         threadId: TEST_IDS.THREAD_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        commentId: TEST_IDS.COMMENT_1,
                     },
                 ],
                 hasMore: false,
+                isPlanRestricted: false,
             })
 
             const result = await searchContent.execute(
                 {
                     query: 'test query',
-                    scope: 'workspace',
-                    objectId: TEST_IDS.WORKSPACE_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
                     limit: 50,
                 },
                 mockTwistApi,
@@ -60,172 +62,148 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                 expect.objectContaining({
                     query: 'test query',
                     workspaceId: TEST_IDS.WORKSPACE_1,
+                    limit: 50,
                 }),
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'search_results',
+                    query: 'test query',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    totalResults: 2,
+                    hasMore: false,
+                }),
+            )
+            expect(structuredContent?.results).toHaveLength(2)
+            expect(structuredContent?.results[0]).toEqual(
+                expect.objectContaining({
+                    type: 'thread',
+                    content: 'Test thread matching query',
+                }),
+            )
         })
 
         it('should search with filters', async () => {
             mockTwistApi.search.search.mockResolvedValue({
-                results: [],
+                items: [
+                    {
+                        id: 'thread-789',
+                        type: 'thread' as const,
+                        snippet: 'Filtered result',
+                        snippetCreatorId: TEST_IDS.USER_1,
+                        snippetLastUpdated: new Date('2024-01-01T00:00:00Z'),
+                        channelId: TEST_IDS.CHANNEL_1,
+                        threadId: TEST_IDS.THREAD_1,
+                    },
+                ],
                 hasMore: false,
+                isPlanRestricted: false,
             })
 
             const result = await searchContent.execute(
                 {
-                    query: 'test',
-                    scope: 'workspace',
-                    objectId: TEST_IDS.WORKSPACE_1,
+                    query: 'filtered',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
                     channelIds: [TEST_IDS.CHANNEL_1],
                     authorIds: [TEST_IDS.USER_1],
                     mentionSelf: true,
                     dateFrom: '2024-01-01',
-                    dateTo: '2024-01-31',
-                    limit: 50,
+                    dateTo: '2024-12-31',
+                    limit: 25,
                 },
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.search.search).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    channelIds: [TEST_IDS.CHANNEL_1],
-                    authorIds: [TEST_IDS.USER_1],
-                    mentionSelf: true,
-                    dateFrom: '2024-01-01',
-                    dateTo: '2024-01-31',
-                }),
-            )
+            expect(mockTwistApi.search.search).toHaveBeenCalledWith({
+                query: 'filtered',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                channelIds: [TEST_IDS.CHANNEL_1],
+                authorIds: [TEST_IDS.USER_1],
+                mentionSelf: true,
+                dateFrom: '2024-01-01',
+                dateTo: '2024-12-31',
+                limit: 25,
+                cursor: undefined,
+            })
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
 
         it('should handle pagination', async () => {
             mockTwistApi.search.search.mockResolvedValue({
-                results: [],
-                hasMore: true,
-                cursor: 'next-cursor',
-            })
-
-            const result = await searchContent.execute(
-                { query: 'test', scope: 'workspace', objectId: TEST_IDS.WORKSPACE_1, limit: 50 },
-                mockTwistApi,
-            )
-
-            const textContent = extractTextContent(result)
-            expect(textContent).toMatchSnapshot()
-            expect(textContent).toContain('More results available')
-        })
-    })
-
-    describe('thread search', () => {
-        it('should search within thread comments', async () => {
-            mockTwistApi.search.searchComments.mockResolvedValue({
-                results: [
+                items: [
                     {
-                        id: TEST_IDS.COMMENT_1,
-                        type: 'comment',
-                        content: 'Comment matching query',
-                        creatorId: TEST_IDS.USER_1,
-                        createdTs: 1704067200,
-                        threadId: TEST_IDS.THREAD_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
-                    },
-                ],
-                hasMore: false,
-            })
-
-            const result = await searchContent.execute(
-                { query: 'test', scope: 'thread', objectId: TEST_IDS.THREAD_1, limit: 50 },
-                mockTwistApi,
-            )
-
-            expect(mockTwistApi.search.searchComments).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query: 'test',
-                    threadId: TEST_IDS.THREAD_1,
-                }),
-            )
-
-            expect(extractTextContent(result)).toMatchSnapshot()
-        })
-    })
-
-    describe('conversation search', () => {
-        it('should search within conversation messages', async () => {
-            mockTwistApi.search.searchMessages.mockResolvedValue({
-                results: [
-                    {
-                        id: TEST_IDS.MESSAGE_1,
-                        type: 'message',
-                        content: 'Message matching query',
-                        creatorId: TEST_IDS.USER_1,
-                        createdTs: 1704067200,
+                        id: 'result-1',
+                        type: 'message' as const,
+                        snippet: 'Page 1 result',
+                        snippetCreatorId: TEST_IDS.USER_1,
+                        snippetLastUpdated: new Date('2024-01-01T00:00:00Z'),
                         conversationId: TEST_IDS.CONVERSATION_1,
-                        workspaceId: TEST_IDS.WORKSPACE_1,
                     },
                 ],
-                hasMore: false,
+                hasMore: true,
+                nextCursorMark: 'next-cursor-123',
+                isPlanRestricted: false,
             })
 
             const result = await searchContent.execute(
                 {
-                    query: 'test',
-                    scope: 'conversation',
-                    objectId: TEST_IDS.CONVERSATION_1,
-                    limit: 50,
+                    query: 'paginated',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    limit: 10,
                 },
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.search.searchMessages).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    query: 'test',
-                    conversationId: TEST_IDS.CONVERSATION_1,
-                }),
-            )
+            const { structuredContent } = result
+            expect(structuredContent?.hasMore).toBe(true)
+            expect(structuredContent?.cursor).toBe('next-cursor-123')
 
-            expect(extractTextContent(result)).toMatchSnapshot()
+            expect(extractTextContent(result)).toContain('More results available')
         })
     })
 
     describe('empty results', () => {
         it('should handle no results found', async () => {
             mockTwistApi.search.search.mockResolvedValue({
-                results: [],
+                items: [],
                 hasMore: false,
+                isPlanRestricted: false,
             })
 
             const result = await searchContent.execute(
                 {
                     query: 'nonexistent',
-                    scope: 'workspace',
-                    objectId: TEST_IDS.WORKSPACE_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
                     limit: 50,
                 },
                 mockTwistApi,
             )
 
-            expect(extractTextContent(result)).toMatchSnapshot()
+            const textContent = extractTextContent(result)
+            expect(textContent).toContain('No results found')
+            expect(textContent).toMatchSnapshot()
         })
     })
 
     describe('error handling', () => {
         it('should propagate API errors', async () => {
-            const apiError = new Error('API Error: Rate limit exceeded')
-            mockTwistApi.search.search.mockRejectedValue(apiError)
+            mockTwistApi.search.search.mockRejectedValue(new Error('Search API error'))
 
             await expect(
                 searchContent.execute(
                     {
                         query: 'test',
-                        scope: 'workspace',
-                        objectId: TEST_IDS.WORKSPACE_1,
+                        workspaceId: TEST_IDS.WORKSPACE_1,
                         limit: 50,
                     },
                     mockTwistApi,
                 ),
-            ).rejects.toThrow('API Error: Rate limit exceeded')
+            ).rejects.toThrow('Search API error')
         })
     })
 })

@@ -1,8 +1,78 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`mark_done tool bulk thread operations should archive all without marking as read in workspace 1`] = `
+"# Mark Threads Done
+
+**Mode:** Bulk Operation
+**Workspace ID:** 11111
+**Mark Read:** No
+**Archive:** Yes
+
+✅ Bulk operation completed successfully
+## Next Steps
+
+Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool bulk thread operations should clear all unread markers in a workspace 1`] = `
+"# Mark Threads Done
+
+**Mode:** Bulk Operation
+**Workspace ID:** 11111
+**Operation:** Clear all unread markers
+
+✅ Bulk operation completed successfully
+## Next Steps
+
+Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool bulk thread operations should mark all as read without archiving in workspace 1`] = `
+"# Mark Threads Done
+
+**Mode:** Bulk Operation
+**Workspace ID:** 11111
+**Mark Read:** Yes
+**Archive:** No
+
+✅ Bulk operation completed successfully
+## Next Steps
+
+Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool bulk thread operations should mark all threads as read and archive in a channel 1`] = `
+"# Mark Threads Done
+
+**Mode:** Bulk Operation
+**Channel ID:** 67890
+**Mark Read:** Yes
+**Archive:** Yes
+
+✅ Bulk operation completed successfully
+## Next Steps
+
+Use fetch_inbox to see remaining unread threads."
+`;
+
+exports[`mark_done tool bulk thread operations should mark all threads as read and archive in a workspace 1`] = `
+"# Mark Threads Done
+
+**Mode:** Bulk Operation
+**Workspace ID:** 11111
+**Mark Read:** Yes
+**Archive:** Yes
+
+✅ Bulk operation completed successfully
+## Next Steps
+
+Use fetch_inbox to see remaining unread threads."
+`;
+
 exports[`mark_done tool marking conversations as done should handle conversation not found error 1`] = `
 "# Mark Conversations Done
 
+**Mode:** Individual IDs
 **Total Requested:** 1
 **Successful:** 0
 **Failed:** 1
@@ -21,6 +91,7 @@ Review failed items and retry if needed."
 exports[`mark_done tool marking conversations as done should mark all conversations as done successfully 1`] = `
 "# Mark Conversations Done
 
+**Mode:** Individual IDs
 **Total Requested:** 2
 **Successful:** 2
 **Failed:** 0
@@ -33,12 +104,13 @@ exports[`mark_done tool marking conversations as done should mark all conversati
 
 ## Next Steps
 
-All conversations marked as done successfully. Check your conversations for remaining unread messages."
+Check your conversations for remaining unread messages."
 `;
 
 exports[`mark_done tool marking threads as done should archive thread only 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 1
 **Successful:** 1
 **Failed:** 0
@@ -51,12 +123,13 @@ exports[`mark_done tool marking threads as done should archive thread only 1`] =
 
 ## Next Steps
 
-All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+Use fetch_inbox to see remaining unread threads."
 `;
 
 exports[`mark_done tool marking threads as done should handle all threads failing 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 2
 **Successful:** 0
 **Failed:** 2
@@ -76,6 +149,7 @@ Review failed items and retry if needed."
 exports[`mark_done tool marking threads as done should handle partial failures gracefully 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 3
 **Successful:** 2
 **Failed:** 1
@@ -98,6 +172,7 @@ Review failed items and retry if needed."
 exports[`mark_done tool marking threads as done should mark all threads as done successfully 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 3
 **Successful:** 3
 **Failed:** 0
@@ -110,12 +185,13 @@ exports[`mark_done tool marking threads as done should mark all threads as done 
 
 ## Next Steps
 
-All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+Use fetch_inbox to see remaining unread threads."
 `;
 
 exports[`mark_done tool marking threads as done should mark thread as read only 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 1
 **Successful:** 1
 **Failed:** 0
@@ -128,12 +204,13 @@ exports[`mark_done tool marking threads as done should mark thread as read only 
 
 ## Next Steps
 
-All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+Use fetch_inbox to see remaining unread threads."
 `;
 
 exports[`mark_done tool next steps logic validation should suggest fetch_inbox when all threads complete successfully 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 2
 **Successful:** 2
 **Failed:** 0
@@ -146,12 +223,13 @@ exports[`mark_done tool next steps logic validation should suggest fetch_inbox w
 
 ## Next Steps
 
-All threads marked as done successfully. Use fetch_inbox to see remaining unread threads."
+Use fetch_inbox to see remaining unread threads."
 `;
 
 exports[`mark_done tool next steps logic validation should suggest reviewing failures when mixed results 1`] = `
 "# Mark Threads Done
 
+**Mode:** Individual IDs
 **Total Requested:** 2
 **Successful:** 1
 **Failed:** 1

@@ -79,7 +79,7 @@ const loadThread = {
             `**Channel ID:** ${thread.channelId}`,
             `**Workspace ID:** ${thread.workspaceId}`,
             `**Creator:** ${thread.creator}`,
-            `**Posted:** ${new Date(thread.postedTs * 1000).toISOString()}`,
+            `**Posted:** ${thread.posted.toISOString()}`,
             `**Comments:** ${thread.commentCount}`,
             `**Archived:** ${thread.isArchived ? 'Yes' : 'No'}`,
             `**In Inbox:** ${thread.inInbox ? 'Yes' : 'No'}`,
@@ -93,7 +93,7 @@ const loadThread = {
         ]
 
         for (const comment of comments) {
-            const commentDate = new Date(comment.postedTs * 1000).toISOString()
+            const commentDate = comment.posted.toISOString()
             lines.push(`### Comment ${comment.id}`)
             lines.push(`**Creator:** ${comment.creator} | **Posted:** ${commentDate}`)
             lines.push('')
@@ -116,7 +116,7 @@ const loadThread = {
                 channelId: thread.channelId,
                 workspaceId: thread.workspaceId,
                 creatorId: thread.creator,
-                postedTs: thread.postedTs,
+                postedTs: Math.floor(thread.posted.getTime() / 1000),
                 commentCount: thread.commentCount,
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
@@ -127,7 +127,7 @@ const loadThread = {
                 content: c.content,
                 creatorId: c.creator,
                 threadId: c.threadId,
-                postedTs: c.postedTs,
+                postedTs: Math.floor(c.posted.getTime() / 1000),
             })),
             totalComments: thread.commentCount,
         }

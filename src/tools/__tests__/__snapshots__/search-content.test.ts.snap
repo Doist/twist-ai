@@ -1,22 +1,5 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`search_content tool conversation search should search within conversation messages 1`] = `
-"# Search Results for "test"
-
-**Search Scope:** Conversation 33333
-**Results Found:** 1
-**More Available:** No
-
-## Results
-
-### Message 98765
-**Created:** 2024-01-01 | **Creator:** 22222
-**Conversation:** 33333
-
-Message matching query
-"
-`;
-
 exports[`search_content tool empty results should handle no results found 1`] = `
 "# Search Results for "nonexistent"
 
@@ -27,37 +10,7 @@ exports[`search_content tool empty results should handle no results found 1`] = 
 _No results found_"
 `;
 
-exports[`search_content tool thread search should search within thread comments 1`] = `
-"# Search Results for "test"
-
-**Search Scope:** Thread 12345
-**Results Found:** 1
-**More Available:** No
-
-## Results
-
-### Comment 54321
-**Created:** 2024-01-01 | **Creator:** 22222
-**Thread:** 12345
-
-Comment matching query
-"
-`;
-
-exports[`search_content tool workspace (global) search should handle pagination 1`] = `
-"# Search Results for "test"
-
-**Search Scope:** Workspace 11111
-**Results Found:** 0
-**More Available:** Yes
-
-_No results found_
-## Next Steps
-
-More results available. Use the cursor to fetch the next page."
-`;
-
-exports[`search_content tool workspace (global) search should search across workspace with results 1`] = `
+exports[`search_content tool workspace search should search across workspace with results 1`] = `
 "# Search Results for "test query"
 
 **Search Scope:** Workspace 11111
@@ -66,13 +19,14 @@ exports[`search_content tool workspace (global) search should search across work
 
 ## Results
 
-### Thread 12345
+### Thread thread-123
 **Created:** 2024-01-01 | **Creator:** 22222
+**Thread:** 12345
 **Channel:** 67890
 
 Test thread matching query
 
-### Comment 54321
+### Comment comment-456
 **Created:** 2024-01-01 | **Creator:** 22222
 **Thread:** 12345
 
@@ -80,12 +34,20 @@ Test comment matching query
 "
 `;
 
-exports[`search_content tool workspace (global) search should search with filters 1`] = `
-"# Search Results for "test"
+exports[`search_content tool workspace search should search with filters 1`] = `
+"# Search Results for "filtered"
 
 **Search Scope:** Workspace 11111
-**Results Found:** 0
+**Results Found:** 1
 **More Available:** No
 
-_No results found_"
+## Results
+
+### Thread thread-789
+**Created:** 2024-01-01 | **Creator:** 22222
+**Thread:** 12345
+**Channel:** 67890
+
+Filtered result
+"
 `;

@@ -36,7 +36,7 @@ describe(`${REACT} tool`, () => {
             expect(mockTwistApi.reactions.add).toHaveBeenCalledWith(
                 expect.objectContaining({
                     threadId: TEST_IDS.THREAD_1,
-                    emoji: '👍',
+                    reaction: '👍',
                 }),
             )
 
@@ -59,7 +59,7 @@ describe(`${REACT} tool`, () => {
             expect(mockTwistApi.reactions.add).toHaveBeenCalledWith(
                 expect.objectContaining({
                     commentId: TEST_IDS.COMMENT_1,
-                    emoji: '❤️',
+                    reaction: '❤️',
                 }),
             )
 
@@ -81,8 +81,8 @@ describe(`${REACT} tool`, () => {
 
             expect(mockTwistApi.reactions.add).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    conversationMessageId: TEST_IDS.MESSAGE_1,
-                    emoji: '🎉',
+                    messageId: TEST_IDS.MESSAGE_1,
+                    reaction: '🎉',
                 }),
             )
 
@@ -107,7 +107,7 @@ describe(`${REACT} tool`, () => {
             expect(mockTwistApi.reactions.remove).toHaveBeenCalledWith(
                 expect.objectContaining({
                     threadId: TEST_IDS.THREAD_1,
-                    emoji: '👍',
+                    reaction: '👍',
                 }),
             )
 
@@ -130,7 +130,7 @@ describe(`${REACT} tool`, () => {
             expect(mockTwistApi.reactions.remove).toHaveBeenCalledWith(
                 expect.objectContaining({
                     commentId: TEST_IDS.COMMENT_1,
-                    emoji: '❤️',
+                    reaction: '❤️',
                 }),
             )
 
@@ -152,8 +152,8 @@ describe(`${REACT} tool`, () => {
 
             expect(mockTwistApi.reactions.remove).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    conversationMessageId: TEST_IDS.MESSAGE_1,
-                    emoji: '🎉',
+                    messageId: TEST_IDS.MESSAGE_1,
+                    reaction: '🎉',
                 }),
             )
 

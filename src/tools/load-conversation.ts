@@ -36,14 +36,14 @@ type LoadConversationStructured = {
         userIds: number[]
         messageCount: number
         archived: boolean
-        lastActiveTs: number
+        lastActive: Date
     }
     messages: Array<{
         id: number
         content: string
         creatorId: number
         conversationId: number
-        createdTs: number
+        posted: Date
     }>
     totalMessages: number
 }
@@ -90,9 +90,9 @@ const loadConversation = {
         lines.push('')
 
         for (const message of messages) {
-            const messageDate = message.created ? message.created.toISOString() : 'Unknown'
+            const messageDate = message.posted.toISOString()
             lines.push(`### Message ${message.id}`)
-            lines.push(`**Creator:** ${message.creatorId} | **Created:** ${messageDate}`)
+            lines.push(`**Creator:** ${message.creator} | **Posted:** ${messageDate}`)
             lines.push('')
             lines.push(message.content)
             lines.push('')
@@ -106,14 +106,14 @@ const loadConversation = {
                 userIds: includeParticipants ? conversation.userIds : [],
                 messageCount: conversation.messageCount ?? 0,
                 archived: conversation.archived,
-                lastActiveTs: Math.floor(conversation.lastActive.getTime() / 1000),
+                lastActive: conversation.lastActive,
             },
             messages: messages.map((m) => ({
                 id: m.id,
                 content: m.content,
-                creatorId: m.creatorId ?? m.creator ?? 0,
+                creatorId: m.creator,
                 conversationId: m.conversationId,
-                createdTs: m.created ? Math.floor(m.created.getTime() / 1000) : 0,
+                posted: m.posted,
             })),
             totalMessages: conversation.messageCount ?? 0,
         }

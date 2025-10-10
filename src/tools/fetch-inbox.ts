@@ -32,7 +32,7 @@ type FetchInboxStructured = {
         id: number
         title: string
         channelId: number
-        creatorId: number
+        creator: number
         isUnread: boolean
         isStarred: boolean
     }>
@@ -118,7 +118,7 @@ const fetchInbox = {
                 id: t.id,
                 title: t.title,
                 channelId: t.channelId,
-                creatorId: t.creator,
+                creator: t.creator,
                 isUnread: t.isUnread,
                 isStarred: t.starred,
             })),

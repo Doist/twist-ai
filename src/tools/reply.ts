@@ -23,7 +23,7 @@ type ReplyStructured = {
     targetId: number
     replyId: number
     content: string
-    createdTs: number
+    created: Date
 }
 
 const reply = {
@@ -35,7 +35,7 @@ const reply = {
         const { targetType, targetId, content, recipients } = args
 
         let replyId: number
-        let createdTs: number
+        let created: Date
 
         if (targetType === 'thread') {
             // Reply to thread (add comment)
@@ -45,7 +45,7 @@ const reply = {
                 recipients,
             })
             replyId = comment.id
-            createdTs = Math.floor(comment.posted.getTime() / 1000)
+            created = comment.posted
         } else {
             // Reply to conversation (add message)
             const message = await client.conversationMessages.createMessage({
@@ -53,7 +53,7 @@ const reply = {
                 content,
             })
             replyId = message.id
-            createdTs = message.created ? Math.floor(message.created.getTime() / 1000) : 0
+            created = message.posted
         }
 
         const lines: string[] = [
@@ -61,7 +61,7 @@ const reply = {
             '',
             `**Target:** ${targetType === 'thread' ? `Thread ${targetId}` : `Conversation ${targetId}`}`,
             `**Reply ID:** ${replyId}`,
-            `**Created:** ${new Date(createdTs * 1000).toISOString()}`,
+            `**Created:** ${created.toISOString()}`,
             '',
             '## Content',
             '',
@@ -75,7 +75,7 @@ const reply = {
             targetId,
             replyId,
             content,
-            createdTs,
+            created,
         }
 
         return getToolOutput({

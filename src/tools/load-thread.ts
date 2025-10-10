@@ -36,8 +36,8 @@ type LoadThreadStructured = {
         content: string
         channelId: number
         workspaceId: number
-        creatorId: number
-        postedTs: number
+        creator: number
+        posted: Date
         commentCount: number
         isArchived: boolean
         inInbox: boolean
@@ -46,9 +46,9 @@ type LoadThreadStructured = {
     comments: Array<{
         id: number
         content: string
-        creatorId: number
+        creator: number
         threadId: number
-        postedTs: number
+        posted: Date
     }>
     totalComments: number
 }
@@ -115,8 +115,8 @@ const loadThread = {
                 content: thread.content,
                 channelId: thread.channelId,
                 workspaceId: thread.workspaceId,
-                creatorId: thread.creator,
-                postedTs: Math.floor(thread.posted.getTime() / 1000),
+                creator: thread.creator,
+                posted: thread.posted,
                 commentCount: thread.commentCount,
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
@@ -125,9 +125,9 @@ const loadThread = {
             comments: comments.map((c) => ({
                 id: c.id,
                 content: c.content,
-                creatorId: c.creator,
+                creator: c.creator,
                 threadId: c.threadId,
-                postedTs: Math.floor(c.posted.getTime() / 1000),
+                posted: c.posted,
             })),
             totalComments: thread.commentCount,
         }

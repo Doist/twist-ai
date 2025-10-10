@@ -82,9 +82,9 @@ export function createMockConversationMessage(
     return {
         id: 98765,
         content: 'Test message content',
-        creatorId: 22222,
+        creator: 22222,
         conversationId: 33333,
-        created: new Date('2024-01-01T00:00:00Z'),
+        posted: new Date('2024-01-01T00:00:00Z'),
         systemMessage: null,
         attachments: [],
         reactions: {},

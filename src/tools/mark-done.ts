@@ -11,7 +11,9 @@ const ArgsSchema = {
     ids: z
         .array(z.number())
         .optional()
-        .describe('Specific thread or conversation IDs to mark as done. Use this OR bulk selectors.'),
+        .describe(
+            'Specific thread or conversation IDs to mark as done. Use this OR bulk selectors.',
+        ),
 
     // Bulk selectors (for threads only)
     workspaceId: z
@@ -24,10 +26,7 @@ const ArgsSchema = {
         .describe('Mark all threads in this channel as done (threads only).'),
 
     // Operations
-    markRead: z
-        .boolean()
-        .optional()
-        .describe('Mark items as read (default: true).'),
+    markRead: z.boolean().optional().describe('Mark items as read (default: true).'),
     archive: z
         .boolean()
         .optional()
@@ -35,7 +34,9 @@ const ArgsSchema = {
     clearUnread: z
         .boolean()
         .optional()
-        .describe('Clear all unread markers for workspace (threads only, requires workspaceId, default: false).'),
+        .describe(
+            'Clear all unread markers for workspace (threads only, requires workspaceId, default: false).',
+        ),
 }
 
 type MarkDoneStructured = {
@@ -112,7 +113,10 @@ const markDone = {
                         if (workspaceId) {
                             await client.inbox.archiveAll({ workspaceId })
                         } else if (channelId) {
-                            await client.inbox.archiveAll({ workspaceId: 0, channelIds: [channelId] })
+                            await client.inbox.archiveAll({
+                                workspaceId: 0,
+                                channelIds: [channelId],
+                            })
                         }
                     }
                 }
@@ -149,7 +153,8 @@ const markDone = {
 
                         completed.push(id)
                     } catch (error) {
-                        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+                        const errorMessage =
+                            error instanceof Error ? error.message : 'Unknown error'
                         failed.push({
                             item: id,
                             error: errorMessage,

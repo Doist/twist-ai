@@ -31,7 +31,7 @@ type SearchContentStructured = {
         type: 'thread' | 'comment' | 'message'
         content: string
         creatorId: number
-        createdTs: number
+        created: Date
         threadId?: number
         conversationId?: number
         channelId?: number
@@ -48,8 +48,17 @@ const searchContent = {
         'Search across a workspace for threads, comments, and messages. Supports filtering by channels, authors, dates, and mentions.',
     parameters: ArgsSchema,
     async execute(args, client) {
-        const { query, workspaceId, channelIds, authorIds, mentionSelf, dateFrom, dateTo, limit, cursor } =
-            args
+        const {
+            query,
+            workspaceId,
+            channelIds,
+            authorIds,
+            mentionSelf,
+            dateFrom,
+            dateTo,
+            limit,
+            cursor,
+        } = args
 
         // Perform global workspace search
         const response = await client.search.search({
@@ -69,7 +78,7 @@ const searchContent = {
             type: r.type,
             content: r.snippet,
             creatorId: r.snippetCreatorId,
-            createdTs: Math.floor(r.snippetLastUpdated.getTime() / 1000),
+            created: r.snippetLastUpdated,
             threadId: r.threadId ?? undefined,
             conversationId: r.conversationId ?? undefined,
             channelId: r.channelId ?? undefined,
@@ -94,7 +103,7 @@ const searchContent = {
             lines.push('')
 
             for (const result of results) {
-                const date = new Date(result.createdTs * 1000).toISOString().split('T')[0]
+                const date = result.created.toISOString().split('T')[0]
                 const typeLabel = result.type.charAt(0).toUpperCase() + result.type.slice(1)
 
                 lines.push(`### ${typeLabel} ${result.id}`)

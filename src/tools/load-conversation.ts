@@ -1,3 +1,4 @@
+import type { WorkspaceUser } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -34,16 +35,17 @@ type LoadConversationStructured = {
         id: number
         workspaceId: number
         userIds: number[]
-        messageCount: number
         archived: boolean
-        lastActive: Date
+        lastActive: string
+        title?: string
     }
     messages: Array<{
         id: number
         content: string
         creatorId: number
+        creatorName?: string
         conversationId: number
-        posted: Date
+        posted: string
     }>
     totalMessages: number
 }
@@ -73,13 +75,27 @@ const loadConversation = {
         const conversation = conversationResponse.data
         const messages = messagesResponse.data
 
+        const { userIds } = conversation
+        const userRequests = userIds.map((id) =>
+            client.workspaceUsers.getUserById(conversation.workspaceId, id, { batch: true }),
+        )
+        const userResponses = await client.batch(...userRequests)
+        const users = userResponses.map((res) => res.data)
+        const userInfo = users.reduce(
+            (acc, user) => {
+                acc[user.id] = user
+                return acc
+            },
+            {} as Record<WorkspaceUser['id'], WorkspaceUser>,
+        )
+
         // Build text content
         const lines: string[] = [
             `# Conversation ${conversationId}`,
             '',
             `**Conversation ID:** ${conversation.id}`,
+            ...(conversation.title ? [`**Title:** ${conversation.title}`] : []),
             `**Workspace ID:** ${conversation.workspaceId}`,
-            `**Messages:** ${conversation.messageCount}`,
             `**Archived:** ${conversation.archived ? 'Yes' : 'No'}`,
             `**Last Active:** ${conversation.lastActive.toISOString()}`,
             '',
@@ -88,7 +104,7 @@ const loadConversation = {
         if (includeParticipants) {
             lines.push('## Participants')
             lines.push('')
-            lines.push(conversation.userIds.join(', '))
+            lines.push(conversation.userIds.map((id) => userInfo[id]?.name).join(', '))
             lines.push('')
         }
 
@@ -98,7 +114,9 @@ const loadConversation = {
         for (const message of messages) {
             const messageDate = message.posted.toISOString()
             lines.push(`### Message ${message.id}`)
-            lines.push(`**Creator:** ${message.creator} | **Posted:** ${messageDate}`)
+            lines.push(
+                `**Creator:** ${userInfo[message.creator]?.name} | **Posted:** ${messageDate}`,
+            )
             lines.push('')
             lines.push(message.content)
             lines.push('')
@@ -108,18 +126,19 @@ const loadConversation = {
             type: 'conversation_data',
             conversation: {
                 id: conversation.id,
+                title: conversation.title ?? undefined,
                 workspaceId: conversation.workspaceId,
                 userIds: includeParticipants ? conversation.userIds : [],
-                messageCount: conversation.messageCount ?? 0,
                 archived: conversation.archived,
-                lastActive: conversation.lastActive,
+                lastActive: conversation.lastActive.toISOString(),
             },
             messages: messages.map((m) => ({
                 id: m.id,
                 content: m.content,
                 creatorId: m.creator,
+                creatorName: userInfo[m.creator]?.name,
                 conversationId: m.conversationId,
-                posted: m.posted,
+                posted: m.posted.toISOString(),
             })),
             totalMessages: conversation.messageCount ?? 0,
         }

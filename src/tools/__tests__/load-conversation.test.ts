@@ -18,6 +18,9 @@ const mockTwistApi = {
     conversationMessages: {
         getMessages: jest.fn(),
     },
+    workspaceUsers: {
+        getUserById: jest.fn(),
+    },
 } as unknown as jest.Mocked<TwistApi>
 
 const { LOAD_CONVERSATION } = ToolNames
@@ -48,6 +51,35 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
 
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue(mockMessages)
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (
+                _ws: number,
+                userId: number,
+            ) => {
+                if (userId === TEST_IDS.USER_1) {
+                    return {
+                        id: TEST_IDS.USER_1,
+                        name: 'Test User 1',
+                        shortName: 'TU1',
+                        email: 'user1@test.com',
+                        userType: 'USER' as const,
+                        bot: false,
+                        removed: false,
+                        timezone: 'UTC',
+                        version: 1,
+                    }
+                }
+                return {
+                    id: TEST_IDS.USER_2,
+                    name: 'Test User 2',
+                    shortName: 'TU2',
+                    email: 'user2@test.com',
+                    userType: 'USER' as const,
+                    bot: false,
+                    removed: false,
+                    timezone: 'UTC',
+                    version: 1,
+                }
+            }) as never)
 
             const result = await loadConversation.execute(
                 { conversationId: TEST_IDS.CONVERSATION_1, limit: 50, includeParticipants: true },
@@ -67,6 +99,17 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
                 },
                 { batch: true },
             )
+            // Verify user info is fetched for each participant
+            expect(mockTwistApi.workspaceUsers.getUserById).toHaveBeenCalledWith(
+                mockConversation.workspaceId,
+                TEST_IDS.USER_1,
+                { batch: true },
+            )
+            expect(mockTwistApi.workspaceUsers.getUserById).toHaveBeenCalledWith(
+                mockConversation.workspaceId,
+                TEST_IDS.USER_2,
+                { batch: true },
+            )
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
@@ -77,6 +120,17 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
             })
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue([])
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadConversation.execute(
                 {
@@ -96,6 +150,17 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
             const mockConversation = createMockConversation()
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue([])
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadConversation.execute(
                 {
@@ -124,6 +189,17 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
             const mockConversation = createMockConversation()
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue([])
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadConversation.execute(
                 { conversationId: TEST_IDS.CONVERSATION_1, limit: 50, includeParticipants: true },

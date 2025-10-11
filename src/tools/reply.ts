@@ -23,7 +23,7 @@ type ReplyStructured = {
     targetId: number
     replyId: number
     content: string
-    created: Date
+    created: string
 }
 
 const reply = {
@@ -75,7 +75,7 @@ const reply = {
             targetId,
             replyId,
             content,
-            created,
+            created: created.toISOString(),
         }
 
         return getToolOutput({

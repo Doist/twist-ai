@@ -37,7 +37,7 @@ type LoadThreadStructured = {
         channelId: number
         workspaceId: number
         creator: number
-        posted: Date
+        posted: string
         commentCount: number
         isArchived: boolean
         inInbox: boolean
@@ -48,7 +48,7 @@ type LoadThreadStructured = {
         content: string
         creator: number
         threadId: number
-        posted: Date
+        posted: string
     }>
     totalComments: number
 }
@@ -122,7 +122,7 @@ const loadThread = {
                 channelId: thread.channelId,
                 workspaceId: thread.workspaceId,
                 creator: thread.creator,
-                posted: thread.posted,
+                posted: thread.posted.toISOString(),
                 commentCount: thread.commentCount,
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
@@ -133,7 +133,7 @@ const loadThread = {
                 content: c.content,
                 creator: c.creator,
                 threadId: c.threadId,
-                posted: c.posted,
+                posted: c.posted.toISOString(),
             })),
             totalComments: thread.commentCount,
         }

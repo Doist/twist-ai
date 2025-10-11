@@ -31,7 +31,7 @@ type SearchContentStructured = {
         type: 'thread' | 'comment' | 'message'
         content: string
         creatorId: number
-        created: Date
+        created: string
         threadId?: number
         conversationId?: number
         channelId?: number
@@ -78,7 +78,7 @@ const searchContent = {
             type: r.type,
             content: r.snippet,
             creatorId: r.snippetCreatorId,
-            created: r.snippetLastUpdated,
+            created: r.snippetLastUpdated.toISOString(),
             threadId: r.threadId ?? undefined,
             conversationId: r.conversationId ?? undefined,
             channelId: r.channelId ?? undefined,
@@ -103,7 +103,7 @@ const searchContent = {
             lines.push('')
 
             for (const result of results) {
-                const date = result.created.toISOString().split('T')[0]
+                const date = result.created.split('T')[0]
                 const typeLabel = result.type.charAt(0).toUpperCase() + result.type.slice(1)
 
                 lines.push(`### ${typeLabel} ${result.id}`)

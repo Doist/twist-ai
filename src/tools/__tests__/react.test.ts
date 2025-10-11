@@ -41,6 +41,17 @@ describe(`${REACT} tool`, () => {
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual({
+                type: 'reaction_result',
+                success: true,
+                operation: 'add',
+                targetType: 'thread',
+                targetId: TEST_IDS.THREAD_1,
+                emoji: '👍',
+            })
         })
 
         it('should add reaction to a comment', async () => {

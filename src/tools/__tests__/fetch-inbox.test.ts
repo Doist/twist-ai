@@ -122,6 +122,26 @@ describe(`${FETCH_INBOX} tool`, () => {
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'inbox_data',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    unreadCount: 1,
+                    totalThreads: 2,
+                }),
+            )
+            expect(structuredContent?.threads).toHaveLength(2)
+            const { threads } = structuredContent || {}
+            if (threads?.[0] && threads[1]) {
+                expect(threads[0].id).toBe(TEST_IDS.THREAD_1)
+                expect(threads[0].channelName).toBe('Test Channel')
+                expect(threads[0].threadUrl).toContain('twist.com')
+                expect(threads[0].isUnread).toBe(true)
+                expect(threads[1].isStarred).toBe(true)
+            }
         })
 
         it('should filter only unread items when requested', async () => {

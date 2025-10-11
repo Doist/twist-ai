@@ -67,6 +67,30 @@ describe(`${LOAD_THREAD} tool`, () => {
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'thread_data',
+                    totalComments: mockThread.commentCount,
+                }),
+            )
+            expect(structuredContent?.thread.id).toBe(TEST_IDS.THREAD_1)
+            expect(structuredContent?.thread.title).toBe('Test Thread')
+            expect(structuredContent?.thread.channelId).toBe(mockThread.channelId)
+            expect(structuredContent?.thread.workspaceId).toBe(mockThread.workspaceId)
+            expect(structuredContent?.thread.posted).toBe('2024-01-01T00:00:00.000Z')
+            expect(structuredContent?.comments).toHaveLength(2)
+            const { comments } = structuredContent || {}
+            if (comments?.[0]) {
+                expect(comments[0].id).toBe(TEST_IDS.COMMENT_1)
+                expect(comments[0].posted).toBe('2024-01-01T00:00:00.000Z')
+            }
+            expect(structuredContent?.thread.participants).toEqual([
+                TEST_IDS.USER_1,
+                TEST_IDS.USER_2,
+            ])
         })
 
         it('should load thread without participants when includeParticipants is false', async () => {

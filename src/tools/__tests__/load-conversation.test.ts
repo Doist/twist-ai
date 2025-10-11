@@ -112,6 +112,29 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'conversation_data',
+                    totalMessages: mockConversation.messageCount,
+                }),
+            )
+            expect(structuredContent?.conversation.id).toBe(TEST_IDS.CONVERSATION_1)
+            expect(structuredContent?.conversation.workspaceId).toBe(mockConversation.workspaceId)
+            expect(structuredContent?.conversation.lastActive).toBe('2024-01-01T00:00:00.000Z')
+            expect(structuredContent?.conversation.userIds).toEqual([
+                TEST_IDS.USER_1,
+                TEST_IDS.USER_2,
+            ])
+            expect(structuredContent?.messages).toHaveLength(2)
+            const { messages } = structuredContent || {}
+            if (messages?.[0]) {
+                expect(messages[0].id).toBe(TEST_IDS.MESSAGE_1)
+                expect(messages[0].posted).toBe('2024-01-01T00:00:00.000Z')
+                expect(messages[0].creatorName).toBe('Test User 1')
+            }
         })
 
         it('should load conversation without participants when includeParticipants is false', async () => {

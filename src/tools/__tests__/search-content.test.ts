@@ -85,6 +85,11 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                     content: 'Test thread matching query',
                 }),
             )
+            const { results } = structuredContent || {}
+            if (results?.[0] && results[1]) {
+                expect(results[0].created).toBe('2024-01-01T00:00:00.000Z')
+                expect(results[1].created).toBe('2024-01-01T00:00:00.000Z')
+            }
         })
 
         it('should search with filters', async () => {

@@ -47,6 +47,20 @@ describe(`${REPLY} tool`, () => {
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    type: 'reply_result',
+                    success: true,
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'This is my reply',
+                }),
+            )
+            expect(structuredContent?.replyId).toBe(mockComment.id)
+            expect(structuredContent?.created).toBe('2024-01-01T00:00:00.000Z')
         })
 
         it('should post a comment with recipients', async () => {

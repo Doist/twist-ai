@@ -140,7 +140,10 @@ describe(`${LOAD_THREAD} tool`, () => {
                 TEST_IDS.USER_1,
                 TEST_IDS.USER_2,
             ])
-            expect(structuredContent?.thread.participantNames).toEqual(['Test User 1', 'Test User 2'])
+            expect(structuredContent?.thread.participantNames).toEqual([
+                'Test User 1',
+                'Test User 2',
+            ])
         })
 
         it('should load thread without participants when includeParticipants is false', async () => {

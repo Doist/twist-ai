@@ -241,7 +241,9 @@ const fetchInbox = {
                 // Build a human-readable title from participant names
                 const participantNames = participants.map((p) => p.name).join(', ')
                 const conversationTitle =
-                    conversation.title || `DM with ${participantNames}` || `Conversation ${conversation.id}`
+                    conversation.title ||
+                    `DM with ${participantNames}` ||
+                    `Conversation ${conversation.id}`
                 const unreadBadge = convDetail.isUnread ? ' 🔵' : ''
 
                 lines.push(`- ${conversationTitle}${unreadBadge} (ID: ${conversation.id})`)

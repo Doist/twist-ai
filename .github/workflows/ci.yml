@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Only a single workflow will run at a time. Cancel any in-progress run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      CI: true
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type checks
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Run linting checks
+        run: npm run lint:check && npm run format:check

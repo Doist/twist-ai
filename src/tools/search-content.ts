@@ -200,26 +200,33 @@ const searchContent = {
             workspaceId,
             results: results.map((r) => {
                 let url: string
-                if (r.type === 'thread') {
+                if (r.type === 'thread' && r.threadId !== undefined) {
                     url = getFullTwistURL({
                         workspaceId,
-                        threadId: r.threadId!,
+                        threadId: r.threadId,
                         channelId: r.channelId,
                     })
-                } else if (r.type === 'comment') {
+                } else if (
+                    r.type === 'comment' &&
+                    r.threadId !== undefined &&
+                    r.channelId !== undefined
+                ) {
                     url = getFullTwistURL({
                         workspaceId,
-                        threadId: r.threadId!,
-                        channelId: r.channelId!,
+                        threadId: r.threadId,
+                        channelId: r.channelId,
                         commentId: r.id,
                     })
-                } else {
+                } else if (r.conversationId !== undefined) {
                     // message
                     url = getFullTwistURL({
                         workspaceId,
-                        conversationId: r.conversationId!,
+                        conversationId: r.conversationId,
                         messageId: r.id,
                     })
+                } else {
+                    // Fallback - shouldn't happen but provides safety
+                    url = ''
                 }
                 return {
                     ...r,

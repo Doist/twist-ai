@@ -56,7 +56,11 @@ const reply = {
             })
             replyId = comment.id
             const postedValue = comment.posted
-            created = postedValue ? (typeof postedValue === 'string' ? new Date(postedValue) : postedValue) : new Date()
+            created = postedValue
+                ? typeof postedValue === 'string'
+                    ? new Date(postedValue)
+                    : postedValue
+                : new Date()
         } else {
             // Get conversation info first, then create the message
             const conversation = await client.conversations.getConversation(targetId)
@@ -70,7 +74,11 @@ const reply = {
             })
             replyId = message.id
             const postedValue = message.posted
-            created = postedValue ? (typeof postedValue === 'string' ? new Date(postedValue) : postedValue) : new Date()
+            created = postedValue
+                ? typeof postedValue === 'string'
+                    ? new Date(postedValue)
+                    : postedValue
+                : new Date()
         }
 
         let replyUrl: string

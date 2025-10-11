@@ -124,9 +124,12 @@ describe(`${FETCH_INBOX} tool`, () => {
             expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
                 batch: true,
             })
-            expect(mockTwistApi.conversations.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
-                batch: true,
-            })
+            expect(mockTwistApi.conversations.getUnread).toHaveBeenCalledWith(
+                TEST_IDS.WORKSPACE_1,
+                {
+                    batch: true,
+                },
+            )
             // Verify channel info is fetched for each thread
             expect(mockTwistApi.channels.getChannel).toHaveBeenCalledWith(TEST_IDS.CHANNEL_1, {
                 batch: true,

@@ -140,7 +140,9 @@ const loadThread = {
             const commentDate = comment.posted.toISOString()
             const commentCreatorName = userLookup[comment.creator]
             lines.push(`### Comment ${comment.id}`)
-            lines.push(`**Creator:** ${commentCreatorName} (${comment.creator}) | **Posted:** ${commentDate}`)
+            lines.push(
+                `**Creator:** ${commentCreatorName} (${comment.creator}) | **Posted:** ${commentDate}`,
+            )
             lines.push('')
             lines.push(comment.content)
             lines.push('')
@@ -171,9 +173,12 @@ const loadThread = {
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
                 participants: includeParticipants ? (thread.participants ?? undefined) : undefined,
-                participantNames: includeParticipants && thread.participants
-                    ? thread.participants.map((id) => userLookup[id]).filter((name): name is string => name !== undefined)
-                    : undefined,
+                participantNames:
+                    includeParticipants && thread.participants
+                        ? thread.participants
+                              .map((id) => userLookup[id])
+                              .filter((name): name is string => name !== undefined)
+                        : undefined,
                 threadUrl: getFullTwistURL({
                     workspaceId: thread.workspaceId,
                     threadId: thread.id,

@@ -1,4 +1,4 @@
-import type { WorkspaceUser } from '@doist/twist-sdk'
+import { getFullTwistURL, type WorkspaceUser } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -38,6 +38,7 @@ type LoadConversationStructured = {
         archived: boolean
         lastActive: string
         title?: string
+        conversationUrl: string
     }
     messages: Array<{
         id: number
@@ -46,6 +47,7 @@ type LoadConversationStructured = {
         creatorName?: string
         conversationId: number
         posted: string
+        messageUrl: string
     }>
     totalMessages: number
 }
@@ -131,6 +133,10 @@ const loadConversation = {
                 userIds: includeParticipants ? conversation.userIds : [],
                 archived: conversation.archived,
                 lastActive: conversation.lastActive.toISOString(),
+                conversationUrl: getFullTwistURL({
+                    workspaceId: conversation.workspaceId,
+                    conversationId: conversation.id,
+                }),
             },
             messages: messages.map((m) => ({
                 id: m.id,
@@ -139,6 +145,11 @@ const loadConversation = {
                 creatorName: userInfo[m.creator]?.name,
                 conversationId: m.conversationId,
                 posted: m.posted.toISOString(),
+                messageUrl: getFullTwistURL({
+                    workspaceId: conversation.workspaceId,
+                    conversationId: m.conversationId,
+                    messageId: m.id,
+                }),
             })),
             totalMessages: conversation.messageCount ?? 0,
         }

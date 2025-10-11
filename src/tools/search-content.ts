@@ -1,3 +1,4 @@
+import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -38,6 +39,7 @@ type SearchContentStructured = {
         channelId?: number
         channelName?: string
         workspaceId: number
+        url: string
     }>
     totalResults: number
     hasMore: boolean
@@ -196,11 +198,36 @@ const searchContent = {
             type: 'search_results',
             query,
             workspaceId,
-            results: results.map((r) => ({
-                ...r,
-                creatorName: userLookup[r.creatorId],
-                channelName: r.channelId ? channelLookup[r.channelId] : undefined,
-            })),
+            results: results.map((r) => {
+                let url: string
+                if (r.type === 'thread') {
+                    url = getFullTwistURL({
+                        workspaceId,
+                        threadId: r.threadId!,
+                        channelId: r.channelId,
+                    })
+                } else if (r.type === 'comment') {
+                    url = getFullTwistURL({
+                        workspaceId,
+                        threadId: r.threadId!,
+                        channelId: r.channelId!,
+                        commentId: r.id,
+                    })
+                } else {
+                    // message
+                    url = getFullTwistURL({
+                        workspaceId,
+                        conversationId: r.conversationId!,
+                        messageId: r.id,
+                    })
+                }
+                return {
+                    ...r,
+                    creatorName: userLookup[r.creatorId],
+                    channelName: r.channelId ? channelLookup[r.channelId] : undefined,
+                    url,
+                }
+            }),
             totalResults: results.length,
             hasMore,
             cursor: responseCursor,

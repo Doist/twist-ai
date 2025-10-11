@@ -1,3 +1,4 @@
+import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -24,6 +25,7 @@ type ReplyStructured = {
     replyId: number
     content: string
     created: string
+    replyUrl: string
 }
 
 const reply = {
@@ -36,24 +38,61 @@ const reply = {
 
         let replyId: number
         let created: Date
+        let workspaceId: number
+        let channelId: number | undefined
+        let conversationId: number | undefined
 
         if (targetType === 'thread') {
-            // Reply to thread (add comment)
+            // Get thread info first, then create the comment
+            const thread = await client.threads.getThread(targetId)
+            workspaceId = thread.workspaceId
+            channelId = thread.channelId
+
+            // Create the comment
             const comment = await client.comments.createComment({
                 threadId: targetId,
                 content,
                 recipients,
             })
             replyId = comment.id
-            created = comment.posted
+            const postedValue = comment.posted
+            created = postedValue ? (typeof postedValue === 'string' ? new Date(postedValue) : postedValue) : new Date()
         } else {
-            // Reply to conversation (add message)
+            // Get conversation info first, then create the message
+            const conversation = await client.conversations.getConversation(targetId)
+            workspaceId = conversation.workspaceId
+            conversationId = targetId
+
+            // Create the message
             const message = await client.conversationMessages.createMessage({
                 conversationId: targetId,
                 content,
             })
             replyId = message.id
-            created = message.posted
+            const postedValue = message.posted
+            created = postedValue ? (typeof postedValue === 'string' ? new Date(postedValue) : postedValue) : new Date()
+        }
+
+        let replyUrl: string
+        if (targetType === 'thread') {
+            if (!channelId) {
+                throw new Error('Channel ID is required for thread replies')
+            }
+            replyUrl = getFullTwistURL({
+                workspaceId,
+                threadId: targetId,
+                channelId,
+                commentId: replyId,
+            })
+        } else {
+            if (!conversationId) {
+                throw new Error('Conversation ID is required for conversation replies')
+            }
+            replyUrl = getFullTwistURL({
+                workspaceId,
+                conversationId,
+                messageId: replyId,
+            })
         }
 
         const lines: string[] = [
@@ -76,6 +115,7 @@ const reply = {
             replyId,
             content,
             created: created.toISOString(),
+            replyUrl,
         }
 
         return getToolOutput({

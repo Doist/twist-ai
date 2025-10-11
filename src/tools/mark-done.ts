@@ -124,41 +124,70 @@ const markDone = {
                 // We don't get individual IDs back from bulk operations
                 // Just indicate success
             } else if (ids && ids.length > 0) {
-                // Individual operations
+                // Individual operations - batch them together
                 mode = 'individual'
 
+                // Build array of batch operations for each ID
+                const operations = []
                 for (const id of ids) {
-                    try {
-                        if (type === 'thread') {
-                            // Mark thread as read
-                            if (markRead) {
-                                await client.threads.markRead(id, 0)
-                            }
-
-                            // Archive thread in inbox
-                            if (archive) {
-                                await client.inbox.archiveThread(id)
-                            }
-                        } else {
-                            // Mark conversation as read
-                            if (markRead) {
-                                await client.conversations.markRead({ id })
-                            }
-
-                            // Archive conversation
-                            if (archive) {
-                                await client.conversations.archiveConversation(id)
-                            }
+                    if (type === 'thread') {
+                        // Mark thread as read
+                        if (markRead) {
+                            operations.push(client.threads.markRead(id, 0, { batch: true }))
                         }
+                        // Archive thread in inbox
+                        if (archive) {
+                            operations.push(client.inbox.archiveThread(id, { batch: true }))
+                        }
+                    } else {
+                        // Mark conversation as read
+                        if (markRead) {
+                            operations.push(client.conversations.markRead({ id }, { batch: true }))
+                        }
+                        // Archive conversation
+                        if (archive) {
+                            operations.push(
+                                client.conversations.archiveConversation(id, { batch: true }),
+                            )
+                        }
+                    }
+                }
 
-                        completed.push(id)
-                    } catch (error) {
-                        const errorMessage =
-                            error instanceof Error ? error.message : 'Unknown error'
-                        failed.push({
-                            item: id,
-                            error: errorMessage,
-                        })
+                // Execute all operations in batch
+                try {
+                    await client.batch(...operations)
+                    // All operations succeeded
+                    completed.push(...ids)
+                } catch (_error) {
+                    // If batch fails, we need to fall back to individual operations to track which ones failed
+                    for (const id of ids) {
+                        try {
+                            if (type === 'thread') {
+                                if (markRead) {
+                                    await client.threads.markRead(id, 0)
+                                }
+                                if (archive) {
+                                    await client.inbox.archiveThread(id)
+                                }
+                            } else {
+                                if (markRead) {
+                                    await client.conversations.markRead({ id })
+                                }
+                                if (archive) {
+                                    await client.conversations.archiveConversation(id)
+                                }
+                            }
+                            completed.push(id)
+                        } catch (individualError) {
+                            const errorMessage =
+                                individualError instanceof Error
+                                    ? individualError.message
+                                    : 'Unknown error'
+                            failed.push({
+                                item: id,
+                                error: errorMessage,
+                            })
+                        }
                     }
                 }
             }

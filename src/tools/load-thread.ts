@@ -61,15 +61,21 @@ const loadThread = {
     async execute(args, client) {
         const { threadId, newerThanDate, limit, includeParticipants } = args
 
-        // Fetch thread metadata
-        const thread = await client.threads.getThread(threadId)
+        // Fetch thread metadata and comments in parallel using batch
+        const [threadResponse, commentsResponse] = await client.batch(
+            client.threads.getThread(threadId, { batch: true }),
+            client.comments.getComments(
+                {
+                    threadId,
+                    from: newerThanDate ? new Date(newerThanDate) : undefined,
+                    limit,
+                },
+                { batch: true },
+            ),
+        )
 
-        // Fetch comments
-        const comments = await client.comments.getComments({
-            threadId,
-            from: newerThanDate ? new Date(newerThanDate) : undefined,
-            limit,
-        })
+        const thread = threadResponse.data
+        const comments = commentsResponse.data
 
         // Build text content
         const lines: string[] = [

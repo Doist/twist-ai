@@ -11,6 +11,7 @@ import { loadThread } from '../load-thread.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    batch: jest.fn(),
     threads: {
         getThread: jest.fn(),
     },
@@ -24,6 +25,15 @@ const { LOAD_THREAD } = ToolNames
 describe(`${LOAD_THREAD} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        // Mock batch to return responses with .data property
+        mockTwistApi.batch.mockImplementation(async (...args: readonly unknown[]) => {
+            const results = []
+            for (const arg of args) {
+                const result = await arg
+                results.push({ data: result })
+            }
+            return results as never
+        })
     })
 
     describe('loading threads successfully', () => {
@@ -44,12 +54,17 @@ describe(`${LOAD_THREAD} tool`, () => {
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.threads.getThread).toHaveBeenCalledWith(TEST_IDS.THREAD_1)
-            expect(mockTwistApi.comments.getComments).toHaveBeenCalledWith({
-                threadId: TEST_IDS.THREAD_1,
-                from: undefined,
-                limit: 50,
+            expect(mockTwistApi.threads.getThread).toHaveBeenCalledWith(TEST_IDS.THREAD_1, {
+                batch: true,
             })
+            expect(mockTwistApi.comments.getComments).toHaveBeenCalledWith(
+                {
+                    threadId: TEST_IDS.THREAD_1,
+                    from: undefined,
+                    limit: 50,
+                },
+                { batch: true },
+            )
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
@@ -95,6 +110,7 @@ describe(`${LOAD_THREAD} tool`, () => {
                 expect.objectContaining({
                     from: expect.any(Date),
                 }),
+                { batch: true },
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()

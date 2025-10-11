@@ -6,6 +6,7 @@ import { markDone } from '../mark-done.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    batch: jest.fn(),
     threads: {
         markRead: jest.fn(),
         markAllRead: jest.fn(),
@@ -26,6 +27,8 @@ const { MARK_DONE } = ToolNames
 describe(`${MARK_DONE} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        // By default, batch succeeds
+        mockTwistApi.batch.mockResolvedValue([] as never)
     })
 
     describe('marking threads as done', () => {
@@ -117,6 +120,9 @@ describe(`${MARK_DONE} tool`, () => {
         })
 
         it('should handle partial failures gracefully', async () => {
+            // Mock batch to fail, triggering fallback to individual operations
+            mockTwistApi.batch.mockRejectedValueOnce(new Error('Batch failed'))
+
             // Mock first thread to succeed, second to fail on markRead, third to succeed
             mockTwistApi.threads.markRead
                 .mockResolvedValueOnce(undefined) // thread-1 succeeds
@@ -157,6 +163,9 @@ describe(`${MARK_DONE} tool`, () => {
         })
 
         it('should handle all threads failing', async () => {
+            // Mock batch to fail, triggering fallback to individual operations
+            mockTwistApi.batch.mockRejectedValueOnce(new Error('Batch failed'))
+
             const apiError = new Error('API Error: Network timeout')
             mockTwistApi.threads.markRead.mockRejectedValue(apiError)
 
@@ -444,6 +453,9 @@ describe(`${MARK_DONE} tool`, () => {
         })
 
         it('should suggest reviewing failures when mixed results', async () => {
+            // Mock batch to fail, triggering fallback to individual operations
+            mockTwistApi.batch.mockRejectedValueOnce(new Error('Batch failed'))
+
             mockTwistApi.threads.markRead
                 .mockResolvedValueOnce(undefined)
                 .mockRejectedValueOnce(new Error('Thread not found'))

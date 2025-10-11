@@ -50,12 +50,12 @@ exports[`load_conversation tool loading conversations successfully should load c
 ## Messages (2)
 
 ### Message 98765
-**Creator:** 22222 | **Created:** 2024-01-01T00:00:00.000Z
+**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
 
 Test message content
 
 ### Message 98766
-**Creator:** 22222 | **Created:** 2024-01-01T00:00:00.000Z
+**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
 
 Test message content
 "

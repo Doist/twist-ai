@@ -56,16 +56,22 @@ const loadConversation = {
     async execute(args, client) {
         const { conversationId, newerThanDate, olderThanDate, limit, includeParticipants } = args
 
-        // Fetch conversation metadata
-        const conversation = await client.conversations.getConversation(conversationId)
+        // Fetch conversation metadata and messages in parallel using batch
+        const [conversationResponse, messagesResponse] = await client.batch(
+            client.conversations.getConversation(conversationId, { batch: true }),
+            client.conversationMessages.getMessages(
+                {
+                    conversationId,
+                    newerThan: newerThanDate ? new Date(newerThanDate) : undefined,
+                    olderThan: olderThanDate ? new Date(olderThanDate) : undefined,
+                    limit,
+                },
+                { batch: true },
+            ),
+        )
 
-        // Fetch messages
-        const messages = await client.conversationMessages.getMessages({
-            conversationId,
-            newerThan: newerThanDate ? new Date(newerThanDate) : undefined,
-            olderThan: olderThanDate ? new Date(olderThanDate) : undefined,
-            limit,
-        })
+        const conversation = conversationResponse.data
+        const messages = messagesResponse.data
 
         // Build text content
         const lines: string[] = [

@@ -3,7 +3,7 @@
 exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with threads 1`] = `
 "# Inbox for Workspace 11111
 
-**Total Threads:** 5
+**Total Threads:** 2
 **Unread Threads:** 1
 
 ## Threads (2)

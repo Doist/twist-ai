@@ -6,6 +6,7 @@ import { fetchInbox } from '../fetch-inbox.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    batch: jest.fn(),
     inbox: {
         getInbox: jest.fn(),
         getCount: jest.fn(),
@@ -20,6 +21,15 @@ const { FETCH_INBOX } = ToolNames
 describe(`${FETCH_INBOX} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        // Mock batch to return responses with .data property
+        mockTwistApi.batch.mockImplementation(async (...args: readonly unknown[]) => {
+            const results = []
+            for (const arg of args) {
+                const result = await arg
+                results.push({ data: result })
+            }
+            return results as never
+        })
     })
 
     describe('fetching inbox successfully', () => {
@@ -77,14 +87,21 @@ describe(`${FETCH_INBOX} tool`, () => {
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith({
-                workspaceId: TEST_IDS.WORKSPACE_1,
-                since: undefined,
-                until: undefined,
-                limit: 50,
+            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                {
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    since: undefined,
+                    until: undefined,
+                    limit: 50,
+                },
+                { batch: true },
+            )
+            expect(mockTwistApi.inbox.getCount).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
+                batch: true,
             })
-            expect(mockTwistApi.inbox.getCount).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
-            expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
+            expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
+                batch: true,
+            })
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
@@ -183,6 +200,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     since: expect.any(Date),
                     until: expect.any(Date),
                 }),
+                { batch: true },
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()

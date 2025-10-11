@@ -11,6 +11,7 @@ import { loadConversation } from '../load-conversation.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    batch: jest.fn(),
     conversations: {
         getConversation: jest.fn(),
     },
@@ -24,6 +25,15 @@ const { LOAD_CONVERSATION } = ToolNames
 describe(`${LOAD_CONVERSATION} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        // Mock batch to return responses with .data property
+        mockTwistApi.batch.mockImplementation(async (...args: readonly unknown[]) => {
+            const results = []
+            for (const arg of args) {
+                const result = await arg
+                results.push({ data: result })
+            }
+            return results as never
+        })
     })
 
     describe('loading conversations successfully', () => {
@@ -46,13 +56,17 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
 
             expect(mockTwistApi.conversations.getConversation).toHaveBeenCalledWith(
                 TEST_IDS.CONVERSATION_1,
+                { batch: true },
             )
-            expect(mockTwistApi.conversationMessages.getMessages).toHaveBeenCalledWith({
-                conversationId: TEST_IDS.CONVERSATION_1,
-                newerThan: undefined,
-                olderThan: undefined,
-                limit: 50,
-            })
+            expect(mockTwistApi.conversationMessages.getMessages).toHaveBeenCalledWith(
+                {
+                    conversationId: TEST_IDS.CONVERSATION_1,
+                    newerThan: undefined,
+                    olderThan: undefined,
+                    limit: 50,
+                },
+                { batch: true },
+            )
 
             expect(extractTextContent(result)).toMatchSnapshot()
         })
@@ -100,6 +114,7 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
                     newerThan: expect.any(Date),
                     olderThan: expect.any(Date),
                 }),
+                { batch: true },
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()

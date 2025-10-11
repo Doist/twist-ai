@@ -50,27 +50,32 @@ const fetchInbox = {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
 
         // Call all 4 endpoints in parallel for complete inbox picture
-        const [inboxThreads, unreadCount, unreadThreadsData] = await Promise.all([
-            client.inbox.getInbox({
-                workspaceId,
-                since: sinceDate ? new Date(sinceDate) : undefined,
-                until: untilDate ? new Date(untilDate) : undefined,
-                limit,
-            }),
-            client.inbox.getCount(workspaceId),
-            client.threads.getUnread(workspaceId),
-        ])
+        const [inboxThreadsResponse, unreadCountResponse, unreadThreadsDataResponse] =
+            await client.batch(
+                client.inbox.getInbox(
+                    {
+                        workspaceId,
+                        since: sinceDate ? new Date(sinceDate) : undefined,
+                        until: untilDate ? new Date(untilDate) : undefined,
+                        limit,
+                    },
+                    { batch: true },
+                ),
+                client.inbox.getCount(workspaceId, { batch: true }),
+                client.threads.getUnread(workspaceId, { batch: true }),
+            )
 
         // Filter by unread if requested
-        let threads = inboxThreads.map((thread) => ({
+        let threads = inboxThreadsResponse.data.map((thread) => ({
             ...thread,
-            isUnread: unreadThreadsData.some((ut) => ut.threadId === thread.id),
+            isUnread: unreadThreadsDataResponse.data.some((ut) => ut.threadId === thread.id),
         }))
 
         const unreadThreads = threads.filter((t) => t.isUnread)
-        const unreadThreadsOriginal = inboxThreads.filter((thread) =>
-            unreadThreadsData.some((ut) => ut.threadId === thread.id),
+        const unreadThreadsOriginal = inboxThreadsResponse.data.filter((thread) =>
+            unreadThreadsDataResponse.data.some((ut) => ut.threadId === thread.id),
         )
+        const unreadCount = unreadCountResponse.data
 
         if (onlyUnread) {
             threads = unreadThreads
@@ -80,7 +85,7 @@ const fetchInbox = {
         const lines: string[] = [
             `# Inbox for Workspace ${workspaceId}`,
             '',
-            `**Total Threads:** ${unreadCount}`,
+            `**Total Threads:** ${threads.length}`,
             `**Unread Threads:** ${unreadThreads.length}`,
             '',
             `## Threads (${threads.length})`,

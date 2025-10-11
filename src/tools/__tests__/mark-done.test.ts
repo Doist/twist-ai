@@ -25,17 +25,51 @@ const mockTwistApi = {
 const { MARK_DONE } = ToolNames
 
 describe(`${MARK_DONE} tool`, () => {
+    // Store original console.error
+    const originalConsoleError = console.error
+
     beforeEach(() => {
         jest.clearAllMocks()
         // By default, batch succeeds
         mockTwistApi.batch.mockResolvedValue([] as never)
+        // Suppress console.error for tests that expect errors
+        console.error = jest.fn()
+
+        // Setup mocks to return batch descriptors when called with {batch: true}
+        mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
+            if (options?.batch) {
+                return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
+            }
+            return Promise.resolve(undefined) as never
+        })
+        mockTwistApi.inbox.archiveThread.mockImplementation((id: number, options?: { batch?: boolean }) => {
+            if (options?.batch) {
+                return { method: 'POST', url: '/inbox/archive', params: { id } } as never
+            }
+            return Promise.resolve(undefined) as never
+        })
+        mockTwistApi.conversations.markRead.mockImplementation((args: { id: number }, options?: { batch?: boolean }) => {
+            if (options?.batch) {
+                return { method: 'POST', url: '/conversations/mark_read', params: args } as never
+            }
+            return Promise.resolve(undefined) as never
+        })
+        mockTwistApi.conversations.archiveConversation.mockImplementation((id: number, options?: { batch?: boolean }) => {
+            if (options?.batch) {
+                return { method: 'POST', url: '/conversations/archive', params: { id } } as never
+            }
+            return Promise.resolve(undefined) as never
+        })
+    })
+
+    afterEach(() => {
+        // Restore console.error
+        console.error = originalConsoleError
     })
 
     describe('marking threads as done', () => {
         it('should mark all threads as done successfully', async () => {
-            mockTwistApi.threads.markRead.mockResolvedValue(undefined)
-            mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
-
+            // Don't override mock implementations - they're set up in beforeEach to handle batch mode
             const result = await markDone.execute(
                 {
                     type: 'thread',
@@ -46,16 +80,16 @@ describe(`${MARK_DONE} tool`, () => {
                 mockTwistApi,
             )
 
-            // Verify API was called for each thread
-            expect(mockTwistApi.threads.markRead).toHaveBeenCalledTimes(3)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(1, TEST_IDS.THREAD_1, 0)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(2, TEST_IDS.THREAD_2, 0)
-            expect(mockTwistApi.threads.markRead).toHaveBeenNthCalledWith(3, TEST_IDS.THREAD_3, 0)
-
-            expect(mockTwistApi.inbox.archiveThread).toHaveBeenCalledTimes(3)
-            expect(mockTwistApi.inbox.archiveThread).toHaveBeenNthCalledWith(1, TEST_IDS.THREAD_1)
-            expect(mockTwistApi.inbox.archiveThread).toHaveBeenNthCalledWith(2, TEST_IDS.THREAD_2)
-            expect(mockTwistApi.inbox.archiveThread).toHaveBeenNthCalledWith(3, TEST_IDS.THREAD_3)
+            // Verify batch was called (operations are batched)
+            expect(mockTwistApi.batch).toHaveBeenCalledTimes(1)
+            expect(mockTwistApi.batch).toHaveBeenCalledWith(
+                expect.objectContaining({ method: 'POST', url: '/threads/mark_read' }),
+                expect.objectContaining({ method: 'POST', url: '/inbox/archive' }),
+                expect.objectContaining({ method: 'POST', url: '/threads/mark_read' }),
+                expect.objectContaining({ method: 'POST', url: '/inbox/archive' }),
+                expect.objectContaining({ method: 'POST', url: '/threads/mark_read' }),
+                expect.objectContaining({ method: 'POST', url: '/inbox/archive' }),
+            )
 
             // Verify result is a concise summary
             expect(extractTextContent(result)).toMatchSnapshot()
@@ -123,11 +157,29 @@ describe(`${MARK_DONE} tool`, () => {
             // Mock batch to fail, triggering fallback to individual operations
             mockTwistApi.batch.mockRejectedValueOnce(new Error('Batch failed'))
 
-            // Mock first thread to succeed, second to fail on markRead, third to succeed
-            mockTwistApi.threads.markRead
-                .mockResolvedValueOnce(undefined) // thread-1 succeeds
-                .mockRejectedValueOnce(new Error('Thread not found')) // thread-2 fails
-                .mockResolvedValueOnce(undefined) // thread-3 succeeds
+            // Don't reset mocks - the batch descriptor implementations need to stay in place
+            // But we need to set up the fallback behavior for when batch fails
+            // The mock implementation in beforeEach handles {batch: true}, but when called without batch option,
+            // it returns Promise.resolve(undefined). We need to override this for the fallback calls.
+
+            // When batch fails, the code will call these functions again WITHOUT {batch: true}
+            // We need to set up separate behavior for those non-batch calls
+            // First 3 calls are for building batch descriptors (with {batch: true})
+            // Next 3 calls are the fallback (without {batch: true})
+            const originalMarkReadImpl = mockTwistApi.threads.markRead.getMockImplementation()
+            let markReadCallCount = 0
+            mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
+                markReadCallCount++
+                // First 3 calls: return batch descriptors
+                if (markReadCallCount <= 3 && options?.batch) {
+                    return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
+                }
+                // Next 3 calls: fallback behavior
+                if (markReadCallCount === 4) return Promise.resolve(undefined) as never // thread-1 succeeds
+                if (markReadCallCount === 5) return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
+                if (markReadCallCount === 6) return Promise.resolve(undefined) as never // thread-3 succeeds
+                return Promise.resolve(undefined) as never
+            })
 
             mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
 
@@ -186,9 +238,7 @@ describe(`${MARK_DONE} tool`, () => {
 
     describe('marking conversations as done', () => {
         it('should mark all conversations as done successfully', async () => {
-            mockTwistApi.conversations.markRead.mockResolvedValue(undefined)
-            mockTwistApi.conversations.archiveConversation.mockResolvedValue(undefined)
-
+            // Don't override mock implementations - they're set up in beforeEach to handle batch mode
             const result = await markDone.execute(
                 {
                     type: 'conversation',
@@ -199,23 +249,13 @@ describe(`${MARK_DONE} tool`, () => {
                 mockTwistApi,
             )
 
-            // Verify API was called for each conversation
-            expect(mockTwistApi.conversations.markRead).toHaveBeenCalledTimes(2)
-            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(1, {
-                id: TEST_IDS.CONVERSATION_1,
-            })
-            expect(mockTwistApi.conversations.markRead).toHaveBeenNthCalledWith(2, {
-                id: TEST_IDS.CONVERSATION_2,
-            })
-
-            expect(mockTwistApi.conversations.archiveConversation).toHaveBeenCalledTimes(2)
-            expect(mockTwistApi.conversations.archiveConversation).toHaveBeenNthCalledWith(
-                1,
-                TEST_IDS.CONVERSATION_1,
-            )
-            expect(mockTwistApi.conversations.archiveConversation).toHaveBeenNthCalledWith(
-                2,
-                TEST_IDS.CONVERSATION_2,
+            // Verify batch was called (operations are batched)
+            expect(mockTwistApi.batch).toHaveBeenCalledTimes(1)
+            expect(mockTwistApi.batch).toHaveBeenCalledWith(
+                expect.objectContaining({ method: 'POST', url: '/conversations/mark_read' }),
+                expect.objectContaining({ method: 'POST', url: '/conversations/archive' }),
+                expect.objectContaining({ method: 'POST', url: '/conversations/mark_read' }),
+                expect.objectContaining({ method: 'POST', url: '/conversations/archive' }),
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
@@ -456,9 +496,19 @@ describe(`${MARK_DONE} tool`, () => {
             // Mock batch to fail, triggering fallback to individual operations
             mockTwistApi.batch.mockRejectedValueOnce(new Error('Batch failed'))
 
-            mockTwistApi.threads.markRead
-                .mockResolvedValueOnce(undefined)
-                .mockRejectedValueOnce(new Error('Thread not found'))
+            // Setup mock implementation to handle batch calls first, then fallback calls
+            let markReadCallCount = 0
+            mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
+                markReadCallCount++
+                // First 2 calls: return batch descriptors (with {batch: true})
+                if (markReadCallCount <= 2 && options?.batch) {
+                    return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
+                }
+                // Next 2 calls: fallback behavior (without {batch: true})
+                if (markReadCallCount === 3) return Promise.resolve(undefined) as never // thread-1 succeeds
+                if (markReadCallCount === 4) return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
+                return Promise.resolve(undefined) as never
+            })
 
             mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
 

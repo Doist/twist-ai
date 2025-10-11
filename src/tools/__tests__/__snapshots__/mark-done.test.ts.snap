@@ -151,18 +151,22 @@ exports[`mark_done tool marking threads as done should handle partial failures g
 
 **Mode:** Individual IDs
 **Total Requested:** 3
-**Successful:** 3
-**Failed:** 0
+**Successful:** 2
+**Failed:** 1
 **Mark Read:** Yes
 **Archive:** Yes
 
 ## Completed
 
-12345, 12346, 12347
+12345, 12347
+
+## Failed
+
+- thread 12346: Thread not found
 
 ## Next Steps
 
-Use fetch_inbox to see remaining unread threads."
+Review failed items and retry if needed."
 `;
 
 exports[`mark_done tool marking threads as done should mark all threads as done successfully 1`] = `
@@ -227,16 +231,20 @@ exports[`mark_done tool next steps logic validation should suggest reviewing fai
 
 **Mode:** Individual IDs
 **Total Requested:** 2
-**Successful:** 2
-**Failed:** 0
+**Successful:** 1
+**Failed:** 1
 **Mark Read:** Yes
 **Archive:** Yes
 
 ## Completed
 
-12345, 12346
+12345
+
+## Failed
+
+- thread 12346: Thread not found
 
 ## Next Steps
 
-Use fetch_inbox to see remaining unread threads."
+Review failed items and retry if needed."
 `;

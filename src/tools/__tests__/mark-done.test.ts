@@ -36,30 +36,50 @@ describe(`${MARK_DONE} tool`, () => {
         console.error = jest.fn()
 
         // Setup mocks to return batch descriptors when called with {batch: true}
-        mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
-            if (options?.batch) {
-                return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
-            }
-            return Promise.resolve(undefined) as never
-        })
-        mockTwistApi.inbox.archiveThread.mockImplementation((id: number, options?: { batch?: boolean }) => {
-            if (options?.batch) {
-                return { method: 'POST', url: '/inbox/archive', params: { id } } as never
-            }
-            return Promise.resolve(undefined) as never
-        })
-        mockTwistApi.conversations.markRead.mockImplementation((args: { id: number }, options?: { batch?: boolean }) => {
-            if (options?.batch) {
-                return { method: 'POST', url: '/conversations/mark_read', params: args } as never
-            }
-            return Promise.resolve(undefined) as never
-        })
-        mockTwistApi.conversations.archiveConversation.mockImplementation((id: number, options?: { batch?: boolean }) => {
-            if (options?.batch) {
-                return { method: 'POST', url: '/conversations/archive', params: { id } } as never
-            }
-            return Promise.resolve(undefined) as never
-        })
+        mockTwistApi.threads.markRead.mockImplementation(
+            (id: number, objIndex: number, options?: { batch?: boolean }) => {
+                if (options?.batch) {
+                    return {
+                        method: 'POST',
+                        url: '/threads/mark_read',
+                        params: { id, obj_index: objIndex },
+                    } as never
+                }
+                return Promise.resolve(undefined) as never
+            },
+        )
+        mockTwistApi.inbox.archiveThread.mockImplementation(
+            (id: number, options?: { batch?: boolean }) => {
+                if (options?.batch) {
+                    return { method: 'POST', url: '/inbox/archive', params: { id } } as never
+                }
+                return Promise.resolve(undefined) as never
+            },
+        )
+        mockTwistApi.conversations.markRead.mockImplementation(
+            (args: { id: number }, options?: { batch?: boolean }) => {
+                if (options?.batch) {
+                    return {
+                        method: 'POST',
+                        url: '/conversations/mark_read',
+                        params: args,
+                    } as never
+                }
+                return Promise.resolve(undefined) as never
+            },
+        )
+        mockTwistApi.conversations.archiveConversation.mockImplementation(
+            (id: number, options?: { batch?: boolean }) => {
+                if (options?.batch) {
+                    return {
+                        method: 'POST',
+                        url: '/conversations/archive',
+                        params: { id },
+                    } as never
+                }
+                return Promise.resolve(undefined) as never
+            },
+        )
     })
 
     afterEach(() => {
@@ -166,20 +186,26 @@ describe(`${MARK_DONE} tool`, () => {
             // We need to set up separate behavior for those non-batch calls
             // First 3 calls are for building batch descriptors (with {batch: true})
             // Next 3 calls are the fallback (without {batch: true})
-            const originalMarkReadImpl = mockTwistApi.threads.markRead.getMockImplementation()
             let markReadCallCount = 0
-            mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
-                markReadCallCount++
-                // First 3 calls: return batch descriptors
-                if (markReadCallCount <= 3 && options?.batch) {
-                    return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
-                }
-                // Next 3 calls: fallback behavior
-                if (markReadCallCount === 4) return Promise.resolve(undefined) as never // thread-1 succeeds
-                if (markReadCallCount === 5) return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
-                if (markReadCallCount === 6) return Promise.resolve(undefined) as never // thread-3 succeeds
-                return Promise.resolve(undefined) as never
-            })
+            mockTwistApi.threads.markRead.mockImplementation(
+                (id: number, objIndex: number, options?: { batch?: boolean }) => {
+                    markReadCallCount++
+                    // First 3 calls: return batch descriptors
+                    if (markReadCallCount <= 3 && options?.batch) {
+                        return {
+                            method: 'POST',
+                            url: '/threads/mark_read',
+                            params: { id, obj_index: objIndex },
+                        } as never
+                    }
+                    // Next 3 calls: fallback behavior
+                    if (markReadCallCount === 4) return Promise.resolve(undefined) as never // thread-1 succeeds
+                    if (markReadCallCount === 5)
+                        return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
+                    if (markReadCallCount === 6) return Promise.resolve(undefined) as never // thread-3 succeeds
+                    return Promise.resolve(undefined) as never
+                },
+            )
 
             mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
 
@@ -498,17 +524,24 @@ describe(`${MARK_DONE} tool`, () => {
 
             // Setup mock implementation to handle batch calls first, then fallback calls
             let markReadCallCount = 0
-            mockTwistApi.threads.markRead.mockImplementation((id: number, objIndex: number, options?: { batch?: boolean }) => {
-                markReadCallCount++
-                // First 2 calls: return batch descriptors (with {batch: true})
-                if (markReadCallCount <= 2 && options?.batch) {
-                    return { method: 'POST', url: '/threads/mark_read', params: { id, obj_index: objIndex } } as never
-                }
-                // Next 2 calls: fallback behavior (without {batch: true})
-                if (markReadCallCount === 3) return Promise.resolve(undefined) as never // thread-1 succeeds
-                if (markReadCallCount === 4) return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
-                return Promise.resolve(undefined) as never
-            })
+            mockTwistApi.threads.markRead.mockImplementation(
+                (id: number, objIndex: number, options?: { batch?: boolean }) => {
+                    markReadCallCount++
+                    // First 2 calls: return batch descriptors (with {batch: true})
+                    if (markReadCallCount <= 2 && options?.batch) {
+                        return {
+                            method: 'POST',
+                            url: '/threads/mark_read',
+                            params: { id, obj_index: objIndex },
+                        } as never
+                    }
+                    // Next 2 calls: fallback behavior (without {batch: true})
+                    if (markReadCallCount === 3) return Promise.resolve(undefined) as never // thread-1 succeeds
+                    if (markReadCallCount === 4)
+                        return Promise.reject(new Error('Thread not found')) as never // thread-2 fails
+                    return Promise.resolve(undefined) as never
+                },
+            )
 
             mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
 

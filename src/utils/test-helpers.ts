@@ -205,6 +205,7 @@ export const TEST_IDS = {
     CHANNEL_1: 67890,
     USER_1: 22222,
     USER_2: 44444,
+    USER_3: 55555,
 } as const
 
 /**

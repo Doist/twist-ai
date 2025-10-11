@@ -20,4 +20,5 @@ export default {
         '!src/**/*.d.ts',
         '!src/main.ts', // Exclude the MCP server entry point
     ],
+    setupFiles: ['<rootDir>/jest.setup.js'],
 }

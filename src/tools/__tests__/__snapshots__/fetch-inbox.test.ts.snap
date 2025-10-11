@@ -18,6 +18,30 @@ exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with th
 - Use \`mark_done\` to mark items as read and archive them"
 `;
 
+exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with unread conversations 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Threads:** 0
+**Unread Threads:** 0
+**Total Conversations:** 2
+**Unread Conversations:** 2
+
+## Threads (0)
+
+_No threads in inbox_
+
+## Conversations (2)
+
+- DM with Alice, Bob 🔵 (ID: 33333)
+- Project Discussion 🔵 (ID: 33334)
+
+## Next Steps
+
+- Use \`load_thread\` to read specific threads with their comments
+- Use \`load_conversation\` to read specific conversations with their messages
+- Use \`mark_done\` to mark items as read and archive them"
+`;
+
 exports[`fetch_inbox tool fetching inbox successfully should filter by date range 1`] = `
 "# Inbox for Workspace 11111
 
@@ -57,4 +81,21 @@ exports[`fetch_inbox tool fetching inbox successfully should handle empty inbox 
 
 _No threads in inbox_
 "
+`;
+
+exports[`fetch_inbox tool fetching inbox successfully should not display conversations when none are unread 1`] = `
+"# Inbox for Workspace 11111
+
+**Total Threads:** 1
+**Unread Threads:** 1
+
+## Threads (1)
+
+- [Test Channel] Test Thread 🔵 (ID: 12345)
+
+## Next Steps
+
+- Use \`load_thread\` to read specific threads with their comments
+- Use \`load_conversation\` to read specific conversations with their messages
+- Use \`mark_done\` to mark items as read and archive them"
 `;

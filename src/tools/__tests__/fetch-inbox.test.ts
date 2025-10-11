@@ -14,8 +14,15 @@ const mockTwistApi = {
     threads: {
         getUnread: jest.fn(),
     },
+    conversations: {
+        getUnread: jest.fn(),
+        getConversation: jest.fn(),
+    },
     channels: {
         getChannel: jest.fn(),
+    },
+    workspaceUsers: {
+        getUserById: jest.fn(),
     },
 } as unknown as jest.Mocked<TwistApi>
 
@@ -84,6 +91,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     directMention: false,
                 },
             ])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
             mockTwistApi.channels.getChannel.mockResolvedValue({
                 id: TEST_IDS.CHANNEL_1,
                 name: 'Test Channel',
@@ -116,6 +124,9 @@ describe(`${FETCH_INBOX} tool`, () => {
             expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
                 batch: true,
             })
+            expect(mockTwistApi.conversations.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
+                batch: true,
+            })
             // Verify channel info is fetched for each thread
             expect(mockTwistApi.channels.getChannel).toHaveBeenCalledWith(TEST_IDS.CHANNEL_1, {
                 batch: true,
@@ -131,9 +142,11 @@ describe(`${FETCH_INBOX} tool`, () => {
                     workspaceId: TEST_IDS.WORKSPACE_1,
                     unreadCount: 1,
                     totalThreads: 2,
+                    totalConversations: 0,
                 }),
             )
             expect(structuredContent?.threads).toHaveLength(2)
+            expect(structuredContent?.conversations).toHaveLength(0)
             const { threads } = structuredContent || {}
             if (threads?.[0] && threads[1]) {
                 expect(threads[0].id).toBe(TEST_IDS.THREAD_1)
@@ -192,6 +205,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     directMention: false,
                 },
             ])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
             mockTwistApi.channels.getChannel.mockResolvedValue({
                 id: TEST_IDS.CHANNEL_1,
                 name: 'Test Channel',
@@ -218,6 +232,7 @@ describe(`${FETCH_INBOX} tool`, () => {
             mockTwistApi.inbox.getInbox.mockResolvedValue([])
             mockTwistApi.inbox.getCount.mockResolvedValue(0)
             mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
@@ -231,6 +246,7 @@ describe(`${FETCH_INBOX} tool`, () => {
             mockTwistApi.inbox.getInbox.mockResolvedValue([])
             mockTwistApi.inbox.getCount.mockResolvedValue(0)
             mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
 
             const result = await fetchInbox.execute(
                 {
@@ -253,6 +269,178 @@ describe(`${FETCH_INBOX} tool`, () => {
             )
 
             expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should fetch inbox with unread conversations', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
+            mockTwistApi.inbox.getCount.mockResolvedValue(0)
+            mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([
+                {
+                    conversationId: TEST_IDS.CONVERSATION_1,
+                    objIndex: 5,
+                    directMention: false,
+                },
+                {
+                    conversationId: TEST_IDS.CONVERSATION_2,
+                    objIndex: 3,
+                    directMention: true,
+                },
+            ])
+            mockTwistApi.conversations.getConversation.mockImplementation((id: number) => {
+                if (id === TEST_IDS.CONVERSATION_1) {
+                    return Promise.resolve({
+                        id: TEST_IDS.CONVERSATION_1,
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        userIds: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+                        messageCount: 10,
+                        lastObjIndex: 5,
+                        snippet: 'Latest message',
+                        snippetCreators: [TEST_IDS.USER_2],
+                        lastActive: new Date(),
+                        archived: false,
+                        created: new Date(),
+                        creator: TEST_IDS.USER_1,
+                    }) as never
+                }
+                return Promise.resolve({
+                    id: TEST_IDS.CONVERSATION_2,
+                    title: 'Project Discussion',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    userIds: [TEST_IDS.USER_1, TEST_IDS.USER_3],
+                    messageCount: 3,
+                    lastObjIndex: 3,
+                    snippet: 'Project update',
+                    snippetCreators: [TEST_IDS.USER_3],
+                    lastActive: new Date(),
+                    archived: false,
+                    created: new Date(),
+                    creator: TEST_IDS.USER_1,
+                }) as never
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation(
+                (_workspaceId: number, userId: number) => {
+                    if (userId === TEST_IDS.USER_1) {
+                        return Promise.resolve({
+                            id: TEST_IDS.USER_1,
+                            name: 'Alice',
+                            shortName: 'Alice',
+                            bot: false,
+                            timezone: 'UTC',
+                            removed: false,
+                            userType: 'MEMBER' as const,
+                            version: 1,
+                        }) as never
+                    }
+                    if (userId === TEST_IDS.USER_2) {
+                        return Promise.resolve({
+                            id: TEST_IDS.USER_2,
+                            name: 'Bob',
+                            shortName: 'Bob',
+                            bot: false,
+                            timezone: 'UTC',
+                            removed: false,
+                            userType: 'MEMBER' as const,
+                            version: 1,
+                        }) as never
+                    }
+                    return Promise.resolve({
+                        id: TEST_IDS.USER_3,
+                        name: 'Charlie',
+                        shortName: 'Charlie',
+                        bot: false,
+                        timezone: 'UTC',
+                        removed: false,
+                        userType: 'MEMBER' as const,
+                        version: 1,
+                    }) as never
+                },
+            )
+
+            const result = await fetchInbox.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                mockTwistApi,
+            )
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+            expect(extractTextContent(result)).toContain('## Conversations (2)')
+            expect(extractTextContent(result)).toContain('DM with Alice, Bob')
+            expect(extractTextContent(result)).toContain('Project Discussion')
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent).toEqual(
+                expect.objectContaining({
+                    totalConversations: 2,
+                }),
+            )
+            expect(structuredContent?.conversations).toHaveLength(2)
+            const { conversations } = structuredContent || {}
+            if (conversations?.[0] && conversations[1]) {
+                expect(conversations[0].id).toBe(TEST_IDS.CONVERSATION_1)
+                expect(conversations[0].participantNames).toEqual(['Alice', 'Bob'])
+                expect(conversations[0].isUnread).toBe(true)
+                expect(conversations[0].conversationUrl).toContain('twist.com')
+                expect(conversations[1].title).toBe('Project Discussion')
+            }
+        })
+
+        it('should not display conversations when none are unread', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([
+                {
+                    id: TEST_IDS.THREAD_1,
+                    title: 'Test Thread',
+                    content: 'Thread content',
+                    creator: TEST_IDS.USER_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 0,
+                    lastUpdated: new Date(),
+                    posted: new Date(),
+                    snippet: 'Thread snippet',
+                    snippetCreator: TEST_IDS.USER_1,
+                    starred: false,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                },
+            ])
+            mockTwistApi.inbox.getCount.mockResolvedValue(1)
+            mockTwistApi.threads.getUnread.mockResolvedValue([
+                {
+                    threadId: TEST_IDS.THREAD_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    objIndex: 1,
+                    directMention: false,
+                },
+            ])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+
+            const result = await fetchInbox.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                mockTwistApi,
+            )
+
+            expect(extractTextContent(result)).toMatchSnapshot()
+            expect(extractTextContent(result)).not.toContain('## Conversations')
+            expect(extractTextContent(result)).not.toContain('Total Conversations')
+
+            // Verify structured content
+            const { structuredContent } = result
+            expect(structuredContent?.totalConversations).toBe(0)
+            expect(structuredContent?.conversations).toHaveLength(0)
         })
     })
 

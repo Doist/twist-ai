@@ -8,8 +8,8 @@ exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with th
 
 ## Threads (2)
 
-- **12345**: Test Thread 1 🔵 (Channel 67890)
-- **12346**: Test Thread 2 ⭐ (Channel 67890)
+- [Test Channel] Test Thread 1 🔵 (ID: 12345)
+- [Test Channel] Test Thread 2 ⭐ (ID: 12346)
 
 ## Next Steps
 
@@ -38,7 +38,7 @@ exports[`fetch_inbox tool fetching inbox successfully should filter only unread 
 
 ## Threads (1)
 
-- **12345**: Unread Thread 🔵 (Channel 67890)
+- [Test Channel] Unread Thread 🔵 (ID: 12345)
 
 ## Next Steps
 

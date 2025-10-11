@@ -1,4 +1,4 @@
-import type { InboxThread } from '@doist/twist-sdk'
+import { type Channel, getFullTwistURL, type InboxThread } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -32,9 +32,11 @@ type FetchInboxStructured = {
         id: number
         title: string
         channelId: number
+        channelName?: string
         creator: number
         isUnread: boolean
         isStarred: boolean
+        threadUrl: string
     }>
     unreadCount: number
     unreadThreads: InboxThread[]
@@ -92,15 +94,32 @@ const fetchInbox = {
             '',
         ]
 
+        const channelCalls = threads.map((thread) =>
+            client.channels.getChannel(thread.channelId, { batch: true }),
+        )
+        const channelResponses = await client.batch(...channelCalls)
+        const channelInfo: Record<Channel['id'], Channel> = channelResponses.reduce(
+            (acc, res) => {
+                acc[res.data.id] = res.data
+                return acc
+            },
+            {} as Record<Channel['id'], Channel>,
+        )
+
         if (threads.length === 0) {
             lines.push('_No threads in inbox_')
             lines.push('')
         } else {
             for (const thread of threads) {
+                const channel = channelInfo[thread.channelId]
+                const channelDetails = !channel ? `(Channel ${thread.channelId})` : ''
+                if (channel) {
+                    thread.title = `[${channel.name}] ${thread.title}`
+                }
                 const unreadBadge = thread.isUnread ? ' 🔵' : ''
                 const starBadge = thread.starred ? ' ⭐' : ''
                 lines.push(
-                    `- **${thread.id}**: ${thread.title}${unreadBadge}${starBadge} (Channel ${thread.channelId})`,
+                    `- ${thread.title}${unreadBadge}${starBadge}${channelDetails} (ID: ${thread.id})`,
                 )
             }
             lines.push('')
@@ -123,11 +142,17 @@ const fetchInbox = {
                 id: t.id,
                 title: t.title,
                 channelId: t.channelId,
+                channelName: channelInfo[t.channelId]?.name,
                 creator: t.creator,
                 isUnread: t.isUnread,
                 isStarred: t.starred,
+                threadUrl: getFullTwistURL({
+                    workspaceId,
+                    threadId: t.id,
+                    channelId: t.channelId,
+                }),
             })),
-            unreadCount,
+            unreadCount: unreadThreads.length,
             unreadThreads: unreadThreadsOriginal,
             totalThreads: threads.length,
         }

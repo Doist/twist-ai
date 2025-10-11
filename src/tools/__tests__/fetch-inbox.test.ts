@@ -14,6 +14,9 @@ const mockTwistApi = {
     threads: {
         getUnread: jest.fn(),
     },
+    channels: {
+        getChannel: jest.fn(),
+    },
 } as unknown as jest.Mocked<TwistApi>
 
 const { FETCH_INBOX } = ToolNames
@@ -81,6 +84,17 @@ describe(`${FETCH_INBOX} tool`, () => {
                     directMention: false,
                 },
             ])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
@@ -100,6 +114,10 @@ describe(`${FETCH_INBOX} tool`, () => {
                 batch: true,
             })
             expect(mockTwistApi.threads.getUnread).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1, {
+                batch: true,
+            })
+            // Verify channel info is fetched for each thread
+            expect(mockTwistApi.channels.getChannel).toHaveBeenCalledWith(TEST_IDS.CHANNEL_1, {
                 batch: true,
             })
 
@@ -154,6 +172,17 @@ describe(`${FETCH_INBOX} tool`, () => {
                     directMention: false,
                 },
             ])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
 
             const result = await fetchInbox.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: true },

@@ -30,7 +30,8 @@
         /* Other */
         "skipLibCheck": true,
         "declaration": true,
-        "declarationMap": true
+        "declarationMap": false
     },
-    "include": ["src"]
+    "include": ["src"],
+    "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__"]
 }

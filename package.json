@@ -1,6 +1,6 @@
 {
     "name": "@doist/twist-ai",
-    "version": "0.1.0",
+    "version": "0.1.0-alpha.0",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -16,6 +16,19 @@
     ],
     "license": "MIT",
     "description": "A collection of tools for Twist using AI",
+    "author": "Doist",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/doist/twist-ai.git"
+    },
+    "keywords": [
+        "twist",
+        "ai",
+        "mcp",
+        "doist",
+        "collaboration",
+        "model-context-protocol"
+    ],
     "scripts": {
         "test": "jest",
         "build": "rimraf dist && npx tsc --project tsconfig.json",

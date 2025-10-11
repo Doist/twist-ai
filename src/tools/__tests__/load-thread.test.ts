@@ -18,6 +18,12 @@ const mockTwistApi = {
     comments: {
         getComments: jest.fn(),
     },
+    channels: {
+        getChannel: jest.fn(),
+    },
+    workspaceUsers: {
+        getUserById: jest.fn(),
+    },
 } as unknown as jest.Mocked<TwistApi>
 
 const { LOAD_THREAD } = ToolNames
@@ -42,12 +48,52 @@ describe(`${LOAD_THREAD} tool`, () => {
                 participants: [TEST_IDS.USER_1, TEST_IDS.USER_2],
             })
             const mockComments = [
-                createMockComment({ id: TEST_IDS.COMMENT_1 }),
-                createMockComment({ id: TEST_IDS.COMMENT_2 }),
+                createMockComment({ id: TEST_IDS.COMMENT_1, creator: TEST_IDS.USER_1 }),
+                createMockComment({ id: TEST_IDS.COMMENT_2, creator: TEST_IDS.USER_2 }),
             ]
 
             mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
             mockTwistApi.comments.getComments.mockResolvedValue(mockComments)
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: mockThread.channelId,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (
+                _ws: number,
+                userId: number,
+            ) => {
+                if (userId === TEST_IDS.USER_1) {
+                    return {
+                        id: TEST_IDS.USER_1,
+                        name: 'Test User 1',
+                        shortName: 'TU1',
+                        email: 'user1@test.com',
+                        userType: 'USER' as const,
+                        bot: false,
+                        removed: false,
+                        timezone: 'UTC',
+                        version: 1,
+                    }
+                }
+                return {
+                    id: TEST_IDS.USER_2,
+                    name: 'Test User 2',
+                    shortName: 'TU2',
+                    email: 'user2@test.com',
+                    userType: 'USER' as const,
+                    bot: false,
+                    removed: false,
+                    timezone: 'UTC',
+                    version: 1,
+                }
+            }) as never)
 
             const result = await loadThread.execute(
                 { threadId: TEST_IDS.THREAD_1, limit: 50, includeParticipants: true },
@@ -79,18 +125,22 @@ describe(`${LOAD_THREAD} tool`, () => {
             expect(structuredContent?.thread.id).toBe(TEST_IDS.THREAD_1)
             expect(structuredContent?.thread.title).toBe('Test Thread')
             expect(structuredContent?.thread.channelId).toBe(mockThread.channelId)
+            expect(structuredContent?.thread.channelName).toBe('Test Channel')
             expect(structuredContent?.thread.workspaceId).toBe(mockThread.workspaceId)
+            expect(structuredContent?.thread.creatorName).toBe('Test User 1')
             expect(structuredContent?.thread.posted).toBe('2024-01-01T00:00:00.000Z')
             expect(structuredContent?.comments).toHaveLength(2)
             const { comments } = structuredContent || {}
             if (comments?.[0]) {
                 expect(comments[0].id).toBe(TEST_IDS.COMMENT_1)
+                expect(comments[0].creatorName).toBe('Test User 1')
                 expect(comments[0].posted).toBe('2024-01-01T00:00:00.000Z')
             }
             expect(structuredContent?.thread.participants).toEqual([
                 TEST_IDS.USER_1,
                 TEST_IDS.USER_2,
             ])
+            expect(structuredContent?.thread.participantNames).toEqual(['Test User 1', 'Test User 2'])
         })
 
         it('should load thread without participants when includeParticipants is false', async () => {
@@ -99,6 +149,28 @@ describe(`${LOAD_THREAD} tool`, () => {
             })
             mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
             mockTwistApi.comments.getComments.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: mockThread.channelId,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadThread.execute(
                 {
@@ -118,6 +190,28 @@ describe(`${LOAD_THREAD} tool`, () => {
             const mockThread = createMockThread()
             mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
             mockTwistApi.comments.getComments.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: mockThread.channelId,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadThread.execute(
                 {
@@ -144,6 +238,28 @@ describe(`${LOAD_THREAD} tool`, () => {
             const mockThread = createMockThread()
             mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
             mockTwistApi.comments.getComments.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: mockThread.channelId,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
 
             const result = await loadThread.execute(
                 { threadId: TEST_IDS.THREAD_1, limit: 50, includeParticipants: true },

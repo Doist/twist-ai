@@ -4,9 +4,9 @@ exports[`load_thread tool loading threads successfully should filter comments by
 "# Thread: Test Thread
 
 **Thread ID:** 12345
-**Channel ID:** 67890
+**Channel:** Test Channel
 **Workspace ID:** 11111
-**Creator:** 22222
+**Creator:** Test User 1 (22222)
 **Posted:** 2024-01-01T00:00:00.000Z
 **Comments:** 0
 **Archived:** No
@@ -20,16 +20,16 @@ Test thread content
 
 ## Participants
 
-22222"
+Test User 1 (22222)"
 `;
 
 exports[`load_thread tool loading threads successfully should handle thread with no comments 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
-**Channel ID:** 67890
+**Channel:** Test Channel
 **Workspace ID:** 11111
-**Creator:** 22222
+**Creator:** Test User 1 (22222)
 **Posted:** 2024-01-01T00:00:00.000Z
 **Comments:** 0
 **Archived:** No
@@ -43,16 +43,16 @@ Test thread content
 
 ## Participants
 
-22222"
+Test User 1 (22222)"
 `;
 
 exports[`load_thread tool loading threads successfully should load thread with comments and participants 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
-**Channel ID:** 67890
+**Channel:** Test Channel
 **Workspace ID:** 11111
-**Creator:** 22222
+**Creator:** Test User 1 (22222)
 **Posted:** 2024-01-01T00:00:00.000Z
 **Comments:** 0
 **Archived:** No
@@ -65,27 +65,27 @@ Test thread content
 ## Comments (2)
 
 ### Comment 54321
-**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
+**Creator:** Test User 1 (22222) | **Posted:** 2024-01-01T00:00:00.000Z
 
 Test comment content
 
 ### Comment 54322
-**Creator:** 22222 | **Posted:** 2024-01-01T00:00:00.000Z
+**Creator:** Test User 2 (44444) | **Posted:** 2024-01-01T00:00:00.000Z
 
 Test comment content
 
 ## Participants
 
-22222, 44444"
+Test User 1 (22222), Test User 2 (44444)"
 `;
 
 exports[`load_thread tool loading threads successfully should load thread without participants when includeParticipants is false 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
-**Channel ID:** 67890
+**Channel:** Test Channel
 **Workspace ID:** 11111
-**Creator:** 22222
+**Creator:** Test User 1 (22222)
 **Posted:** 2024-01-01T00:00:00.000Z
 **Comments:** 0
 **Archived:** No

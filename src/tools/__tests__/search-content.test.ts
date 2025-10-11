@@ -6,8 +6,15 @@ import { searchContent } from '../search-content.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    batch: jest.fn(),
     search: {
         search: jest.fn(),
+    },
+    channels: {
+        getChannel: jest.fn(),
+    },
+    workspaceUsers: {
+        getUserById: jest.fn(),
     },
 } as unknown as jest.Mocked<TwistApi>
 
@@ -16,6 +23,15 @@ const { SEARCH_CONTENT } = ToolNames
 describe(`${SEARCH_CONTENT} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        // Mock batch to return responses with .data property
+        mockTwistApi.batch.mockImplementation(async (...args: readonly unknown[]) => {
+            const results = []
+            for (const arg of args) {
+                const result = await arg
+                results.push({ data: result })
+            }
+            return results as never
+        })
     })
 
     describe('workspace search', () => {
@@ -47,6 +63,28 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                 ],
                 hasMore: false,
                 isPlanRestricted: false,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
             })
 
             const result = await searchContent.execute(
@@ -89,6 +127,10 @@ describe(`${SEARCH_CONTENT} tool`, () => {
             if (results?.[0] && results[1]) {
                 expect(results[0].created).toBe('2024-01-01T00:00:00.000Z')
                 expect(results[1].created).toBe('2024-01-01T00:00:00.000Z')
+                expect(results[0].creatorName).toBe('Test User 1')
+                expect(results[0].channelName).toBe('Test Channel')
+                expect(results[1].creatorName).toBe('Test User 1')
+                expect(results[1].channelName).toBeUndefined()
             }
         })
 
@@ -107,6 +149,28 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                 ],
                 hasMore: false,
                 isPlanRestricted: false,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
             })
 
             const result = await searchContent.execute(
@@ -153,6 +217,17 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                 hasMore: true,
                 nextCursorMark: 'next-cursor-123',
                 isPlanRestricted: false,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
             })
 
             const result = await searchContent.execute(

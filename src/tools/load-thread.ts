@@ -35,18 +35,22 @@ type LoadThreadStructured = {
         title: string
         content: string
         channelId: number
+        channelName?: string
         workspaceId: number
         creator: number
+        creatorName?: string
         posted: string
         commentCount: number
         isArchived: boolean
         inInbox: boolean
         participants?: number[]
+        participantNames?: string[]
     }
     comments: Array<{
         id: number
         content: string
         creator: number
+        creatorName?: string
         threadId: number
         posted: string
     }>
@@ -77,14 +81,45 @@ const loadThread = {
         const thread = threadResponse.data
         const comments = commentsResponse.data
 
+        // Collect all unique user IDs
+        const userIds = new Set<number>([thread.creator])
+        for (const comment of comments) {
+            userIds.add(comment.creator)
+        }
+        if (includeParticipants && thread.participants) {
+            for (const participantId of thread.participants) {
+                userIds.add(participantId)
+            }
+        }
+
+        // Fetch channel and all user info in a single batch call
+        const uniqueUserIds = Array.from(userIds)
+        const [channelResponse, ...userResponses] = await client.batch(
+            client.channels.getChannel(thread.channelId, { batch: true }),
+            ...uniqueUserIds.map((id) =>
+                client.workspaceUsers.getUserById(thread.workspaceId, id, { batch: true }),
+            ),
+        )
+
+        const channel = channelResponse.data
+        const users = userResponses.map((res) => res.data)
+        const userLookup = users.reduce(
+            (acc, user) => {
+                acc[user.id] = user.name
+                return acc
+            },
+            {} as Record<number, string>,
+        )
+
         // Build text content
+        const creatorName = userLookup[thread.creator]
         const lines: string[] = [
             `# Thread: ${thread.title}`,
             '',
             `**Thread ID:** ${thread.id}`,
-            `**Channel ID:** ${thread.channelId}`,
+            `**Channel:** ${channel.name}`,
             `**Workspace ID:** ${thread.workspaceId}`,
-            `**Creator:** ${thread.creator}`,
+            `**Creator:** ${creatorName} (${thread.creator})`,
             `**Posted:** ${thread.posted.toISOString()}`,
             `**Comments:** ${thread.commentCount}`,
             `**Archived:** ${thread.isArchived ? 'Yes' : 'No'}`,
@@ -100,8 +135,9 @@ const loadThread = {
 
         for (const comment of comments) {
             const commentDate = comment.posted.toISOString()
+            const commentCreatorName = userLookup[comment.creator]
             lines.push(`### Comment ${comment.id}`)
-            lines.push(`**Creator:** ${comment.creator} | **Posted:** ${commentDate}`)
+            lines.push(`**Creator:** ${commentCreatorName} (${comment.creator}) | **Posted:** ${commentDate}`)
             lines.push('')
             lines.push(comment.content)
             lines.push('')
@@ -110,7 +146,10 @@ const loadThread = {
         if (includeParticipants && thread.participants) {
             lines.push('## Participants')
             lines.push('')
-            lines.push(thread.participants.join(', '))
+            const participantList = thread.participants
+                .map((id) => `${userLookup[id]} (${id})`)
+                .join(', ')
+            lines.push(participantList)
         }
 
         const structuredContent: LoadThreadStructured = {
@@ -120,18 +159,24 @@ const loadThread = {
                 title: thread.title,
                 content: thread.content,
                 channelId: thread.channelId,
+                channelName: channel.name,
                 workspaceId: thread.workspaceId,
                 creator: thread.creator,
+                creatorName,
                 posted: thread.posted.toISOString(),
                 commentCount: thread.commentCount,
                 isArchived: thread.isArchived,
                 inInbox: thread.inInbox ?? false,
                 participants: includeParticipants ? (thread.participants ?? undefined) : undefined,
+                participantNames: includeParticipants && thread.participants
+                    ? thread.participants.map((id) => userLookup[id]).filter((name): name is string => name !== undefined)
+                    : undefined,
             },
             comments: comments.map((c) => ({
                 id: c.id,
                 content: c.content,
                 creator: c.creator,
+                creatorName: userLookup[c.creator],
                 threadId: c.threadId,
                 posted: c.posted.toISOString(),
             })),

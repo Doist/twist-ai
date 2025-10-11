@@ -31,10 +31,12 @@ type SearchContentStructured = {
         type: 'thread' | 'comment' | 'message'
         content: string
         creatorId: number
+        creatorName?: string
         created: string
         threadId?: number
         conversationId?: number
         channelId?: number
+        channelName?: string
         workspaceId: number
     }>
     totalResults: number
@@ -88,6 +90,56 @@ const searchContent = {
         const hasMore = response.hasMore
         const responseCursor = response.nextCursorMark
 
+        // Initialize lookup maps
+        let userLookup: Record<number, string> = {}
+        let channelLookup: Record<number, string> = {}
+
+        // Only fetch user and channel info if there are results
+        if (results.length > 0) {
+            // Collect unique user IDs and channel IDs
+            const userIds = new Set<number>()
+            const channelIds = new Set<number>()
+            for (const result of results) {
+                userIds.add(result.creatorId)
+                if (result.channelId) {
+                    channelIds.add(result.channelId)
+                }
+            }
+
+            // Fetch all users and channels in a single batch call
+            const uniqueUserIds = Array.from(userIds)
+            const uniqueChannelIds = Array.from(channelIds)
+            const batchResponses = await client.batch(
+                ...uniqueUserIds.map((id) =>
+                    client.workspaceUsers.getUserById(workspaceId, id, { batch: true }),
+                ),
+                ...uniqueChannelIds.map((id) => client.channels.getChannel(id, { batch: true })),
+            )
+
+            // Split responses into users and channels
+            const userResponses = batchResponses.slice(0, uniqueUserIds.length)
+            const channelResponses = batchResponses.slice(uniqueUserIds.length)
+
+            // Build lookup maps
+            const users = userResponses.map((res) => res.data)
+            userLookup = users.reduce(
+                (acc, user) => {
+                    acc[user.id] = user.name
+                    return acc
+                },
+                {} as Record<number, string>,
+            )
+
+            const channels = channelResponses.map((res) => res.data)
+            channelLookup = channels.reduce(
+                (acc, channel) => {
+                    acc[channel.id] = channel.name
+                    return acc
+                },
+                {} as Record<number, string>,
+            )
+        }
+
         // Build text content
         const lines: string[] = [`# Search Results for "${query}"`, '']
 
@@ -105,9 +157,12 @@ const searchContent = {
             for (const result of results) {
                 const date = result.created.split('T')[0]
                 const typeLabel = result.type.charAt(0).toUpperCase() + result.type.slice(1)
+                const creatorName = userLookup[result.creatorId]
 
                 lines.push(`### ${typeLabel} ${result.id}`)
-                lines.push(`**Created:** ${date} | **Creator:** ${result.creatorId}`)
+                lines.push(
+                    `**Created:** ${date} | **Creator:** ${creatorName} (${result.creatorId})`,
+                )
 
                 if (result.threadId) {
                     lines.push(`**Thread:** ${result.threadId}`)
@@ -116,7 +171,8 @@ const searchContent = {
                     lines.push(`**Conversation:** ${result.conversationId}`)
                 }
                 if (result.channelId) {
-                    lines.push(`**Channel:** ${result.channelId}`)
+                    const channelName = channelLookup[result.channelId]
+                    lines.push(`**Channel:** ${channelName} (${result.channelId})`)
                 }
 
                 lines.push('')
@@ -140,7 +196,11 @@ const searchContent = {
             type: 'search_results',
             query,
             workspaceId,
-            results,
+            results: results.map((r) => ({
+                ...r,
+                creatorName: userLookup[r.creatorId],
+                channelName: r.channelId ? channelLookup[r.channelId] : undefined,
+            })),
             totalResults: results.length,
             hasMore,
             cursor: responseCursor,

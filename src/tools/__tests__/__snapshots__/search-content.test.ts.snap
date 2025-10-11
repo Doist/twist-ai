@@ -20,14 +20,14 @@ exports[`search_content tool workspace search should search across workspace wit
 ## Results
 
 ### Thread thread-123
-**Created:** 2024-01-01 | **Creator:** 22222
+**Created:** 2024-01-01 | **Creator:** Test User 1 (22222)
 **Thread:** 12345
-**Channel:** 67890
+**Channel:** Test Channel (67890)
 
 Test thread matching query
 
 ### Comment comment-456
-**Created:** 2024-01-01 | **Creator:** 22222
+**Created:** 2024-01-01 | **Creator:** Test User 1 (22222)
 **Thread:** 12345
 
 Test comment matching query
@@ -44,9 +44,9 @@ exports[`search_content tool workspace search should search with filters 1`] = `
 ## Results
 
 ### Thread thread-789
-**Created:** 2024-01-01 | **Creator:** 22222
+**Created:** 2024-01-01 | **Creator:** Test User 1 (22222)
 **Thread:** 12345
-**Channel:** 67890
+**Channel:** Test Channel (67890)
 
 Filtered result
 "

@@ -49,7 +49,7 @@ const fetchInbox = {
     async execute(args, client) {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
 
-        // Call all 4 endpoints in parallel for complete inbox picture
+        // Call all 3 endpoints in parallel for complete inbox picture
         const [inboxThreadsResponse, unreadCountResponse, unreadThreadsDataResponse] =
             await client.batch(
                 client.inbox.getInbox(

@@ -51,11 +51,11 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
 
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue(mockMessages)
-            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (
-                _ws: number,
-                userId: number,
-            ) => {
-                if (userId === TEST_IDS.USER_1) {
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (args: {
+                workspaceId: number
+                userId: number
+            }) => {
+                if (args.userId === TEST_IDS.USER_1) {
                     return {
                         id: TEST_IDS.USER_1,
                         name: 'Test User 1',
@@ -101,13 +101,11 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
             )
             // Verify user info is fetched for each participant
             expect(mockTwistApi.workspaceUsers.getUserById).toHaveBeenCalledWith(
-                mockConversation.workspaceId,
-                TEST_IDS.USER_1,
+                { workspaceId: mockConversation.workspaceId, userId: TEST_IDS.USER_1 },
                 { batch: true },
             )
             expect(mockTwistApi.workspaceUsers.getUserById).toHaveBeenCalledWith(
-                mockConversation.workspaceId,
-                TEST_IDS.USER_2,
+                { workspaceId: mockConversation.workspaceId, userId: TEST_IDS.USER_2 },
                 { batch: true },
             )
 

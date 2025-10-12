@@ -37,12 +37,12 @@ describe(`${MARK_DONE} tool`, () => {
 
         // Setup mocks to return batch descriptors when called with {batch: true}
         mockTwistApi.threads.markRead.mockImplementation(
-            (id: number, objIndex: number, options?: { batch?: boolean }) => {
+            (args: { id: number; objIndex: number }, options?: { batch?: boolean }) => {
                 if (options?.batch) {
                     return {
                         method: 'POST',
                         url: '/threads/mark_read',
-                        params: { id, obj_index: objIndex },
+                        params: { id: args.id, obj_index: args.objIndex },
                     } as never
                 }
                 return Promise.resolve(undefined) as never
@@ -188,14 +188,14 @@ describe(`${MARK_DONE} tool`, () => {
             // Next 3 calls are the fallback (without {batch: true})
             let markReadCallCount = 0
             mockTwistApi.threads.markRead.mockImplementation(
-                (id: number, objIndex: number, options?: { batch?: boolean }) => {
+                (args: { id: number; objIndex: number }, options?: { batch?: boolean }) => {
                     markReadCallCount++
                     // First 3 calls: return batch descriptors
                     if (markReadCallCount <= 3 && options?.batch) {
                         return {
                             method: 'POST',
                             url: '/threads/mark_read',
-                            params: { id, obj_index: objIndex },
+                            params: { id: args.id, obj_index: args.objIndex },
                         } as never
                     }
                     // Next 3 calls: fallback behavior
@@ -525,14 +525,14 @@ describe(`${MARK_DONE} tool`, () => {
             // Setup mock implementation to handle batch calls first, then fallback calls
             let markReadCallCount = 0
             mockTwistApi.threads.markRead.mockImplementation(
-                (id: number, objIndex: number, options?: { batch?: boolean }) => {
+                (args: { id: number; objIndex: number }, options?: { batch?: boolean }) => {
                     markReadCallCount++
                     // First 2 calls: return batch descriptors (with {batch: true})
                     if (markReadCallCount <= 2 && options?.batch) {
                         return {
                             method: 'POST',
                             url: '/threads/mark_read',
-                            params: { id, obj_index: objIndex },
+                            params: { id: args.id, obj_index: args.objIndex },
                         } as never
                     }
                     // Next 2 calls: fallback behavior (without {batch: true})

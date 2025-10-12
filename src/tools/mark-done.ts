@@ -133,7 +133,9 @@ const markDone = {
                     if (type === 'thread') {
                         // Mark thread as read
                         if (markRead) {
-                            operations.push(client.threads.markRead(id, 0, { batch: true }))
+                            operations.push(
+                                client.threads.markRead({ id, objIndex: 0 }, { batch: true }),
+                            )
                         }
                         // Archive thread in inbox
                         if (archive) {
@@ -164,7 +166,7 @@ const markDone = {
                         try {
                             if (type === 'thread') {
                                 if (markRead) {
-                                    await client.threads.markRead(id, 0)
+                                    await client.threads.markRead({ id, objIndex: 0 })
                                 }
                                 if (archive) {
                                     await client.inbox.archiveThread(id)

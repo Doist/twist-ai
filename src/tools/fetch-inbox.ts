@@ -98,7 +98,7 @@ async function loadConversationDetails(
     }
 
     const userCalls = Array.from(allUserIds).map((userId) =>
-        client.workspaceUsers.getUserById(workspaceId, userId, { batch: true }),
+        client.workspaceUsers.getUserById({ workspaceId, userId }, { batch: true }),
     )
     const userResponses = await client.batch(...userCalls)
     const userMap = userResponses.reduce(

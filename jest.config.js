@@ -14,7 +14,16 @@ export default {
                 useESM: true,
             },
         ],
+        '^.+\\.js$': [
+            'ts-jest',
+            {
+                useESM: true,
+            },
+        ],
     },
+    transformIgnorePatterns: [
+        'node_modules/(?!(@doist/twist-sdk|camelcase)/)',
+    ],
     collectCoverageFrom: [
         'src/**/*.ts',
         '!src/**/*.d.ts',

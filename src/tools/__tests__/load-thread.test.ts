@@ -66,10 +66,9 @@ describe(`${LOAD_THREAD} tool`, () => {
                 version: 1,
             })
             mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (
-                _ws: number,
-                userId: number,
+                args: { workspaceId: number; userId: number },
             ) => {
-                if (userId === TEST_IDS.USER_1) {
+                if (args.userId === TEST_IDS.USER_1) {
                     return {
                         id: TEST_IDS.USER_1,
                         name: 'Test User 1',

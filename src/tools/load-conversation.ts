@@ -79,7 +79,10 @@ const loadConversation = {
 
         const { userIds } = conversation
         const userRequests = userIds.map((id) =>
-            client.workspaceUsers.getUserById(conversation.workspaceId, id, { batch: true }),
+            client.workspaceUsers.getUserById(
+                { workspaceId: conversation.workspaceId, userId: id },
+                { batch: true },
+            ),
         )
         const userResponses = await client.batch(...userRequests)
         const users = userResponses.map((res) => res.data)

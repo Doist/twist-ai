@@ -39,9 +39,10 @@ Always provide clear context and maintain professional communication standards.
 /**
  * Create the MCP server.
  * @param twistApiKey - The API key for the Twist account.
+ * @param baseUrl - Optional base URL for the Twist API.
  * @returns the MCP server.
  */
-function getMcpServer({ twistApiKey }: { twistApiKey: string }) {
+function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?: string }) {
     const server = new McpServer(
         { name: 'twist-mcp-server', version: '0.1.0' },
         {
@@ -52,7 +53,7 @@ function getMcpServer({ twistApiKey }: { twistApiKey: string }) {
         },
     )
 
-    const twist = new TwistApi(twistApiKey)
+    const twist = new TwistApi(twistApiKey, baseUrl)
 
     // Register tools
     registerTool(userInfo, server, twist)

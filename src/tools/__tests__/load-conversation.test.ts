@@ -51,9 +51,10 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
 
             mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
             mockTwistApi.conversationMessages.getMessages.mockResolvedValue(mockMessages)
-            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (
-                args: { workspaceId: number; userId: number },
-            ) => {
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation((async (args: {
+                workspaceId: number
+                userId: number
+            }) => {
                 if (args.userId === TEST_IDS.USER_1) {
                     return {
                         id: TEST_IDS.USER_1,

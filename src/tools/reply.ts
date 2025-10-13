@@ -26,6 +26,7 @@ type ReplyStructured = {
     content: string
     created: string
     replyUrl: string
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const reply = {
@@ -124,6 +125,7 @@ const reply = {
             content,
             created: created.toISOString(),
             replyUrl,
+            appliedFilters: args,
         }
 
         return getToolOutput({

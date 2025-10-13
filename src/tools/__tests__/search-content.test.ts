@@ -114,6 +114,11 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                     workspaceId: TEST_IDS.WORKSPACE_1,
                     totalResults: 2,
                     hasMore: false,
+                    appliedFilters: {
+                        query: 'test query',
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        limit: 50,
+                    },
                 }),
             )
             expect(structuredContent?.results).toHaveLength(2)
@@ -200,6 +205,18 @@ describe(`${SEARCH_CONTENT} tool`, () => {
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            const { structuredContent } = result
+            expect(structuredContent?.appliedFilters).toEqual({
+                query: 'filtered',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                channelIds: [TEST_IDS.CHANNEL_1],
+                authorIds: [TEST_IDS.USER_1],
+                mentionSelf: true,
+                dateFrom: '2024-01-01',
+                dateTo: '2024-12-31',
+                limit: 25,
+            })
         })
 
         it('should handle pagination', async () => {

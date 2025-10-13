@@ -144,6 +144,11 @@ describe(`${LOAD_THREAD} tool`, () => {
                 'Test User 1',
                 'Test User 2',
             ])
+            expect(structuredContent?.appliedFilters).toEqual({
+                threadId: TEST_IDS.THREAD_1,
+                limit: 50,
+                includeParticipants: true,
+            })
         })
 
         it('should load thread without participants when includeParticipants is false', async () => {

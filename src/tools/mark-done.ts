@@ -57,6 +57,7 @@ type MarkDoneStructured = {
         workspaceId?: number
         channelId?: number
     }
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const markDone = {
@@ -281,6 +282,7 @@ const markDone = {
                           channelId,
                       }
                     : undefined,
+            appliedFilters: args,
         }
 
         return getToolOutput({

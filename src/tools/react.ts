@@ -25,6 +25,7 @@ type ReactStructured = {
     targetId: number
     emoji: string
     targetUrl: string
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const react = {
@@ -135,6 +136,7 @@ const react = {
             targetId,
             emoji,
             targetUrl,
+            appliedFilters: args,
         }
 
         return getToolOutput({

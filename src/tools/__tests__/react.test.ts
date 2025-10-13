@@ -75,6 +75,12 @@ describe(`${REACT} tool`, () => {
                 targetId: TEST_IDS.THREAD_1,
                 emoji: '👍',
                 targetUrl: expect.stringContaining('twist.com'),
+                appliedFilters: {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    emoji: '👍',
+                    operation: 'add',
+                },
             })
         })
 

@@ -58,6 +58,7 @@ type FetchInboxStructured = {
     unreadConversations: UnreadConversation[]
     totalThreads: number
     totalConversations: number
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 /**
@@ -301,6 +302,7 @@ const fetchInbox = {
             unreadConversations: unreadConversationsOriginal,
             totalThreads: threads.length,
             totalConversations: conversationsWithDetails.length,
+            appliedFilters: args,
         }
 
         return getToolOutput({

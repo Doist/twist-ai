@@ -133,6 +133,11 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
                 expect(messages[0].posted).toBe('2024-01-01T00:00:00.000Z')
                 expect(messages[0].creatorName).toBe('Test User 1')
             }
+            expect(structuredContent?.appliedFilters).toEqual({
+                conversationId: TEST_IDS.CONVERSATION_1,
+                limit: 50,
+                includeParticipants: true,
+            })
         })
 
         it('should load conversation without participants when includeParticipants is false', async () => {

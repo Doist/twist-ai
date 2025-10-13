@@ -35,6 +35,7 @@ type GetUsersStructured = Record<string, unknown> & {
     users: UserData[]
     totalUsers: number
     filteredUsers: number
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const getUsers = {
@@ -115,6 +116,7 @@ const getUsers = {
             })),
             totalUsers,
             filteredUsers: filteredUsers.length,
+            appliedFilters: args,
         }
 
         return getToolOutput({

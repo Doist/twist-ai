@@ -50,6 +50,7 @@ type LoadConversationStructured = {
         messageUrl: string
     }>
     totalMessages: number
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const loadConversation = {
@@ -155,6 +156,7 @@ const loadConversation = {
                 }),
             })),
             totalMessages: conversation.messageCount ?? 0,
+            appliedFilters: args,
         }
 
         return getToolOutput({

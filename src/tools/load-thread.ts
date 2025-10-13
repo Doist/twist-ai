@@ -58,6 +58,7 @@ type LoadThreadStructured = {
         commentUrl: string
     }>
     totalComments: number
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const loadThread = {
@@ -203,6 +204,7 @@ const loadThread = {
                 }),
             })),
             totalComments: thread.commentCount,
+            appliedFilters: args,
         }
 
         return getToolOutput({

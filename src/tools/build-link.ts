@@ -41,6 +41,7 @@ type BuildLinkStructured = {
         threadId?: number
         commentId?: number | string
     }
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const buildLink = {
@@ -105,6 +106,7 @@ const buildLink = {
                 threadId,
                 commentId,
             },
+            appliedFilters: args,
         }
 
         return getToolOutput({

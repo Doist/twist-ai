@@ -109,6 +109,9 @@ describe(`${GET_USERS} tool`, () => {
                         bot: true,
                     }),
                 ]),
+                appliedFilters: {
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                },
             })
         })
 
@@ -128,6 +131,10 @@ describe(`${GET_USERS} tool`, () => {
 
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.users).toHaveLength(1)
+            expect(structuredContent.appliedFilters).toEqual({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                userIds: [],
+            })
         })
     })
 
@@ -169,6 +176,10 @@ describe(`${GET_USERS} tool`, () => {
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.totalUsers).toBe(2)
             expect(structuredContent.users).toHaveLength(2)
+            expect(structuredContent.appliedFilters).toEqual({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                userIds: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+            })
         })
 
         it('should handle single user ID', async () => {
@@ -220,6 +231,10 @@ describe(`${GET_USERS} tool`, () => {
             expect(structuredContent.totalUsers).toBe(3)
             expect(structuredContent.filteredUsers).toBe(2)
             expect(structuredContent.users).toHaveLength(2)
+            expect(structuredContent.appliedFilters).toEqual({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                searchText: 'alice',
+            })
         })
 
         it('should filter users by email (case-insensitive)', async () => {

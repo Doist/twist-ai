@@ -44,6 +44,7 @@ type SearchContentStructured = {
     totalResults: number
     hasMore: boolean
     cursor?: string
+    appliedFilters: z.infer<z.ZodObject<typeof ArgsSchema>>
 }
 
 const searchContent = {
@@ -238,6 +239,7 @@ const searchContent = {
             totalResults: results.length,
             hasMore,
             cursor: responseCursor,
+            appliedFilters: args,
         }
 
         return getToolOutput({

@@ -1,4 +1,11 @@
-import type { Comment, Conversation, ConversationMessage, Thread, User } from '@doist/twist-sdk'
+import type {
+    Comment,
+    Conversation,
+    ConversationMessage,
+    Thread,
+    User,
+    Workspace,
+} from '@doist/twist-sdk'
 import type { getToolOutput } from '../mcp-helpers.js'
 
 /**
@@ -120,6 +127,25 @@ export function createMockUser(overrides: Partial<User> = {}): User {
 }
 
 /**
+ * Creates a mock Workspace with all required properties and sensible defaults.
+ * Pass only the properties you want to override for your specific test.
+ */
+export function createMockWorkspace(overrides: Partial<Workspace> = {}): Workspace {
+    return {
+        id: TEST_IDS.WORKSPACE_1,
+        name: 'Test Workspace',
+        creator: TEST_IDS.USER_1,
+        created: new Date('2024-01-01T00:00:00Z'),
+        defaultChannel: TEST_IDS.CHANNEL_1,
+        defaultConversation: TEST_IDS.CONVERSATION_1,
+        plan: 'free',
+        avatarId: undefined,
+        avatarUrls: undefined,
+        ...overrides,
+    }
+}
+
+/**
  * Common error messages used across tests.
  */
 export const TEST_ERRORS = {
@@ -202,6 +228,7 @@ export const TEST_IDS = {
     MESSAGE_1: 98765,
     MESSAGE_2: 98766,
     WORKSPACE_1: 11111,
+    WORKSPACE_2: 11112,
     CHANNEL_1: 67890,
     USER_1: 22222,
     USER_2: 44444,

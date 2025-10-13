@@ -8,4 +8,6 @@ export const ToolNames = {
     REACT: 'react',
     MARK_DONE: 'mark_done',
     BUILD_LINK: 'build_link',
+    GET_WORKSPACES: 'get_workspaces',
+    GET_USERS: 'get_users',
 } as const

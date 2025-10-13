@@ -1,4 +1,4 @@
-import type { TwistApi } from '@doist/twist-sdk'
+import type { TwistApi, WorkspacePlan } from '@doist/twist-sdk'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
 import { ToolNames } from '../utils/tool-names.js'
@@ -15,7 +15,7 @@ type WorkspaceData = {
     defaultChannelName?: string
     defaultConversation?: number
     defaultConversationTitle?: string
-    plan?: 'free' | 'unlimited'
+    plan?: WorkspacePlan
     avatarId?: string
     avatarUrls?: {
         s35: string

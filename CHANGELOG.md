@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.0-alpha.2...v0.2.1-alpha.2) (2025-10-26)
+
+
+### Bug Fixes
+
+* Add --repo parameter to workflow run command ([a1dce5e](https://github.com/Doist/twist-ai/commit/a1dce5e44978869af7ebd7856327d2981fd85e0f))
+
 ## [0.2.0-alpha.2](https://github.com/Doist/twist-ai/compare/v0.1.0-alpha.2...v0.2.0-alpha.2) (2025-10-26)
 
 

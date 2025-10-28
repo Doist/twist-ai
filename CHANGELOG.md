@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.2-alpha.2...v0.2.3-alpha.2) (2025-10-28)
+
+
+### Bug Fixes
+
+* Trigger workflow execution ([ee74555](https://github.com/Doist/twist-ai/commit/ee74555225a813867588afb52f94f8786d8b4acf))
+
 ## [0.2.2-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.1-alpha.2...v0.2.2-alpha.2) (2025-10-28)
 
 ### Bug Fixes

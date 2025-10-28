@@ -100,10 +100,7 @@ const loadThread = {
         const [channelResponse, ...userResponses] = await client.batch(
             client.channels.getChannel(thread.channelId, { batch: true }),
             ...uniqueUserIds.map((id) =>
-                client.workspaceUsers.getUserById(
-                    { workspaceId: thread.workspaceId, userId: id },
-                    { batch: true },
-                ),
+                client.workspaceUsers.getUserById(thread.workspaceId, id, { batch: true }),
             ),
         )
 

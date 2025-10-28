@@ -120,10 +120,7 @@ async function generateWorkspacesList(
             .map((creatorId) => {
                 const workspaceId = workspaceIdByCreatorId.get(creatorId)
                 if (!workspaceId) return null
-                return client.workspaceUsers.getUserById(
-                    { workspaceId, userId: creatorId },
-                    { batch: true },
-                )
+                return client.workspaceUsers.getUserById(workspaceId, creatorId, { batch: true })
             })
             .filter((req): req is Exclude<typeof req, null> => req !== null)
 

@@ -48,13 +48,10 @@ const getUsers = {
         // Fetch users based on userIds parameter
         const users =
             !userIds || userIds.length === 0
-                ? await client.workspaceUsers.getWorkspaceUsers({ workspaceId })
+                ? await client.workspaceUsers.getWorkspaceUsers(workspaceId)
                 : await (async () => {
                       const userRequests = userIds.map((userId) =>
-                          client.workspaceUsers.getUserById(
-                              { workspaceId, userId },
-                              { batch: true },
-                          ),
+                          client.workspaceUsers.getUserById(workspaceId, userId, { batch: true }),
                       )
                       const userResponses = await client.batch(...userRequests)
                       return userResponses.map((response) => response.data)

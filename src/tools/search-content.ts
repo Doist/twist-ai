@@ -113,7 +113,7 @@ const searchContent = {
             const uniqueChannelIds = Array.from(channelIds)
             const batchResponses = await client.batch(
                 ...uniqueUserIds.map((id) =>
-                    client.workspaceUsers.getUserById({ workspaceId, userId: id }, { batch: true }),
+                    client.workspaceUsers.getUserById(workspaceId, id, { batch: true }),
                 ),
                 ...uniqueChannelIds.map((id) => client.channels.getChannel(id, { batch: true })),
             )

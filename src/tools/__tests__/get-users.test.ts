@@ -74,9 +74,9 @@ describe(`${GET_USERS} tool`, () => {
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.workspaceUsers.getWorkspaceUsers).toHaveBeenCalledWith({
-                workspaceId: TEST_IDS.WORKSPACE_1,
-            })
+            expect(mockTwistApi.workspaceUsers.getWorkspaceUsers).toHaveBeenCalledWith(
+                TEST_IDS.WORKSPACE_1,
+            )
 
             const textContent = extractTextContent(result)
             expect(textContent).toContain(`**Workspace ID:** ${TEST_IDS.WORKSPACE_1}`)
@@ -122,9 +122,9 @@ describe(`${GET_USERS} tool`, () => {
                 mockTwistApi,
             )
 
-            expect(mockTwistApi.workspaceUsers.getWorkspaceUsers).toHaveBeenCalledWith({
-                workspaceId: TEST_IDS.WORKSPACE_1,
-            })
+            expect(mockTwistApi.workspaceUsers.getWorkspaceUsers).toHaveBeenCalledWith(
+                TEST_IDS.WORKSPACE_1,
+            )
 
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.users).toHaveLength(1)
@@ -134,11 +134,11 @@ describe(`${GET_USERS} tool`, () => {
     describe('fetching specific users', () => {
         it('should batch fetch specific users by ID', async () => {
             mockTwistApi.workspaceUsers.getUserById.mockImplementation(
-                async (args: { workspaceId: number; userId: number }) => {
-                    if (args.userId === TEST_IDS.USER_1) {
+                async (_workspaceId: number, userId: number) => {
+                    if (userId === TEST_IDS.USER_1) {
                         return createMockWorkspaceUser()
                     }
-                    if (args.userId === TEST_IDS.USER_2) {
+                    if (userId === TEST_IDS.USER_2) {
                         return createMockWorkspaceUser({
                             id: TEST_IDS.USER_2,
                             name: 'Bob Smith',

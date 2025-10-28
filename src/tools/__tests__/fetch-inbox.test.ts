@@ -322,8 +322,8 @@ describe(`${FETCH_INBOX} tool`, () => {
                 }) as never
             })
             mockTwistApi.workspaceUsers.getUserById.mockImplementation(
-                (args: { workspaceId: number; userId: number }) => {
-                    if (args.userId === TEST_IDS.USER_1) {
+                (_workspaceId: number, userId: number) => {
+                    if (userId === TEST_IDS.USER_1) {
                         return Promise.resolve({
                             id: TEST_IDS.USER_1,
                             name: 'Alice',
@@ -335,7 +335,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                             version: 1,
                         }) as never
                     }
-                    if (args.userId === TEST_IDS.USER_2) {
+                    if (userId === TEST_IDS.USER_2) {
                         return Promise.resolve({
                             id: TEST_IDS.USER_2,
                             name: 'Bob',

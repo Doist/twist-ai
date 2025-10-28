@@ -37,12 +37,12 @@ describe(`${MARK_DONE} tool`, () => {
 
         // Setup mocks to return batch descriptors when called with {batch: true}
         mockTwistApi.threads.markRead.mockImplementation(
-            (args: { id: number; objIndex: number }, options?: { batch?: boolean }) => {
+            (id: number, objIndex: number, options?: { batch?: boolean }) => {
                 if (options?.batch) {
                     return {
                         method: 'POST',
                         url: '/threads/mark_read',
-                        params: { id: args.id, obj_index: args.objIndex },
+                        params: { id, obj_index: objIndex },
                     } as never
                 }
                 return Promise.resolve(undefined) as never

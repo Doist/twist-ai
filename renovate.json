@@ -1,4 +1,42 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended"]
+    "extends": [
+        "config:recommended",
+        ":semanticCommitTypeAll(chore)",
+        "github>doist/renovate-config:frontend-base"
+    ],
+    "schedule": ["before 4am on Monday"],
+    "timezone": "UTC",
+    "labels": ["dependencies"],
+    "assigneesFromCodeOwners": true,
+    "reviewersFromCodeOwners": true,
+    "packageRules": [
+        {
+            "matchPackageNames": ["*"],
+            "groupName": "all dependencies",
+            "groupSlug": "all"
+        },
+        {
+            "matchDepTypes": ["devDependencies"],
+            "groupName": "dev dependencies",
+            "groupSlug": "dev"
+        },
+        {
+            "matchDepTypes": ["dependencies"],
+            "groupName": "production dependencies",
+            "groupSlug": "prod"
+        },
+        {
+            "matchPackageNames": ["zod"],
+            "allowedVersions": "<4.0.0",
+            "description": "Pin zod to v3 until the @modelcontextprotocol/sdk supports zod v4"
+        }
+    ],
+    "vulnerabilityAlerts": {
+        "enabled": true
+    },
+    "lockFileMaintenance": {
+        "enabled": true,
+        "schedule": ["before 4am on Monday"]
+    }
 }

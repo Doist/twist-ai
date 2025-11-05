@@ -2,6 +2,7 @@ import { getCommentURL, getFullTwistURL, getMessageURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { BuildLinkOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -48,6 +49,7 @@ const buildLink = {
     description:
         'Build valid Twist URLs for threads, comments, conversations, or messages. Provide workspace_id and either (conversation_id + optional message_id) OR (thread_id + optional channel_id + optional comment_id).',
     parameters: ArgsSchema,
+    outputSchema: BuildLinkOutputSchema.shape,
     async execute(args, _client) {
         const { workspaceId, conversationId, messageId, channelId, threadId, commentId, fullUrl } =
             args
@@ -112,6 +114,6 @@ const buildLink = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof BuildLinkOutputSchema.shape>
 
 export { buildLink, type BuildLinkStructured }

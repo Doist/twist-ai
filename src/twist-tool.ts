@@ -4,7 +4,7 @@ import type { z } from 'zod'
 /**
  * A Twist tool that can be used in an MCP server or other conversational AI interfaces.
  */
-type TwistTool<Params extends z.ZodRawShape> = {
+type TwistTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape = z.ZodRawShape> = {
     /**
      * The name of the tool.
      */
@@ -23,6 +23,14 @@ type TwistTool<Params extends z.ZodRawShape> = {
      * parameters are.
      */
     parameters: Params
+
+    /**
+     * The schema of the output of the tool.
+     *
+     * This is used to validate the output of the tool, as well as to let MCP clients know what the
+     * structure of the returned data will be.
+     */
+    outputSchema: Output
 
     /**
      * The function that executes the tool.

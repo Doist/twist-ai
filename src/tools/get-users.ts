@@ -2,6 +2,7 @@ import type { UserType } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { GetUsersOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -42,6 +43,7 @@ const getUsers = {
     description:
         'Get users from a workspace. Retrieves all workspace users by default, or specific users if userIds array is provided. Supports optional case-insensitive search filtering by name or email.',
     parameters: ArgsSchema,
+    outputSchema: GetUsersOutputSchema.shape,
     async execute(args, client) {
         const { workspaceId, userIds, searchText } = args
 
@@ -122,6 +124,6 @@ const getUsers = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof GetUsersOutputSchema.shape>
 
 export { getUsers, type GetUsersStructured }

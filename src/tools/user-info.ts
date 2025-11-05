@@ -1,6 +1,7 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { UserInfoOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {}
@@ -62,6 +63,7 @@ const userInfo = {
     description:
         'Get comprehensive user information including user ID, name, email, timezone, bot status, default workspace, and away mode status.',
     parameters: ArgsSchema,
+    outputSchema: UserInfoOutputSchema.shape,
     async execute(_args, client) {
         const result = await generateUserInfo(client)
 
@@ -70,6 +72,6 @@ const userInfo = {
             structuredContent: result.structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof UserInfoOutputSchema.shape>
 
 export { userInfo, type UserInfoStructured }

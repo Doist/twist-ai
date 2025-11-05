@@ -2,6 +2,7 @@ import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { ReactOutputSchema } from '../utils/output-schemas.js'
 import { type ReactionTargetType, ReactionTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
@@ -32,6 +33,7 @@ const react = {
     description:
         'Add or remove an emoji reaction on a thread, comment, or conversation message. Use targetType to specify the type of object (thread, comment, or message) and targetId for the ID.',
     parameters: ArgsSchema,
+    outputSchema: ReactOutputSchema.shape,
     async execute(args, client) {
         const { targetType, targetId, emoji, operation } = args
 
@@ -142,6 +144,6 @@ const react = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof ReactOutputSchema.shape>
 
 export { react, type ReactStructured }

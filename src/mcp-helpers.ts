@@ -1,6 +1,6 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { ZodTypeAny, z } from 'zod'
+import { type ZodTypeAny, z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
 import { removeNullFields } from './utils/sanitize-data.js'
 
@@ -67,8 +67,8 @@ function getErrorOutput(error: string) {
  * @param server - The server to register the tool on.
  * @param client - The Twist API client to use to execute the tool.
  */
-function registerTool<Params extends z.ZodRawShape>(
-    tool: TwistTool<Params>,
+function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape = z.ZodRawShape>(
+    tool: TwistTool<Params, Output>,
     server: McpServer,
     client: TwistApi,
 ) {
@@ -90,7 +90,15 @@ function registerTool<Params extends z.ZodRawShape>(
         }
     }
 
-    server.tool(tool.name, tool.description, tool.parameters, cb)
+    server.registerTool(
+        tool.name,
+        {
+            description: tool.description,
+            inputSchema: tool.parameters,
+            outputSchema: tool.outputSchema as Output,
+        },
+        cb,
+    )
 }
 
 export { registerTool, getToolOutput }

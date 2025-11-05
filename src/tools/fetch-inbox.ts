@@ -9,6 +9,7 @@ import {
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { FetchInboxOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -123,6 +124,7 @@ const fetchInbox = {
     description:
         'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state.',
     parameters: ArgsSchema,
+    outputSchema: FetchInboxOutputSchema.shape,
     async execute(args, client) {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
 
@@ -308,6 +310,6 @@ const fetchInbox = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof FetchInboxOutputSchema.shape>
 
 export { fetchInbox, type FetchInboxStructured }

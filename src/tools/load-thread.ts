@@ -2,6 +2,7 @@ import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { LoadThreadOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -65,6 +66,7 @@ const loadThread = {
     description:
         'Load a thread with its metadata and comments. Supports filtering by timestamp and pagination.',
     parameters: ArgsSchema,
+    outputSchema: LoadThreadOutputSchema.shape,
     async execute(args, client) {
         const { threadId, newerThanDate, limit, includeParticipants } = args
 
@@ -210,6 +212,6 @@ const loadThread = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof LoadThreadOutputSchema.shape>
 
 export { loadThread, type LoadThreadStructured }

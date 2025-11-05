@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { MarkDoneOutputSchema } from '../utils/output-schemas.js'
 import { type MarkDoneType, MarkDoneTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
@@ -64,6 +65,7 @@ const markDone = {
     description:
         'Mark threads or conversations as done. Supports individual IDs or bulk operations (mark all in workspace/channel). For threads: can mark as read, archive in inbox, or clear all unread. For conversations: can mark as read and archive.',
     parameters: ArgsSchema,
+    outputSchema: MarkDoneOutputSchema.shape,
     async execute(args, client) {
         const {
             type,
@@ -288,6 +290,6 @@ const markDone = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof MarkDoneOutputSchema.shape>
 
 export { markDone, type MarkDoneStructured }

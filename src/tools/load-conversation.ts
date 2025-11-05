@@ -2,6 +2,7 @@ import { getFullTwistURL, type WorkspaceUser } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { LoadConversationOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -57,6 +58,7 @@ const loadConversation = {
     description:
         'Load a conversation (direct message) with its metadata and messages. Supports filtering by timestamp and pagination.',
     parameters: ArgsSchema,
+    outputSchema: LoadConversationOutputSchema.shape,
     async execute(args, client) {
         const { conversationId, newerThanDate, olderThanDate, limit, includeParticipants } = args
 
@@ -162,6 +164,6 @@ const loadConversation = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof LoadConversationOutputSchema.shape>
 
 export { loadConversation, type LoadConversationStructured }

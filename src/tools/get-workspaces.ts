@@ -1,6 +1,7 @@
 import type { TwistApi, WorkspacePlan } from '@doist/twist-sdk'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { GetWorkspacesOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {}
@@ -217,6 +218,7 @@ const getWorkspaces = {
     description:
         'Get all workspaces that the user belongs to. Returns a list of workspaces with their IDs, names, creators, creation dates, and optional default channels, conversations, and plan information.',
     parameters: ArgsSchema,
+    outputSchema: GetWorkspacesOutputSchema.shape,
     async execute(_args, client) {
         const result = await generateWorkspacesList(client)
 
@@ -225,6 +227,6 @@ const getWorkspaces = {
             structuredContent: result.structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof GetWorkspacesOutputSchema.shape>
 
 export { getWorkspaces, type GetWorkspacesStructured }

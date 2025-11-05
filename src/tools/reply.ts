@@ -2,6 +2,7 @@ import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { ReplyOutputSchema } from '../utils/output-schemas.js'
 import { type ReplyTargetType, ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
@@ -33,6 +34,7 @@ const reply = {
     description:
         'Post a reply to a thread (as a comment) or conversation (as a message). Use targetType to specify thread or conversation, and targetId for the ID.',
     parameters: ArgsSchema,
+    outputSchema: ReplyOutputSchema.shape,
     async execute(args, client) {
         const { targetType, targetId, content, recipients } = args
 
@@ -131,6 +133,6 @@ const reply = {
             structuredContent,
         })
     },
-} satisfies TwistTool<typeof ArgsSchema>
+} satisfies TwistTool<typeof ArgsSchema, typeof ReplyOutputSchema.shape>
 
 export { reply, type ReplyStructured }

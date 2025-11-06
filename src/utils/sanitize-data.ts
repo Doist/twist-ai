@@ -1,32 +1,42 @@
 /**
- * Recursively remove null fields from an object.
- * @param obj - The object to sanitize.
- * @returns The sanitized object.
+ * Removes all null fields and empty objects from an object recursively.
+ * Empty arrays are preserved as they carry semantic meaning (e.g., "no results found").
+ * This ensures that data sent to agents doesn't include unnecessary empty values.
+ *
+ * @param obj - The object to sanitize
+ * @returns A new object with all null fields and empty objects removed
  */
-function removeNullFields<T extends Record<string, unknown>>(obj: T): T {
-    const result = {} as T
-
-    for (const key in obj) {
-        const value = obj[key]
-        if (value === null || value === undefined) {
-            continue
-        }
-
-        if (typeof value === 'object' && !Array.isArray(value)) {
-            result[key] = removeNullFields(value as Record<string, unknown>) as T[Extract<
-                keyof T,
-                string
-            >]
-        } else if (Array.isArray(value)) {
-            result[key] = value.map((item) =>
-                typeof item === 'object' && item !== null ? removeNullFields(item) : item,
-            ) as T[Extract<keyof T, string>]
-        } else {
-            result[key] = value
-        }
+export function removeNullFields<T>(obj: T): T {
+    if (obj === null || obj === undefined) {
+        return obj
     }
 
-    return result
-}
+    if (Array.isArray(obj)) {
+        return obj.map((item) => removeNullFields(item)) as T
+    }
 
-export { removeNullFields }
+    if (typeof obj === 'object') {
+        const sanitized: Record<string, unknown> = {}
+        for (const [key, value] of Object.entries(obj)) {
+            if (value !== null) {
+                const cleanedValue = removeNullFields(value)
+
+                // Keep empty arrays - they indicate "no results" which is semantically meaningful
+                // Only skip empty objects
+                if (
+                    cleanedValue !== null &&
+                    typeof cleanedValue === 'object' &&
+                    !Array.isArray(cleanedValue) &&
+                    Object.keys(cleanedValue).length === 0
+                ) {
+                    continue
+                }
+
+                sanitized[key] = cleanedValue
+            }
+        }
+        return sanitized as T
+    }
+
+    return obj
+}

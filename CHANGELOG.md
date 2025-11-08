@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.2-alpha.2...v1.0.0-alpha.2) (2025-11-08)
+## [1.0.0](https://github.com/Doist/twist-ai/compare/v0.2.2...v1.0.0) (2025-11-08)
 
 
 ### ⚠ BREAKING CHANGES

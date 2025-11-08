@@ -55,7 +55,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
         },
     )
 
-    const twist = new TwistApi(twistApiKey, baseUrl)
+    const twist = new TwistApi(twistApiKey, { baseUrl })
 
     // Register tools
     registerTool(userInfo, server, twist)

@@ -1,6 +1,6 @@
 {
     "name": "@doist/twist-ai",
-    "version": "0.2.2-alpha.3",
+    "version": "1.0.0-alpha.2",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",

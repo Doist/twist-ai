@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.2-alpha.2...v1.0.0-alpha.2) (2025-11-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* Update to v1 of Twist SDK ([#30](https://github.com/Doist/twist-ai/issues/30))
+
+### Features
+
+* Add output schema support to all tools ([#28](https://github.com/Doist/twist-ai/issues/28)) ([355a341](https://github.com/Doist/twist-ai/commit/355a3414ccdd35b47e2b81d007fba71e651950ff))
+* Update to v1 of Twist SDK ([#30](https://github.com/Doist/twist-ai/issues/30)) ([a2d7110](https://github.com/Doist/twist-ai/commit/a2d7110b898e3b621f7fcadbeaf2ca164833ff38))
+
 ## [0.2.2-alpha.2](https://github.com/Doist/twist-ai/compare/v0.2.1-alpha.2...v0.2.2-alpha.2) (2025-10-28)
 
 ### Bug Fixes

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/Doist/twist-ai/compare/v1.0.0...v1.1.0) (2025-11-12)
+
+
+### Features
+
+* Switch publishing from GitHub Packages to npmjs ([fda0f3b](https://github.com/Doist/twist-ai/commit/fda0f3bb6c683a0251535da5771d556cd865041e))
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#35](https://github.com/Doist/twist-ai/issues/35)) ([af53226](https://github.com/Doist/twist-ai/commit/af53226503cfd5b7b5209117211fd7cb941ed044))
+
 ## [1.0.0](https://github.com/Doist/twist-ai/compare/v0.2.2...v1.0.0) (2025-11-08)
 
 

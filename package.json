@@ -19,7 +19,7 @@
     "author": "Doist",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/doist/twist-ai.git"
+        "url": "https://github.com/doist/twist-ai"
     },
     "keywords": [
         "twist",

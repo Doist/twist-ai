@@ -17,10 +17,7 @@
     "license": "MIT",
     "description": "A collection of tools for Twist using AI",
     "author": "Doist",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/doist/twist-ai"
-    },
+    "repository":  "https://github.com/doist/twist-ai",
     "keywords": [
         "twist",
         "ai",

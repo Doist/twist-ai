@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Doist/twist-ai/compare/v1.1.0...v1.1.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* Correct repository URL case for npm provenance ([3af8429](https://github.com/Doist/twist-ai/commit/3af8429b4575c1b64c69dc9fee1a92eb58ca498a))
+
 ## [1.1.0](https://github.com/Doist/twist-ai/compare/v1.0.0...v1.1.0) (2025-11-12)
 
 

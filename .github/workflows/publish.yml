@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
 
 permissions:
+  # Enable reading repository contents (allows checkout without token)
   contents: read
-  id-token: write # Required for npm provenance
+  # Enable the use of OIDC for trusted publishing and npm provenance
+  id-token: write
 
 jobs:
   publish:
@@ -22,6 +24,9 @@ jobs:
           node-version-file: ".nvmrc"
           registry-url: "https://registry.npmjs.org"
           scope: "@doist"
+
+      - name: Ensure npm 11.5.1 or later is installed
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
@@ -53,5 +58,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --tag ${{ steps.npm-tag.outputs.tag }} --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

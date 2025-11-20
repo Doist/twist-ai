@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Doist/twist-ai/compare/v1.1.1...v1.2.0) (2025-11-20)
+
+
+### Features
+
+* add read-only and destructive hints to all tools ([#44](https://github.com/Doist/twist-ai/issues/44)) ([234f3de](https://github.com/Doist/twist-ai/commit/234f3de1dab0d5eb7b8fb6284aec1b7f36d8f00e))
+
 ## [1.1.1](https://github.com/Doist/twist-ai/compare/v1.1.0...v1.1.1) (2025-11-19)
 
 

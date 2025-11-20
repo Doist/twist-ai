@@ -4,7 +4,7 @@ import { getMcpAnnotations, type ToolMutability } from '../../utils/tool-mutabil
 import { ToolNames } from '../../utils/tool-names.js'
 
 // Extract the union type of all tool name values
-type ToolName = typeof ToolNames[keyof typeof ToolNames]
+type ToolName = (typeof ToolNames)[keyof typeof ToolNames]
 
 // Tool mutability categorization with full type safety.
 // TypeScript will ensure all tool names are covered and no invalid names are added.
@@ -79,9 +79,9 @@ describe('Tool annotations', () => {
 
     it('should have appropriate categorization distribution', () => {
         const categorizations = Object.values(TOOL_MUTABILITY_CATEGORIZATION)
-        const readonly = categorizations.filter(m => m === 'readonly').length
-        const additive = categorizations.filter(m => m === 'additive').length
-        const mutating = categorizations.filter(m => m === 'mutating').length
+        const readonly = categorizations.filter((m) => m === 'readonly').length
+        const additive = categorizations.filter((m) => m === 'additive').length
+        const mutating = categorizations.filter((m) => m === 'mutating').length
 
         // Verify we have the expected distribution
         expect(readonly).toBe(8) // user_info, fetch_inbox, load_thread, load_conversation, search_content, get_users, get_workspaces, build_link
@@ -89,6 +89,8 @@ describe('Tool annotations', () => {
         expect(mutating).toBe(2) // react, mark_done
 
         // Total should match all tools
-        expect(readonly + additive + mutating).toBe(Object.keys(TOOL_MUTABILITY_CATEGORIZATION).length)
+        expect(readonly + additive + mutating).toBe(
+            Object.keys(TOOL_MUTABILITY_CATEGORIZATION).length,
+        )
     })
 })

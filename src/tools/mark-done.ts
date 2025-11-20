@@ -66,6 +66,7 @@ const markDone = {
         'Mark threads or conversations as done. Supports individual IDs or bulk operations (mark all in workspace/channel). For threads: can mark as read, archive in inbox, or clear all unread. For conversations: can mark as read and archive.',
     parameters: ArgsSchema,
     outputSchema: MarkDoneOutputSchema.shape,
+    mutability: 'mutating' as const,
     async execute(args, client) {
         const {
             type,

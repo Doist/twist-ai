@@ -125,6 +125,7 @@ const fetchInbox = {
         'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state.',
     parameters: ArgsSchema,
     outputSchema: FetchInboxOutputSchema.shape,
+    mutability: 'readonly' as const,
     async execute(args, client) {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
 

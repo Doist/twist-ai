@@ -64,6 +64,7 @@ const userInfo = {
         'Get comprehensive user information including user ID, name, email, timezone, bot status, default workspace, and away mode status.',
     parameters: ArgsSchema,
     outputSchema: UserInfoOutputSchema.shape,
+    mutability: 'readonly' as const,
     async execute(_args, client) {
         const result = await generateUserInfo(client)
 

@@ -219,6 +219,7 @@ const getWorkspaces = {
         'Get all workspaces that the user belongs to. Returns a list of workspaces with their IDs, names, creators, creation dates, and optional default channels, conversations, and plan information.',
     parameters: ArgsSchema,
     outputSchema: GetWorkspacesOutputSchema.shape,
+    mutability: 'readonly' as const,
     async execute(_args, client) {
         const result = await generateWorkspacesList(client)
 

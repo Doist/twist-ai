@@ -35,6 +35,7 @@ const reply = {
         'Post a reply to a thread (as a comment) or conversation (as a message). Use targetType to specify thread or conversation, and targetId for the ID.',
     parameters: ArgsSchema,
     outputSchema: ReplyOutputSchema.shape,
+    mutability: 'additive' as const,
     async execute(args, client) {
         const { targetType, targetId, content, recipients } = args
 

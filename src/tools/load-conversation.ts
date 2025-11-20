@@ -59,6 +59,7 @@ const loadConversation = {
         'Load a conversation (direct message) with its metadata and messages. Supports filtering by timestamp and pagination.',
     parameters: ArgsSchema,
     outputSchema: LoadConversationOutputSchema.shape,
+    mutability: 'readonly' as const,
     async execute(args, client) {
         const { conversationId, newerThanDate, olderThanDate, limit, includeParticipants } = args
 

@@ -2,6 +2,7 @@ import type { TwistApi } from '@doist/twist-sdk'
 import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { type ZodTypeAny, z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
+import { getMcpAnnotations } from './utils/tool-mutability.js'
 import { removeNullFields } from './utils/sanitize-data.js'
 
 /**
@@ -96,6 +97,7 @@ function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape
             description: tool.description,
             inputSchema: tool.parameters,
             outputSchema: tool.outputSchema as Output,
+            annotations: getMcpAnnotations(tool.mutability),
         },
         cb,
     )

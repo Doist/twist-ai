@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/Doist/twist-ai/compare/v1.2.0...v1.2.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* **deps:** update production dependencies ([#47](https://github.com/Doist/twist-ai/issues/47)) ([0c4e020](https://github.com/Doist/twist-ai/commit/0c4e020d2f2ea22519055ad2534dfd70aa84a784))
+
 ## [1.2.0](https://github.com/Doist/twist-ai/compare/v1.1.1...v1.2.0) (2025-11-20)
 
 

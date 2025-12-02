@@ -2,8 +2,8 @@ import type { TwistApi } from '@doist/twist-sdk'
 import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { type ZodTypeAny, z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
-import { getMcpAnnotations } from './utils/tool-mutability.js'
 import { removeNullFields } from './utils/sanitize-data.js'
+import { getMcpAnnotations } from './utils/tool-mutability.js'
 
 /**
  * Whether to return the structured content directly, vs. in the `content` part of the output.
@@ -39,20 +39,23 @@ function getToolOutput<StructuredContent extends Record<string, unknown>>({
     // Remove null fields from structured content before returning
     const sanitizedContent = removeNullFields(structuredContent)
 
-    if (USE_STRUCTURED_CONTENT) {
-        return {
-            content: [{ type: 'text' as const, text: textContent }],
-            structuredContent: sanitizedContent,
-        }
+    // Always include structuredContent when available since all tools have outputSchema
+    const result: Record<string, unknown> = {
+        content: [{ type: 'text' as const, text: textContent }],
+        structuredContent: sanitizedContent,
     }
 
-    const json = JSON.stringify(sanitizedContent)
-    return {
-        content: [
-            { type: 'text' as const, text: textContent },
-            { type: 'text' as const, mimeType: 'application/json', text: json },
-        ],
+    // Legacy support: also include JSON in content when USE_STRUCTURED_CONTENT is false
+    if (!USE_STRUCTURED_CONTENT) {
+        const json = JSON.stringify(sanitizedContent)
+        ;(result.content as Array<{ type: 'text'; text: string; mimeType?: string }>).push({
+            type: 'text',
+            mimeType: 'application/json',
+            text: json,
+        })
     }
+
+    return result
 }
 
 function getErrorOutput(error: string) {

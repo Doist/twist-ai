@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/Doist/twist-ai/compare/v1.2.1...v1.2.2) (2025-12-02)
+
+
+### Bug Fixes
+
+* always include structuredContent in tool outputs to prevent MCP validation errors ([#55](https://github.com/Doist/twist-ai/issues/55)) ([40fc577](https://github.com/Doist/twist-ai/commit/40fc5776196b443add18a746e49405349eb57980))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.23.0 ([#52](https://github.com/Doist/twist-ai/issues/52)) ([16f7d46](https://github.com/Doist/twist-ai/commit/16f7d4606b6bb8d98a3993ab52bef5cb2fead30d))
+
 ## [1.2.1](https://github.com/Doist/twist-ai/compare/v1.2.0...v1.2.1) (2025-11-27)
 
 

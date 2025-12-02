@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/Doist/twist-ai/compare/v1.2.2...v1.2.3) (2025-12-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.24.0 [security] ([#57](https://github.com/Doist/twist-ai/issues/57)) ([21023c5](https://github.com/Doist/twist-ai/commit/21023c59a5d9fa94defcbd8cb661df0febbc0a07))
+
 ## [1.2.2](https://github.com/Doist/twist-ai/compare/v1.2.1...v1.2.2) (2025-12-02)
 
 

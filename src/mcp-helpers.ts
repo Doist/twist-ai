@@ -1,6 +1,6 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { type ZodTypeAny, z } from 'zod'
+import { z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
 import { removeNullFields } from './utils/sanitize-data.js'
 import { getMcpAnnotations } from './utils/tool-mutability.js'
@@ -77,10 +77,7 @@ function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape
     client: TwistApi,
 ) {
     // @ts-expect-error I give up
-    const cb: ToolCallback<Params> = async (
-        args: z.objectOutputType<Params, ZodTypeAny>,
-        _context,
-    ) => {
+    const cb: ToolCallback<Params> = async (args: z.infer<z.ZodObject<Params>>, _context) => {
         try {
             const result = await tool.execute(args as z.infer<z.ZodObject<Params>>, client)
             return result

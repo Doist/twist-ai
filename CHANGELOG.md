@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/Doist/twist-ai/compare/v1.2.2...v2.0.0) (2025-12-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Zod v4 ([#59](https://github.com/Doist/twist-ai/issues/59))
+
+### Features
+
+* upgrade to Zod v4 ([#59](https://github.com/Doist/twist-ai/issues/59)) ([1ce1254](https://github.com/Doist/twist-ai/commit/1ce1254df67d56207426b0cb541939e089a5301c))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.24.0 [security] ([#57](https://github.com/Doist/twist-ai/issues/57)) ([21023c5](https://github.com/Doist/twist-ai/commit/21023c59a5d9fa94defcbd8cb661df0febbc0a07))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.24.1 ([#61](https://github.com/Doist/twist-ai/issues/61)) ([b5e52a2](https://github.com/Doist/twist-ai/commit/b5e52a2d37207a76b0720915a7772041d17ac1c1))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.24.3 ([#63](https://github.com/Doist/twist-ai/issues/63)) ([cb0e8e9](https://github.com/Doist/twist-ai/commit/cb0e8e92779e65c400b7593818af29c8ad00c221))
+
 ## [1.2.2](https://github.com/Doist/twist-ai/compare/v1.2.1...v1.2.2) (2025-12-02)
 
 

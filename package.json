@@ -46,7 +46,7 @@
     },
     "dependencies": {
         "@doist/twist-sdk": "1.0.3",
-        "@modelcontextprotocol/sdk": "1.24.3",
+        "@modelcontextprotocol/sdk": "1.25.1",
         "dotenv": "17.2.3",
         "zod": "4.1.13"
     },

@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0](https://github.com/Doist/twist-ai/compare/v2.0.0...v3.0.0) (2025-12-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* @modelcontextprotocol/sdk moved to peerDependencies. Consumers must now explicitly install: npm install @modelcontextprotocol/sdk@^1.25.0
+
+### Features
+
+* make MCP SDK a peer dependency ([50eeba2](https://github.com/Doist/twist-ai/commit/50eeba20736bb8e6204ac1c25d2e43550a946443))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.25.1 ([#66](https://github.com/Doist/twist-ai/issues/66)) ([ae4f9c8](https://github.com/Doist/twist-ai/commit/ae4f9c82d85b7591e38fdcdd44bffec9e4233dc8))
+
 ## [2.0.0](https://github.com/Doist/twist-ai/compare/v1.2.2...v2.0.0) (2025-12-16)
 
 

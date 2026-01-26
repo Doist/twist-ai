@@ -50,7 +50,7 @@ const buildLink = {
         'Build valid Twist URLs for threads, comments, conversations, or messages. Provide workspace_id and either (conversation_id + optional message_id) OR (thread_id + optional channel_id + optional comment_id).',
     parameters: ArgsSchema,
     outputSchema: BuildLinkOutputSchema.shape,
-    mutability: 'readonly' as const,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, _client) {
         const { workspaceId, conversationId, messageId, channelId, threadId, commentId, fullUrl } =
             args

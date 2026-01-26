@@ -34,7 +34,7 @@ const react = {
         'Add or remove an emoji reaction on a thread, comment, or conversation message. Use targetType to specify the type of object (thread, comment, or message) and targetId for the ID.',
     parameters: ArgsSchema,
     outputSchema: ReactOutputSchema.shape,
-    mutability: 'mutating' as const,
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false },
     async execute(args, client) {
         const { targetType, targetId, emoji, operation } = args
 

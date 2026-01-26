@@ -1,9 +1,10 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
+import { formatToolTitle } from './utils/required-tool-annotations.js'
 import { removeNullFields } from './utils/sanitize-data.js'
-import { getMcpAnnotations } from './utils/tool-mutability.js'
 
 /**
  * Whether to return the structured content directly, vs. in the `content` part of the output.
@@ -66,6 +67,20 @@ function getErrorOutput(error: string) {
 }
 
 /**
+ * Build MCP ToolAnnotations for a tool.
+ * @param tool - The tool information used for annotation generation.
+ * @returns MCP annotations.
+ */
+function getMcpAnnotations(tool: { name: string; annotations: ToolAnnotations }): ToolAnnotations {
+    const defaultAnnotations: ToolAnnotations = {
+        title: formatToolTitle(tool.name),
+        openWorldHint: false,
+    }
+
+    return { ...defaultAnnotations, ...tool.annotations }
+}
+
+/**
  * Register a Twist tool in an MCP server.
  * @param tool - The tool to register.
  * @param server - The server to register the tool on.
@@ -97,7 +112,7 @@ function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape
             description: tool.description,
             inputSchema: tool.parameters,
             outputSchema: tool.outputSchema as Output,
-            annotations: getMcpAnnotations(tool.mutability),
+            annotations: getMcpAnnotations(tool),
         },
         cb,
     )

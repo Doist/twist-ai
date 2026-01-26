@@ -1,6 +1,6 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import type { z } from 'zod'
-import type { ToolMutability } from './utils/tool-mutability.js'
+import type { RequiredToolAnnotations } from './utils/required-tool-annotations.js'
 
 /**
  * A Twist tool that can be used in an MCP server or other conversational AI interfaces.
@@ -34,11 +34,11 @@ type TwistTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape = z.Zo
     outputSchema: Output
 
     /**
-     * The mutability level of this tool.
+     * MCP ToolAnnotations hints for this tool.
      *
-     * This is used to generate appropriate MCP annotation hints (readOnlyHint, destructiveHint).
+     * Common defaults (e.g. title, openWorldHint) are applied when registering.
      */
-    mutability: ToolMutability
+    annotations: RequiredToolAnnotations
 
     /**
      * The function that executes the tool.
@@ -52,4 +52,4 @@ type TwistTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape = z.Zo
     execute: (args: z.infer<z.ZodObject<Params>>, client: TwistApi) => Promise<unknown>
 }
 
-export type { TwistTool, ToolMutability }
+export type { TwistTool }

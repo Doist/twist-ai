@@ -257,11 +257,11 @@ const fetchInbox = {
         if (unreadCount > 0 || conversationsWithDetails.length > 0) {
             lines.push('## Next Steps')
             lines.push('')
-            lines.push('- Use `load_thread` to read specific threads with their comments')
+            lines.push('- Use `load-thread` to read specific threads with their comments')
             lines.push(
-                '- Use `load_conversation` to read specific conversations with their messages',
+                '- Use `load-conversation` to read specific conversations with their messages',
             )
-            lines.push('- Use `mark_done` to mark items as read and archive them')
+            lines.push('- Use `mark-done` to mark items as read and archive them')
         }
 
         const structuredContent: FetchInboxStructured = {

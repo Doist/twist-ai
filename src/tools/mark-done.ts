@@ -256,7 +256,7 @@ const markDone = {
         if (mode === 'bulk' || (failed.length === 0 && completed.length > 0)) {
             lines.push(
                 type === 'thread'
-                    ? 'Use fetch_inbox to see remaining unread threads.'
+                    ? 'Use `fetch-inbox` to see remaining unread threads.'
                     : 'Check your conversations for remaining unread messages.',
             )
         } else if (failed.length > 0) {

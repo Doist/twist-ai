@@ -499,7 +499,7 @@ describe(`${MARK_DONE} tool`, () => {
     })
 
     describe('next steps logic validation', () => {
-        it('should suggest fetch_inbox when all threads complete successfully', async () => {
+        it('should suggest fetch-inbox when all threads complete successfully', async () => {
             mockTwistApi.threads.markRead.mockResolvedValue(undefined)
             mockTwistApi.inbox.archiveThread.mockResolvedValue(undefined)
 
@@ -515,7 +515,7 @@ describe(`${MARK_DONE} tool`, () => {
 
             const textContent = extractTextContent(result)
             expect(textContent).toMatchSnapshot()
-            expect(textContent).toContain('fetch_inbox')
+            expect(textContent).toContain('fetch-inbox')
         })
 
         it('should suggest reviewing failures when mixed results', async () => {

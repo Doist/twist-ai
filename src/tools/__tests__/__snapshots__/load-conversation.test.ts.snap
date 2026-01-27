@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`load_conversation tool loading conversations successfully should filter messages by date range 1`] = `
+exports[`load-conversation tool loading conversations successfully should filter messages by date range 1`] = `
 "# Conversation 33333
 
 **Conversation ID:** 33333
@@ -16,7 +16,7 @@ Test User 1,
 "
 `;
 
-exports[`load_conversation tool loading conversations successfully should handle conversation with no messages 1`] = `
+exports[`load-conversation tool loading conversations successfully should handle conversation with no messages 1`] = `
 "# Conversation 33333
 
 **Conversation ID:** 33333
@@ -32,7 +32,7 @@ Test User 1,
 "
 `;
 
-exports[`load_conversation tool loading conversations successfully should load conversation with messages and participants 1`] = `
+exports[`load-conversation tool loading conversations successfully should load conversation with messages and participants 1`] = `
 "# Conversation 33333
 
 **Conversation ID:** 33333
@@ -58,7 +58,7 @@ Test message content
 "
 `;
 
-exports[`load_conversation tool loading conversations successfully should load conversation without participants when includeParticipants is false 1`] = `
+exports[`load-conversation tool loading conversations successfully should load conversation without participants when includeParticipants is false 1`] = `
 "# Conversation 33333
 
 **Conversation ID:** 33333

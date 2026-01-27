@@ -53,7 +53,7 @@ const searchContent = {
         'Search across a workspace for threads, comments, and messages. Supports filtering by channels, authors, dates, and mentions.',
     parameters: ArgsSchema,
     outputSchema: SearchContentOutputSchema.shape,
-    mutability: 'readonly' as const,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
         const {
             query,

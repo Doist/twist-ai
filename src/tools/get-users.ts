@@ -44,7 +44,7 @@ const getUsers = {
         'Get users from a workspace. Retrieves all workspace users by default, or specific users if userIds array is provided. Supports optional case-insensitive search filtering by name or email.',
     parameters: ArgsSchema,
     outputSchema: GetUsersOutputSchema.shape,
-    mutability: 'readonly' as const,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
         const { workspaceId, userIds, searchText } = args
 

@@ -67,7 +67,7 @@ const loadThread = {
         'Load a thread with its metadata and comments. Supports filtering by timestamp and pagination.',
     parameters: ArgsSchema,
     outputSchema: LoadThreadOutputSchema.shape,
-    mutability: 'readonly' as const,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
         const { threadId, newerThanDate, limit, includeParticipants } = args
 

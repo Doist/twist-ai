@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/Doist/twist-ai/compare/v3.0.0...v3.0.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* register build_link tool in MCP server ([#83](https://github.com/Doist/twist-ai/issues/83)) ([d4ed5b4](https://github.com/Doist/twist-ai/commit/d4ed5b4cf094b8d9418648619c6fed93f8524e38))
+
 ## [3.0.0](https://github.com/Doist/twist-ai/compare/v2.0.0...v3.0.0) (2025-12-30)
 
 

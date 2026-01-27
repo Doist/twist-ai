@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with threads 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should fetch inbox with threads 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 2
@@ -13,12 +13,12 @@ exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with th
 
 ## Next Steps
 
-- Use \`load_thread\` to read specific threads with their comments
-- Use \`load_conversation\` to read specific conversations with their messages
-- Use \`mark_done\` to mark items as read and archive them"
+- Use \`load-thread\` to read specific threads with their comments
+- Use \`load-conversation\` to read specific conversations with their messages
+- Use \`mark-done\` to mark items as read and archive them"
 `;
 
-exports[`fetch_inbox tool fetching inbox successfully should fetch inbox with unread conversations 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should fetch inbox with unread conversations 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 0
@@ -37,12 +37,12 @@ _No threads in inbox_
 
 ## Next Steps
 
-- Use \`load_thread\` to read specific threads with their comments
-- Use \`load_conversation\` to read specific conversations with their messages
-- Use \`mark_done\` to mark items as read and archive them"
+- Use \`load-thread\` to read specific threads with their comments
+- Use \`load-conversation\` to read specific conversations with their messages
+- Use \`mark-done\` to mark items as read and archive them"
 `;
 
-exports[`fetch_inbox tool fetching inbox successfully should filter by date range 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should filter by date range 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 0
@@ -54,7 +54,7 @@ _No threads in inbox_
 "
 `;
 
-exports[`fetch_inbox tool fetching inbox successfully should filter only unread items when requested 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should filter only unread items when requested 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 1
@@ -66,12 +66,12 @@ exports[`fetch_inbox tool fetching inbox successfully should filter only unread 
 
 ## Next Steps
 
-- Use \`load_thread\` to read specific threads with their comments
-- Use \`load_conversation\` to read specific conversations with their messages
-- Use \`mark_done\` to mark items as read and archive them"
+- Use \`load-thread\` to read specific threads with their comments
+- Use \`load-conversation\` to read specific conversations with their messages
+- Use \`mark-done\` to mark items as read and archive them"
 `;
 
-exports[`fetch_inbox tool fetching inbox successfully should handle empty inbox 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should handle empty inbox 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 0
@@ -83,7 +83,7 @@ _No threads in inbox_
 "
 `;
 
-exports[`fetch_inbox tool fetching inbox successfully should not display conversations when none are unread 1`] = `
+exports[`fetch-inbox tool fetching inbox successfully should not display conversations when none are unread 1`] = `
 "# Inbox for Workspace 11111
 
 **Total Threads:** 1
@@ -95,7 +95,7 @@ exports[`fetch_inbox tool fetching inbox successfully should not display convers
 
 ## Next Steps
 
-- Use \`load_thread\` to read specific threads with their comments
-- Use \`load_conversation\` to read specific conversations with their messages
-- Use \`mark_done\` to mark items as read and archive them"
+- Use \`load-thread\` to read specific threads with their comments
+- Use \`load-conversation\` to read specific conversations with their messages
+- Use \`mark-done\` to mark items as read and archive them"
 `;

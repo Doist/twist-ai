@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`load_thread tool loading threads successfully should filter comments by date 1`] = `
+exports[`load-thread tool loading threads successfully should filter comments by date 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
@@ -23,7 +23,7 @@ Test thread content
 Test User 1 (22222)"
 `;
 
-exports[`load_thread tool loading threads successfully should handle thread with no comments 1`] = `
+exports[`load-thread tool loading threads successfully should handle thread with no comments 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
@@ -46,7 +46,7 @@ Test thread content
 Test User 1 (22222)"
 `;
 
-exports[`load_thread tool loading threads successfully should load thread with comments and participants 1`] = `
+exports[`load-thread tool loading threads successfully should load thread with comments and participants 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345
@@ -79,7 +79,7 @@ Test comment content
 Test User 1 (22222), Test User 2 (44444)"
 `;
 
-exports[`load_thread tool loading threads successfully should load thread without participants when includeParticipants is false 1`] = `
+exports[`load-thread tool loading threads successfully should load thread without participants when includeParticipants is false 1`] = `
 "# Thread: Test Thread
 
 **Thread ID:** 12345

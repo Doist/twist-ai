@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`search_content tool empty results should handle no results found 1`] = `
+exports[`search-content tool empty results should handle no results found 1`] = `
 "# Search Results for "nonexistent"
 
 **Search Scope:** Workspace 11111
@@ -10,7 +10,7 @@ exports[`search_content tool empty results should handle no results found 1`] = 
 _No results found_"
 `;
 
-exports[`search_content tool workspace search should search across workspace with results 1`] = `
+exports[`search-content tool workspace search should search across workspace with results 1`] = `
 "# Search Results for "test query"
 
 **Search Scope:** Workspace 11111
@@ -34,7 +34,7 @@ Test comment matching query
 "
 `;
 
-exports[`search_content tool workspace search should search with filters 1`] = `
+exports[`search-content tool workspace search should search with filters 1`] = `
 "# Search Results for "filtered"
 
 **Search Scope:** Workspace 11111

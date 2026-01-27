@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/Doist/twist-ai/compare/v3.1.0...v4.0.0) (2026-01-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mcp:** Tool names changed (e.g. load_thread -> load-thread, fetch_inbox -> fetch-inbox, mark_done -> mark-done).
+
+### Features
+
+* **mcp:** switch tool names to kebab-case ([06f4404](https://github.com/Doist/twist-ai/commit/06f4404dcf90168d89f91e3abdee499ad0462df5)), closes [#82](https://github.com/Doist/twist-ai/issues/82)
+
 ## [3.1.0](https://github.com/Doist/twist-ai/compare/v3.0.1...v3.1.0) (2026-01-27)
 
 

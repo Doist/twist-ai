@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Doist/twist-ai/compare/v3.0.1...v3.1.0) (2026-01-27)
+
+
+### Features
+
+* **mcp:** add ToolAnnotations hints ([fc8eaa4](https://github.com/Doist/twist-ai/commit/fc8eaa4d019ea996edac31259c4ff8b48335e4cb))
+
 ## [3.0.1](https://github.com/Doist/twist-ai/compare/v3.0.0...v3.0.1) (2026-01-27)
 
 

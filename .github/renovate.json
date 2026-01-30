@@ -10,6 +10,9 @@
     "labels": ["dependencies"],
     "assigneesFromCodeOwners": true,
     "reviewersFromCodeOwners": true,
+    "constraints": {
+        "node": "^22.0.0"
+    },
     "packageRules": [
         {
             "matchPackageNames": ["*"],

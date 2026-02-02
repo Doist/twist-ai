@@ -53,7 +53,7 @@
         "@modelcontextprotocol/sdk": "^1.25.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.3.11",
+        "@biomejs/biome": "2.3.13",
         "@types/jest": "30.0.0",
         "@types/node": "22.19.7",
         "concurrently": "9.2.1",

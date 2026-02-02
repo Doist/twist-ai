@@ -99,7 +99,9 @@ describe(`${GET_WORKSPACES} tool`, () => {
         expect(textContent).toContain(`**ID:** ${TEST_IDS.WORKSPACE_1}`)
         expect(textContent).toContain(`**ID:** ${TEST_IDS.WORKSPACE_2}`)
         expect(textContent).toContain(`**Creator:** Test User (${TEST_IDS.USER_1})`)
-        expect(textContent).toContain(`**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`)
+        expect(textContent).toContain(
+            `**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`,
+        )
         expect(textContent).toContain(
             `**Default Conversation:** [Team Discussion](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/msg/${TEST_IDS.CONVERSATION_1}/) (${TEST_IDS.CONVERSATION_1})`,
         )
@@ -262,7 +264,9 @@ describe(`${GET_WORKSPACES} tool`, () => {
         const result = await getWorkspaces.execute({}, mockTwistApi)
 
         const textContent = extractTextContent(result)
-        expect(textContent).toContain(`**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`)
+        expect(textContent).toContain(
+            `**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`,
+        )
         expect(textContent).not.toContain('Default Conversation')
     })
 

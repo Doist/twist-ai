@@ -171,10 +171,13 @@ export const GetWorkspacesOutputSchema = z.object({
             creator: z.number(),
             creatorName: z.string().optional(),
             created: z.string(),
+            workspaceUrl: z.string().url(),
             defaultChannel: z.number().optional(),
             defaultChannelName: z.string().optional(),
+            defaultChannelUrl: z.string().url().optional(),
             defaultConversation: z.number().optional(),
             defaultConversationTitle: z.string().optional(),
+            defaultConversationUrl: z.string().url().optional(),
             plan: z.string().optional(), // WorkspacePlan is a string union
             avatarId: z.string().optional(),
             avatarUrls: z

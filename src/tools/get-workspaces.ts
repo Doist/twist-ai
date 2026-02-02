@@ -3,6 +3,7 @@ import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
 import { GetWorkspacesOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
+import { getChannelUrl, getConversationUrl, getWorkspaceUrl } from '../utils/url-helpers.js'
 
 const ArgsSchema = {}
 
@@ -12,10 +13,13 @@ type WorkspaceData = {
     creator: number
     creatorName?: string
     created: string
+    workspaceUrl: string
     defaultChannel?: number
     defaultChannelName?: string
+    defaultChannelUrl?: string
     defaultConversation?: number
     defaultConversationTitle?: string
+    defaultConversationUrl?: string
     plan?: WorkspacePlan
     avatarId?: string
     avatarUrls?: {
@@ -154,7 +158,7 @@ async function generateWorkspacesList(
             ? conversationLookup[workspace.defaultConversation]
             : undefined
 
-        lines.push(`## ${workspace.name}`)
+        lines.push(`## [${workspace.name}](${getWorkspaceUrl(workspace.id)})`)
         lines.push(`**ID:** ${workspace.id}`)
         lines.push(
             `**Creator:** ${creatorName ? `${creatorName} (${workspace.creator})` : workspace.creator}`,
@@ -162,14 +166,16 @@ async function generateWorkspacesList(
         lines.push(`**Created:** ${workspace.created.toISOString()}`)
 
         if (workspace.defaultChannel) {
+            const channelUrl = getChannelUrl(workspace.id, workspace.defaultChannel)
             lines.push(
-                `**Default Channel:** ${defaultChannelName ? `${defaultChannelName} (${workspace.defaultChannel})` : workspace.defaultChannel}`,
+                `**Default Channel:** ${defaultChannelName ? `[${defaultChannelName}](${channelUrl}) (${workspace.defaultChannel})` : `[${workspace.defaultChannel}](${channelUrl})`}`,
             )
         }
 
         if (workspace.defaultConversation) {
+            const conversationUrl = getConversationUrl(workspace.id, workspace.defaultConversation)
             lines.push(
-                `**Default Conversation:** ${defaultConversationTitle ? `${defaultConversationTitle} (${workspace.defaultConversation})` : workspace.defaultConversation}`,
+                `**Default Conversation:** ${defaultConversationTitle ? `[${defaultConversationTitle}](${conversationUrl}) (${workspace.defaultConversation})` : `[${workspace.defaultConversation}](${conversationUrl})`}`,
             )
         }
 
@@ -192,11 +198,15 @@ async function generateWorkspacesList(
                 creatorName: creatorLookup[workspace.creator],
             }),
             created: workspace.created.toISOString(),
+            workspaceUrl: getWorkspaceUrl(workspace.id),
             ...(workspace.defaultChannel && { defaultChannel: workspace.defaultChannel }),
             ...(workspace.defaultChannel &&
                 channelLookup[workspace.defaultChannel] && {
                     defaultChannelName: channelLookup[workspace.defaultChannel],
                 }),
+            ...(workspace.defaultChannel && {
+                defaultChannelUrl: getChannelUrl(workspace.id, workspace.defaultChannel),
+            }),
             ...(workspace.defaultConversation && {
                 defaultConversation: workspace.defaultConversation,
             }),
@@ -204,6 +214,12 @@ async function generateWorkspacesList(
                 conversationLookup[workspace.defaultConversation] && {
                     defaultConversationTitle: conversationLookup[workspace.defaultConversation],
                 }),
+            ...(workspace.defaultConversation && {
+                defaultConversationUrl: getConversationUrl(
+                    workspace.id,
+                    workspace.defaultConversation,
+                ),
+            }),
             ...(workspace.plan && { plan: workspace.plan }),
             ...(workspace.avatarId && { avatarId: workspace.avatarId }),
             ...(workspace.avatarUrls && { avatarUrls: workspace.avatarUrls }),

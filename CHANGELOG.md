@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/Doist/twist-ai/compare/v4.0.0...v4.1.0) (2026-02-02)
+
+
+### Features
+
+* include Twist URLs in get-workspaces tool output ([#91](https://github.com/Doist/twist-ai/issues/91)) ([eb0d3ea](https://github.com/Doist/twist-ai/commit/eb0d3eae736d72f31161109287968c4d45c2cefa))
+
 ## [4.0.0](https://github.com/Doist/twist-ai/compare/v3.1.0...v4.0.0) (2026-01-27)
 
 

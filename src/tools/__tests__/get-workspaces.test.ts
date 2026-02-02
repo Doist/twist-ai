@@ -99,9 +99,11 @@ describe(`${GET_WORKSPACES} tool`, () => {
         expect(textContent).toContain(`**ID:** ${TEST_IDS.WORKSPACE_1}`)
         expect(textContent).toContain(`**ID:** ${TEST_IDS.WORKSPACE_2}`)
         expect(textContent).toContain(`**Creator:** Test User (${TEST_IDS.USER_1})`)
-        expect(textContent).toContain(`**Default Channel:** General (${TEST_IDS.CHANNEL_1})`)
         expect(textContent).toContain(
-            `**Default Conversation:** Team Discussion (${TEST_IDS.CONVERSATION_1})`,
+            `**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`,
+        )
+        expect(textContent).toContain(
+            `**Default Conversation:** [Team Discussion](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/msg/${TEST_IDS.CONVERSATION_1}/) (${TEST_IDS.CONVERSATION_1})`,
         )
         expect(textContent).toContain(`**Plan:** free`)
         expect(textContent).toContain(`**Plan:** unlimited`)
@@ -117,10 +119,13 @@ describe(`${GET_WORKSPACES} tool`, () => {
                     creator: mockWorkspace1.creator,
                     creatorName: 'Test User',
                     created: mockWorkspace1.created.toISOString(),
+                    workspaceUrl: `https://twist.com/a/${mockWorkspace1.id}/`,
                     defaultChannel: mockWorkspace1.defaultChannel,
                     defaultChannelName: 'General',
+                    defaultChannelUrl: `https://twist.com/a/${mockWorkspace1.id}/ch/${mockWorkspace1.defaultChannel}/`,
                     defaultConversation: mockWorkspace1.defaultConversation,
                     defaultConversationTitle: 'Team Discussion',
+                    defaultConversationUrl: `https://twist.com/a/${mockWorkspace1.id}/msg/${mockWorkspace1.defaultConversation}/`,
                     plan: mockWorkspace1.plan,
                 },
                 {
@@ -129,10 +134,13 @@ describe(`${GET_WORKSPACES} tool`, () => {
                     creator: mockWorkspace2.creator,
                     creatorName: 'Test User',
                     created: mockWorkspace2.created.toISOString(),
+                    workspaceUrl: `https://twist.com/a/${mockWorkspace2.id}/`,
                     defaultChannel: mockWorkspace2.defaultChannel,
                     defaultChannelName: 'General',
+                    defaultChannelUrl: `https://twist.com/a/${mockWorkspace2.id}/ch/${mockWorkspace2.defaultChannel}/`,
                     defaultConversation: mockWorkspace2.defaultConversation,
                     defaultConversationTitle: 'Team Discussion',
+                    defaultConversationUrl: `https://twist.com/a/${mockWorkspace2.id}/msg/${mockWorkspace2.defaultConversation}/`,
                     plan: mockWorkspace2.plan,
                 },
             ],
@@ -256,7 +264,9 @@ describe(`${GET_WORKSPACES} tool`, () => {
         const result = await getWorkspaces.execute({}, mockTwistApi)
 
         const textContent = extractTextContent(result)
-        expect(textContent).toContain(`**Default Channel:** General (${TEST_IDS.CHANNEL_1})`)
+        expect(textContent).toContain(
+            `**Default Channel:** [General](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/) (${TEST_IDS.CHANNEL_1})`,
+        )
         expect(textContent).not.toContain('Default Conversation')
     })
 
@@ -302,7 +312,7 @@ describe(`${GET_WORKSPACES} tool`, () => {
 
         const textContent = extractTextContent(result)
         expect(textContent).toContain(
-            `**Default Conversation:** Conversation with users: ${TEST_IDS.USER_1}, ${TEST_IDS.USER_2}`,
+            `**Default Conversation:** [Conversation with users: ${TEST_IDS.USER_1}, ${TEST_IDS.USER_2}](https://twist.com/a/${TEST_IDS.WORKSPACE_1}/msg/${TEST_IDS.CONVERSATION_1}/) (${TEST_IDS.CONVERSATION_1})`,
         )
     })
 

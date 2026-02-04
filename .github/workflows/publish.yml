@@ -77,5 +77,5 @@ jobs:
             -f event_type='twist-ai-updated' \
             -f client_payload='{"version":"${{ env.PACKAGE_VERSION }}","npm_tag":"${{ steps.npm-tag.outputs.tag }}"}'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         continue-on-error: true

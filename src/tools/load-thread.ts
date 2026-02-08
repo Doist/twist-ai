@@ -1,4 +1,3 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -185,11 +184,7 @@ const loadThread = {
                               .map((id) => userLookup[id])
                               .filter((name): name is string => name !== undefined)
                         : undefined,
-                threadUrl: getFullTwistURL({
-                    workspaceId: thread.workspaceId,
-                    threadId: thread.id,
-                    channelId: thread.channelId,
-                }),
+                threadUrl: thread.url,
             },
             comments: comments.map((c) => ({
                 id: c.id,
@@ -198,12 +193,7 @@ const loadThread = {
                 creatorName: userLookup[c.creator],
                 threadId: c.threadId,
                 posted: c.posted.toISOString(),
-                commentUrl: getFullTwistURL({
-                    workspaceId: thread.workspaceId,
-                    threadId: c.threadId,
-                    channelId: thread.channelId,
-                    commentId: c.id,
-                }),
+                commentUrl: c.url,
             })),
             totalComments: thread.commentCount,
         }

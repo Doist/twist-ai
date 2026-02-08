@@ -13,7 +13,7 @@ type WorkspaceData = {
     creator: number
     creatorName?: string
     created: string
-    workspaceUrl: string
+    url: string
     defaultChannel?: number
     defaultChannelName?: string
     defaultChannelUrl?: string
@@ -198,7 +198,7 @@ async function generateWorkspacesList(
                 creatorName: creatorLookup[workspace.creator],
             }),
             created: workspace.created.toISOString(),
-            workspaceUrl: getWorkspaceUrl(workspace.id),
+            url: getWorkspaceUrl(workspace.id),
             ...(workspace.defaultChannel && { defaultChannel: workspace.defaultChannel }),
             ...(workspace.defaultChannel &&
                 channelLookup[workspace.defaultChannel] && {

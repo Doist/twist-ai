@@ -62,6 +62,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     isArchived: false,
                     inInbox: true,
                     closed: false,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${TEST_IDS.THREAD_1}/`,
                 },
                 {
                     id: TEST_IDS.THREAD_2,
@@ -80,6 +81,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     isArchived: false,
                     inInbox: true,
                     closed: false,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${TEST_IDS.THREAD_2}/`,
                 },
             ])
             mockTwistApi.inbox.getCount.mockResolvedValue(5)
@@ -179,6 +181,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     isArchived: false,
                     inInbox: true,
                     closed: false,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${TEST_IDS.THREAD_1}/`,
                 },
                 {
                     id: TEST_IDS.THREAD_2,
@@ -197,6 +200,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     isArchived: false,
                     inInbox: true,
                     closed: false,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${TEST_IDS.THREAD_2}/`,
                 },
             ])
             mockTwistApi.inbox.getCount.mockResolvedValue(1)
@@ -304,6 +308,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                         archived: false,
                         created: new Date(),
                         creator: TEST_IDS.USER_1,
+                        url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/msg/${TEST_IDS.CONVERSATION_1}/`,
                     }) as never
                 }
                 return Promise.resolve({
@@ -319,6 +324,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     archived: false,
                     created: new Date(),
                     creator: TEST_IDS.USER_1,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/msg/${TEST_IDS.CONVERSATION_2}/`,
                 }) as never
             })
             mockTwistApi.workspaceUsers.getUserById.mockImplementation(
@@ -407,6 +413,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     isArchived: false,
                     inInbox: true,
                     closed: false,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${TEST_IDS.THREAD_1}/`,
                 },
             ])
             mockTwistApi.inbox.getCount.mockResolvedValue(1)

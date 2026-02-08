@@ -1,10 +1,9 @@
-import {
-    type Channel,
-    type Conversation,
-    getFullTwistURL,
-    type InboxThread,
-    type UnreadConversation,
-    type WorkspaceUser,
+import type {
+    Channel,
+    Conversation,
+    InboxThread,
+    UnreadConversation,
+    WorkspaceUser,
 } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
@@ -275,11 +274,7 @@ const fetchInbox = {
                 creator: t.creator,
                 isUnread: t.isUnread,
                 isStarred: t.starred,
-                threadUrl: getFullTwistURL({
-                    workspaceId,
-                    threadId: t.id,
-                    channelId: t.channelId,
-                }),
+                threadUrl: t.url,
             })),
             conversations: conversationsWithDetails.map((cd) => {
                 const { conversation, participants } = cd
@@ -293,10 +288,7 @@ const fetchInbox = {
                     userIds: conversation.userIds,
                     participantNames,
                     isUnread: cd.isUnread,
-                    conversationUrl: getFullTwistURL({
-                        workspaceId,
-                        conversationId: conversation.id,
-                    }),
+                    conversationUrl: conversation.url,
                 }
             }),
             unreadCount: unreadThreads.length,

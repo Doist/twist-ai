@@ -1,4 +1,3 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -38,29 +37,19 @@ const react = {
     async execute(args, client) {
         const { targetType, targetId, emoji, operation } = args
 
-        let workspaceId: number
-        let channelId: number | undefined
-        let threadId: number | undefined
-        let conversationId: number | undefined
+        let targetUrl: string
 
-        // Fetch target metadata to get IDs for URL building
+        // Fetch target metadata to get URL
         if (targetType === 'thread') {
             const thread = await client.threads.getThread(targetId)
-            workspaceId = thread.workspaceId
-            channelId = thread.channelId
-            threadId = targetId
+            targetUrl = thread.url
         } else if (targetType === 'comment') {
             const comment = await client.comments.getComment(targetId)
-            threadId = comment.threadId
-            const thread = await client.threads.getThread(threadId)
-            workspaceId = thread.workspaceId
-            channelId = thread.channelId
+            targetUrl = comment.url
         } else {
             // message
             const message = await client.conversationMessages.getMessage(targetId)
-            conversationId = message.conversationId
-            const conversation = await client.conversations.getConversation(conversationId)
-            workspaceId = conversation.workspaceId
+            targetUrl = message.url
         }
 
         // Map targetType to the appropriate API parameter
@@ -84,42 +73,6 @@ const react = {
             await client.reactions.add(apiParams)
         } else {
             await client.reactions.remove(apiParams)
-        }
-
-        // Build URL based on target type
-        let targetUrl: string
-        if (targetType === 'thread') {
-            if (!threadId) {
-                throw new Error('Thread ID is required for thread reactions')
-            }
-            targetUrl = getFullTwistURL({
-                workspaceId,
-                threadId,
-                channelId,
-            })
-        } else if (targetType === 'comment') {
-            if (!threadId) {
-                throw new Error('Thread ID is required for comment reactions')
-            }
-            if (!channelId) {
-                throw new Error('Channel ID is required for comment reactions')
-            }
-            targetUrl = getFullTwistURL({
-                workspaceId,
-                threadId,
-                channelId,
-                commentId: targetId,
-            })
-        } else {
-            // message
-            if (!conversationId) {
-                throw new Error('Conversation ID is required for message reactions')
-            }
-            targetUrl = getFullTwistURL({
-                workspaceId,
-                conversationId,
-                messageId: targetId,
-            })
         }
 
         const lines: string[] = [

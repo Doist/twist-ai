@@ -35,6 +35,7 @@ export function createMockThread(overrides: Partial<Thread> = {}): Thread {
         inInbox: true,
         starred: false,
         participants: [22222],
+        url: 'https://twist.com/a/11111/ch/67890/t/12345/',
         ...overrides,
     }
 }
@@ -48,12 +49,15 @@ export function createMockComment(overrides: Partial<Comment> = {}): Comment {
         id: 54321,
         content: 'Test comment content',
         threadId: 12345,
+        workspaceId: 11111,
+        channelId: 67890,
         creator: 22222,
         posted: new Date('2024-01-01T00:00:00Z'),
         systemMessage: null,
         attachments: [],
         reactions: {},
         objIndex: 1,
+        url: 'https://twist.com/a/11111/ch/67890/t/12345/c/54321',
         ...overrides,
     }
 }
@@ -75,6 +79,7 @@ export function createMockConversation(overrides: Partial<Conversation> = {}): C
         creator: 22222,
         created: new Date('2024-01-01T00:00:00Z'),
         lastActive: new Date('2024-01-01T00:00:00Z'),
+        url: 'https://twist.com/a/11111/msg/33333/',
         ...overrides,
     }
 }
@@ -91,12 +96,14 @@ export function createMockConversationMessage(
         content: 'Test message content',
         creator: 22222,
         conversationId: 33333,
+        workspaceId: 11111,
         posted: new Date('2024-01-01T00:00:00Z'),
         systemMessage: null,
         attachments: [],
         reactions: {},
         objIndex: 1,
         lastEdited: null,
+        url: 'https://twist.com/a/11111/msg/33333/m/98765',
         ...overrides,
     }
 }

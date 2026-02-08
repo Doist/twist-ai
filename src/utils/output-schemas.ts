@@ -171,7 +171,7 @@ export const GetWorkspacesOutputSchema = z.object({
             creator: z.number(),
             creatorName: z.string().optional(),
             created: z.string(),
-            workspaceUrl: z.url(),
+            url: z.url(),
             defaultChannel: z.number().optional(),
             defaultChannelName: z.string().optional(),
             defaultChannelUrl: z.url().optional(),

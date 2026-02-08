@@ -2,7 +2,6 @@ import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
 import {
     createMockComment,
-    createMockConversation,
     createMockConversationMessage,
     createMockThread,
     extractTextContent,
@@ -82,9 +81,6 @@ describe(`${REACT} tool`, () => {
             mockTwistApi.comments.getComment.mockResolvedValue(
                 createMockComment({ id: TEST_IDS.COMMENT_1, threadId: TEST_IDS.THREAD_1 }),
             )
-            mockTwistApi.threads.getThread.mockResolvedValue(
-                createMockThread({ id: TEST_IDS.THREAD_1 }),
-            )
             mockTwistApi.reactions.add.mockResolvedValue(undefined)
 
             const result = await react.execute(
@@ -98,7 +94,6 @@ describe(`${REACT} tool`, () => {
             )
 
             expect(mockTwistApi.comments.getComment).toHaveBeenCalledWith(TEST_IDS.COMMENT_1)
-            expect(mockTwistApi.threads.getThread).toHaveBeenCalledWith(TEST_IDS.THREAD_1)
             expect(mockTwistApi.reactions.add).toHaveBeenCalledWith(
                 expect.objectContaining({
                     commentId: TEST_IDS.COMMENT_1,
@@ -116,9 +111,6 @@ describe(`${REACT} tool`, () => {
                     conversationId: TEST_IDS.CONVERSATION_1,
                 }),
             )
-            mockTwistApi.conversations.getConversation.mockResolvedValue(
-                createMockConversation({ id: TEST_IDS.CONVERSATION_1 }),
-            )
             mockTwistApi.reactions.add.mockResolvedValue(undefined)
 
             const result = await react.execute(
@@ -133,9 +125,6 @@ describe(`${REACT} tool`, () => {
 
             expect(mockTwistApi.conversationMessages.getMessage).toHaveBeenCalledWith(
                 TEST_IDS.MESSAGE_1,
-            )
-            expect(mockTwistApi.conversations.getConversation).toHaveBeenCalledWith(
-                TEST_IDS.CONVERSATION_1,
             )
             expect(mockTwistApi.reactions.add).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -180,9 +169,6 @@ describe(`${REACT} tool`, () => {
             mockTwistApi.comments.getComment.mockResolvedValue(
                 createMockComment({ id: TEST_IDS.COMMENT_1, threadId: TEST_IDS.THREAD_1 }),
             )
-            mockTwistApi.threads.getThread.mockResolvedValue(
-                createMockThread({ id: TEST_IDS.THREAD_1 }),
-            )
             mockTwistApi.reactions.remove.mockResolvedValue(undefined)
 
             const result = await react.execute(
@@ -196,7 +182,6 @@ describe(`${REACT} tool`, () => {
             )
 
             expect(mockTwistApi.comments.getComment).toHaveBeenCalledWith(TEST_IDS.COMMENT_1)
-            expect(mockTwistApi.threads.getThread).toHaveBeenCalledWith(TEST_IDS.THREAD_1)
             expect(mockTwistApi.reactions.remove).toHaveBeenCalledWith(
                 expect.objectContaining({
                     commentId: TEST_IDS.COMMENT_1,
@@ -214,9 +199,6 @@ describe(`${REACT} tool`, () => {
                     conversationId: TEST_IDS.CONVERSATION_1,
                 }),
             )
-            mockTwistApi.conversations.getConversation.mockResolvedValue(
-                createMockConversation({ id: TEST_IDS.CONVERSATION_1 }),
-            )
             mockTwistApi.reactions.remove.mockResolvedValue(undefined)
 
             const result = await react.execute(
@@ -231,9 +213,6 @@ describe(`${REACT} tool`, () => {
 
             expect(mockTwistApi.conversationMessages.getMessage).toHaveBeenCalledWith(
                 TEST_IDS.MESSAGE_1,
-            )
-            expect(mockTwistApi.conversations.getConversation).toHaveBeenCalledWith(
-                TEST_IDS.CONVERSATION_1,
             )
             expect(mockTwistApi.reactions.remove).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -270,9 +249,6 @@ describe(`${REACT} tool`, () => {
         it('should propagate remove reaction errors', async () => {
             mockTwistApi.comments.getComment.mockResolvedValue(
                 createMockComment({ id: TEST_IDS.COMMENT_1, threadId: TEST_IDS.THREAD_1 }),
-            )
-            mockTwistApi.threads.getThread.mockResolvedValue(
-                createMockThread({ id: TEST_IDS.THREAD_1 }),
             )
             const apiError = new Error('Reaction not found')
             mockTwistApi.reactions.remove.mockRejectedValue(apiError)

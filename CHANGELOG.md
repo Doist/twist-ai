@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/Doist/twist-ai/compare/v4.2.0...v4.2.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* bump @doist/twist-sdk to 2.0.1 to fix missing url on batched list results ([#102](https://github.com/Doist/twist-ai/issues/102)) ([d5f8256](https://github.com/Doist/twist-ai/commit/d5f8256ea0db6a1486719272281660dfe3b348c1))
+
 ## [4.2.0](https://github.com/Doist/twist-ai/compare/v4.1.0...v4.2.0) (2026-02-09)
 
 

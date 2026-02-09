@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/Doist/twist-ai/compare/v4.1.0...v4.2.0) (2026-02-09)
+
+
+### Features
+
+* add automated cross-repository trigger for twist-ai-integrations ([#93](https://github.com/Doist/twist-ai/issues/93)) ([46e47fb](https://github.com/Doist/twist-ai/commit/46e47fb24485b69158ae9b8c251a5262e24d3f71))
+* upgrade @doist/twist-sdk to v2.0.0 and use entity.url ([#99](https://github.com/Doist/twist-ai/issues/99)) ([2e19452](https://github.com/Doist/twist-ai/commit/2e1945244af505c0c7b0f94313e10cd72a0664f6))
+
 ## [4.1.0](https://github.com/Doist/twist-ai/compare/v4.0.0...v4.1.0) (2026-02-02)
 
 

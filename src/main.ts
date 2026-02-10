@@ -23,5 +23,5 @@ function main() {
         })
 }
 
-dotenv.config()
+dotenv.config({ quiet: true })
 main()

@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.2](https://github.com/Doist/twist-ai/compare/v4.2.1...v4.2.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* add CI workflow to satisfy required check on release PRs ([#106](https://github.com/Doist/twist-ai/issues/106)) ([92eaa10](https://github.com/Doist/twist-ai/commit/92eaa107f1b758d81015af233ba0eb68eee8d09e))
+* suppress dotenv@17 stdout logging that breaks stdio MCP transport ([#104](https://github.com/Doist/twist-ai/issues/104)) ([e2c02d0](https://github.com/Doist/twist-ai/commit/e2c02d0fffaea412014feb676aa4e2eb27c8c6f9))
+
 ## [4.2.1](https://github.com/Doist/twist-ai/compare/v4.2.0...v4.2.1) (2026-02-09)
 
 

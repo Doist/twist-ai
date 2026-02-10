@@ -45,7 +45,7 @@
         "check:fix": "biome check --fix --unsafe"
     },
     "dependencies": {
-        "@doist/twist-sdk": "2.0.1",
+        "@doist/twist-sdk": "2.0.2",
         "dotenv": "17.2.3",
         "zod": "4.1.13"
     },

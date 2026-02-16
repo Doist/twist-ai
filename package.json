@@ -46,7 +46,7 @@
     },
     "dependencies": {
         "@doist/twist-sdk": "2.0.2",
-        "dotenv": "17.2.3",
+        "dotenv": "17.2.4",
         "zod": "4.1.13"
     },
     "peerDependencies": {

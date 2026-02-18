@@ -1,3 +1,4 @@
+import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -49,7 +50,14 @@ const reply = {
                 recipients,
             })
             replyId = comment.id
-            replyUrl = comment.url
+            replyUrl =
+                comment.url ??
+                getFullTwistURL({
+                    workspaceId: comment.workspaceId,
+                    channelId: comment.channelId,
+                    threadId: comment.threadId,
+                    commentId: comment.id,
+                })
             const postedValue = comment.posted
             created = postedValue
                 ? typeof postedValue === 'string'
@@ -62,7 +70,13 @@ const reply = {
                 content,
             })
             replyId = message.id
-            replyUrl = message.url
+            replyUrl =
+                message.url ??
+                getFullTwistURL({
+                    workspaceId: message.workspaceId,
+                    conversationId: message.conversationId,
+                    messageId: message.id,
+                })
             const postedValue = message.posted
             created = postedValue
                 ? typeof postedValue === 'string'

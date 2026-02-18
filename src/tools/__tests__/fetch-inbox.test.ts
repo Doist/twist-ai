@@ -454,6 +454,132 @@ describe(`${FETCH_INBOX} tool`, () => {
         })
     })
 
+    describe('missing URL fallback', () => {
+        it('should construct threadUrl via getFullTwistURL when SDK omits url field', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([
+                {
+                    id: TEST_IDS.THREAD_1,
+                    title: 'Thread Without URL',
+                    content: 'Content',
+                    creator: TEST_IDS.USER_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    commentCount: 0,
+                    lastUpdated: new Date(),
+                    posted: new Date(),
+                    snippet: 'Snippet',
+                    snippetCreator: TEST_IDS.USER_1,
+                    starred: false,
+                    pinned: false,
+                    isArchived: false,
+                    inInbox: true,
+                    closed: false,
+                    // url intentionally omitted to simulate batch-builder validation failure
+                },
+            ])
+            mockTwistApi.inbox.getCount.mockResolvedValue(1)
+            mockTwistApi.threads.getUnread.mockResolvedValue([
+                {
+                    threadId: TEST_IDS.THREAD_1,
+                    channelId: TEST_IDS.CHANNEL_1,
+                    objIndex: 1,
+                    directMention: false,
+                },
+            ])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                id: TEST_IDS.CHANNEL_1,
+                name: 'Test Channel',
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                created: new Date(),
+                archived: false,
+                public: true,
+                color: 0,
+                creator: TEST_IDS.USER_1,
+                version: 1,
+            })
+
+            const result = await fetchInbox.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.threads).toHaveLength(1)
+            const threadUrl = structuredContent?.threads?.[0]?.threadUrl
+            expect(threadUrl).toBeDefined()
+            expect(typeof threadUrl).toBe('string')
+            expect(threadUrl).toContain('twist.com')
+            expect(threadUrl).toContain(String(TEST_IDS.THREAD_1))
+        })
+
+        it('should construct conversationUrl via getFullTwistURL when SDK omits url field', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
+            mockTwistApi.inbox.getCount.mockResolvedValue(0)
+            mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([
+                {
+                    conversationId: TEST_IDS.CONVERSATION_1,
+                    objIndex: 5,
+                    directMention: false,
+                },
+            ])
+            mockTwistApi.conversations.getConversation.mockResolvedValue({
+                id: TEST_IDS.CONVERSATION_1,
+                workspaceId: TEST_IDS.WORKSPACE_1,
+                userIds: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+                messageCount: 10,
+                lastObjIndex: 5,
+                snippet: 'Latest message',
+                snippetCreators: [TEST_IDS.USER_2],
+                lastActive: new Date(),
+                archived: false,
+                created: new Date(),
+                creator: TEST_IDS.USER_1,
+                // url intentionally omitted
+            } as never)
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation(
+                (args: { workspaceId: number; userId: number }) => {
+                    if (args.userId === TEST_IDS.USER_1) {
+                        return Promise.resolve({
+                            id: TEST_IDS.USER_1,
+                            name: 'Alice',
+                            shortName: 'Alice',
+                            bot: false,
+                            timezone: 'UTC',
+                            removed: false,
+                            userType: 'MEMBER' as const,
+                            version: 1,
+                        }) as never
+                    }
+                    return Promise.resolve({
+                        id: TEST_IDS.USER_2,
+                        name: 'Bob',
+                        shortName: 'Bob',
+                        bot: false,
+                        timezone: 'UTC',
+                        removed: false,
+                        userType: 'MEMBER' as const,
+                        version: 1,
+                    }) as never
+                },
+            )
+
+            const result = await fetchInbox.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.conversations).toHaveLength(1)
+            const conversationUrl = structuredContent?.conversations?.[0]?.conversationUrl
+            expect(conversationUrl).toBeDefined()
+            expect(typeof conversationUrl).toBe('string')
+            expect(conversationUrl).toContain('twist.com')
+            expect(conversationUrl).toContain(String(TEST_IDS.CONVERSATION_1))
+        })
+    })
+
     describe('error handling', () => {
         it('should propagate API errors', async () => {
             const apiError = new Error('API Error: Unauthorized')

@@ -1,3 +1,4 @@
+import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -42,14 +43,33 @@ const react = {
         // Fetch target metadata to get URL
         if (targetType === 'thread') {
             const thread = await client.threads.getThread(targetId)
-            targetUrl = thread.url
+            targetUrl =
+                thread.url ??
+                getFullTwistURL({
+                    workspaceId: thread.workspaceId,
+                    channelId: thread.channelId,
+                    threadId: thread.id,
+                })
         } else if (targetType === 'comment') {
             const comment = await client.comments.getComment(targetId)
-            targetUrl = comment.url
+            targetUrl =
+                comment.url ??
+                getFullTwistURL({
+                    workspaceId: comment.workspaceId,
+                    channelId: comment.channelId,
+                    threadId: comment.threadId,
+                    commentId: comment.id,
+                })
         } else {
             // message
             const message = await client.conversationMessages.getMessage(targetId)
-            targetUrl = message.url
+            targetUrl =
+                message.url ??
+                getFullTwistURL({
+                    workspaceId: message.workspaceId,
+                    conversationId: message.conversationId,
+                    messageId: message.id,
+                })
         }
 
         // Map targetType to the appropriate API parameter

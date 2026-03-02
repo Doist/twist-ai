@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.4](https://github.com/Doist/twist-ai/compare/v4.2.3...v4.2.4) (2026-03-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency dotenv to v17.3.1 ([#117](https://github.com/Doist/twist-ai/issues/117)) ([9931448](https://github.com/Doist/twist-ai/commit/99314485a275ed0173d14f557332afded8676979))
+* use PAT for release-please to trigger CI on its PRs ([#119](https://github.com/Doist/twist-ai/issues/119)) ([0168650](https://github.com/Doist/twist-ai/commit/01686500a9f892c4e3c0eb3c138eb635d3827691))
+
 ## [4.2.3](https://github.com/Doist/twist-ai/compare/v4.2.2...v4.2.3) (2026-02-18)
 
 

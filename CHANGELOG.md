@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.1](https://github.com/Doist/twist-ai/compare/v4.3.0...v4.3.1) (2026-03-13)
+
+
+### Bug Fixes
+
+* use correct clear payload for away status and fix output schema ([#131](https://github.com/Doist/twist-ai/issues/131)) ([7237139](https://github.com/Doist/twist-ai/commit/7237139c8c547b7d30e62709a5f225a6e53eee86))
+
 ## [4.3.0](https://github.com/Doist/twist-ai/compare/v4.2.3...v4.3.0) (2026-03-13)
 
 

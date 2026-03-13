@@ -41,7 +41,7 @@ async function executeGet(
     client: TwistApi,
 ): Promise<{ textContent: string; structuredContent: AwayOutput }> {
     const user = await client.users.getSessionUser()
-    const awayMode = user.awayMode ?? null
+    const awayMode = user.awayMode ?? undefined
 
     const lines: string[] = ['# Away Status']
     if (awayMode) {
@@ -61,14 +61,14 @@ async function executeGet(
         structuredContent: {
             type: 'away_status',
             action: 'get',
-            isAway: awayMode !== null,
+            isAway: awayMode !== undefined,
             awayMode: awayMode
                 ? {
                       type: awayMode.type,
                       dateFrom: awayMode.dateFrom,
                       dateTo: awayMode.dateTo,
                   }
-                : null,
+                : undefined,
         },
     }
 }
@@ -107,7 +107,7 @@ async function executeSet(
 async function executeClear(
     client: TwistApi,
 ): Promise<{ textContent: string; structuredContent: AwayOutput }> {
-    await client.users.update({ awayMode: undefined })
+    await client.users.update({ awayMode: '' as never })
 
     return {
         textContent: '# Away Status Cleared\n\n**Status:** Not away',
@@ -115,7 +115,7 @@ async function executeClear(
             type: 'away_status',
             action: 'clear',
             isAway: false,
-            awayMode: null,
+            awayMode: undefined,
         },
     }
 }

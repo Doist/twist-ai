@@ -230,7 +230,7 @@ export const AwayOutputSchema = z.object({
             dateFrom: z.string(),
             dateTo: z.string(),
         })
-        .nullable(),
+        .optional(),
 })
 
 /**

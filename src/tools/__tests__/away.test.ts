@@ -198,7 +198,7 @@ describe(`${AWAY} tool`, () => {
             const result = await away.execute({ action: 'clear' }, mockTwistApi)
 
             expect(mockTwistApi.users.update).toHaveBeenCalledWith({
-                awayMode: undefined,
+                awayMode: '' as never,
             })
 
             const textContent = extractTextContent(result)

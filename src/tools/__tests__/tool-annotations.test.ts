@@ -13,6 +13,13 @@ type ToolExpectation = {
 
 const TOOL_EXPECTATIONS: ToolExpectation[] = [
     {
+        name: ToolNames.AWAY,
+        title: 'Twist: Away',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.USER_INFO,
         title: 'Twist: User Info',
         readOnlyHint: true,

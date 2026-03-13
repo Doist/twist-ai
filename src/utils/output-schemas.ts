@@ -214,6 +214,25 @@ export const GetUsersOutputSchema = z.object({
     filteredUsers: z.number(),
 })
 
+export const AWAY_ACTIONS = ['get', 'set', 'clear'] as const
+export type AwayAction = (typeof AWAY_ACTIONS)[number]
+
+/**
+ * Schema for away tool output
+ */
+export const AwayOutputSchema = z.object({
+    type: z.literal('away_status'),
+    action: z.enum(AWAY_ACTIONS),
+    isAway: z.boolean(),
+    awayMode: z
+        .object({
+            type: z.string(),
+            dateFrom: z.string(),
+            dateTo: z.string(),
+        })
+        .nullable(),
+})
+
 /**
  * Schema for user-info tool output
  */
@@ -305,6 +324,7 @@ export const MarkDoneOutputSchema = z.object({
  * Union of all possible structured outputs for type safety
  */
 export const StructuredOutputSchema = z.union([
+    AwayOutputSchema,
     LoadThreadOutputSchema,
     LoadConversationOutputSchema,
     FetchInboxOutputSchema,
@@ -321,6 +341,7 @@ export const StructuredOutputSchema = z.union([
 /**
  * Type definitions for the structured outputs
  */
+export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>
 export type FetchInboxOutput = z.infer<typeof FetchInboxOutputSchema>

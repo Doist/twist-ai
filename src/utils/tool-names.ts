@@ -10,4 +10,5 @@ export const ToolNames = {
     BUILD_LINK: 'build-link',
     GET_WORKSPACES: 'get-workspaces',
     GET_USERS: 'get-users',
+    AWAY: 'away',
 } as const

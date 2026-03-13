@@ -1,4 +1,5 @@
 import { getMcpServer } from './mcp-server.js'
+import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { loadConversation } from './tools/load-conversation.js'
@@ -10,6 +11,7 @@ import { searchContent } from './tools/search-content.js'
 import { userInfo } from './tools/user-info.js'
 
 const tools = {
+    away,
     userInfo,
     fetchInbox,
     loadThread,
@@ -24,6 +26,7 @@ const tools = {
 export { tools, getMcpServer }
 
 export {
+    away,
     userInfo,
     fetchInbox,
     loadThread,

@@ -1,6 +1,7 @@
 import { TwistApi } from '@doist/twist-sdk'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerTool } from './mcp-helpers.js'
+import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { getUsers } from './tools/get-users.js'
@@ -60,6 +61,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
 
     // Register tools
     registerTool(userInfo, server, twist)
+    registerTool(away, server, twist)
     registerTool(getWorkspaces, server, twist)
     registerTool(getUsers, server, twist)
     registerTool(fetchInbox, server, twist)

@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/Doist/twist-ai/compare/v4.3.2...v4.4.0) (2026-03-18)
+
+
+### Features
+
+* add create-thread tool ([#139](https://github.com/Doist/twist-ai/issues/139)) ([6990e54](https://github.com/Doist/twist-ai/commit/6990e54c806228099e880c8cde361908669278a3))
+
 ## [4.3.2](https://github.com/Doist/twist-ai/compare/v4.3.1...v4.3.2) (2026-03-18)
 
 

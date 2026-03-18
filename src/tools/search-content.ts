@@ -30,7 +30,7 @@ type SearchContentStructured = {
     workspaceId: number
     results: Array<{
         id: string
-        type: 'thread' | 'comment' | 'message'
+        type: 'thread' | 'comment' | 'message' | 'conversation'
         content: string
         creatorId: number
         creatorName?: string
@@ -219,6 +219,11 @@ const searchContent = {
                         threadId: r.threadId,
                         channelId: r.channelId,
                         commentId: r.id,
+                    })
+                } else if (r.type === 'conversation' && r.conversationId !== undefined) {
+                    url = getFullTwistURL({
+                        workspaceId,
+                        conversationId: r.conversationId,
                     })
                 } else if (r.conversationId !== undefined) {
                     // message

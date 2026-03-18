@@ -141,7 +141,7 @@ export const SearchContentOutputSchema = z.object({
     results: z.array(
         z.object({
             id: z.string(),
-            type: z.enum(['thread', 'comment', 'message']),
+            type: z.enum(['thread', 'comment', 'message', 'conversation']),
             content: z.string(),
             creatorId: z.number(),
             creatorName: z.string().optional(),

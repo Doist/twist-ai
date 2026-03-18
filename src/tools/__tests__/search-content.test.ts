@@ -293,12 +293,8 @@ describe(`${SEARCH_CONTENT} tool`, () => {
                 }),
             )
             // Conversation URL should not include a messageId
-            expect(structuredContent?.results[0]?.url).toContain(
-                `${TEST_IDS.CONVERSATION_1}`,
-            )
-            expect(structuredContent?.results[0]?.url).not.toContain(
-                'conversation-33333',
-            )
+            expect(structuredContent?.results[0]?.url).toContain(`${TEST_IDS.CONVERSATION_1}`)
+            expect(structuredContent?.results[0]?.url).not.toContain('conversation-33333')
         })
     })
 

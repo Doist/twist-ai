@@ -4,6 +4,7 @@ import {
     ConversationMessageSchema,
     ConversationSchema,
     InboxThreadSchema,
+    SEARCH_RESULT_TYPES,
     SearchResultSchema,
     ThreadSchema,
     UnreadConversationSchema,
@@ -141,7 +142,7 @@ export const SearchContentOutputSchema = z.object({
     results: z.array(
         z.object({
             id: z.string(),
-            type: z.enum(['thread', 'comment', 'message', 'conversation']),
+            type: z.enum(SEARCH_RESULT_TYPES),
             content: z.string(),
             creatorId: z.number(),
             creatorName: z.string().optional(),

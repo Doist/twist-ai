@@ -247,6 +247,61 @@ describe(`${SEARCH_CONTENT} tool`, () => {
         })
     })
 
+    describe('conversation results', () => {
+        it('should handle conversation type results with correct URL', async () => {
+            mockTwistApi.search.search.mockResolvedValue({
+                items: [
+                    {
+                        id: 'conversation-33333',
+                        type: 'conversation' as const,
+                        snippet: 'Conversation matching query',
+                        snippetCreatorId: TEST_IDS.USER_1,
+                        snippetLastUpdated: new Date('2024-01-01T00:00:00Z'),
+                        conversationId: TEST_IDS.CONVERSATION_1,
+                    },
+                ],
+                hasMore: false,
+                isPlanRestricted: false,
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
+
+            const result = await searchContent.execute(
+                {
+                    query: 'conversation test',
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    limit: 50,
+                },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.results).toHaveLength(1)
+            expect(structuredContent?.results[0]).toEqual(
+                expect.objectContaining({
+                    type: 'conversation',
+                    content: 'Conversation matching query',
+                }),
+            )
+            // Conversation URL should not include a messageId
+            expect(structuredContent?.results[0]?.url).toContain(
+                `${TEST_IDS.CONVERSATION_1}`,
+            )
+            expect(structuredContent?.results[0]?.url).not.toContain(
+                'conversation-33333',
+            )
+        })
+    })
+
     describe('empty results', () => {
         it('should handle no results found', async () => {
             mockTwistApi.search.search.mockResolvedValue({

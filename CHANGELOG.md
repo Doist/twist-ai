@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://github.com/Doist/twist-ai/compare/v4.3.1...v4.3.2) (2026-03-18)
+
+
+### Bug Fixes
+
+* support 'conversation' type in search results ([#137](https://github.com/Doist/twist-ai/issues/137)) ([0d80bf1](https://github.com/Doist/twist-ai/commit/0d80bf1b851dfb8cb0e08e8af9556b5c9bb05b72))
+
 ## [4.3.1](https://github.com/Doist/twist-ai/compare/v4.3.0...v4.3.1) (2026-03-13)
 
 

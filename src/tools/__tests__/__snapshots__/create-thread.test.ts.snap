@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`create-thread tool creating threads should create a thread in a channel 1`] = `
+"# Thread Created
+
+**Title:** New Discussion
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Let us discuss this topic"
+`;
+
+exports[`create-thread tool creating threads should create a thread with recipients 1`] = `
+"# Thread Created
+
+**Title:** Notify Users
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Important update"
+`;

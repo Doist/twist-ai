@@ -31,8 +31,6 @@ import { reply } from '../src/tools/reply.js'
 import { searchContent } from '../src/tools/search-content.js'
 import { userInfo } from '../src/tools/user-info.js'
 
-config()
-
 // Define a minimal type for tool execution that works with any tool
 type ExecutableTool = {
     name: string
@@ -96,6 +94,8 @@ async function main() {
         process.exit(0)
     }
 
+    config()
+
     const toolName = args[0]
     const tool = tools[toolName]
 
@@ -111,7 +111,12 @@ async function main() {
             console.error('--file requires a path argument')
             process.exit(1)
         }
-        jsonArgs = readFileSync(args[2], 'utf-8')
+        try {
+            jsonArgs = readFileSync(args[2], 'utf-8')
+        } catch (e) {
+            console.error(`Failed to read file: ${args[2]}`)
+            process.exit(1)
+        }
     } else {
         jsonArgs = args[1] || '{}'
     }

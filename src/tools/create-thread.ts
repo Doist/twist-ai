@@ -60,7 +60,7 @@ const createThread = {
             '',
             '## Content',
             '',
-            content,
+            thread.content,
         ]
 
         const structuredContent: CreateThreadOutput = {
@@ -70,7 +70,7 @@ const createThread = {
             title: thread.title,
             channelId: thread.channelId,
             workspaceId: thread.workspaceId,
-            content,
+            content: thread.content,
             creator: thread.creator,
             created: created.toISOString(),
             threadUrl,

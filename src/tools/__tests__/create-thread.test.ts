@@ -59,7 +59,10 @@ describe(`${CREATE_THREAD} tool`, () => {
         })
 
         it('should create a thread with recipients', async () => {
-            const mockThread = createMockThread()
+            const mockThread = createMockThread({
+                title: 'Notify Users',
+                content: 'Important update',
+            })
             mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
 
             const result = await createThread.execute(

@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerTool } from './mcp-helpers.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
+import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
@@ -69,6 +70,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(loadConversation, server, twist)
     registerTool(searchContent, server, twist)
     registerTool(buildLink, server, twist)
+    registerTool(createThread, server, twist)
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)

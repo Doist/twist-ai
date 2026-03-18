@@ -265,6 +265,22 @@ export const BuildLinkOutputSchema = z.object({
 })
 
 /**
+ * Schema for create-thread tool output
+ */
+export const CreateThreadOutputSchema = z.object({
+    type: z.literal('create_thread_result'),
+    success: z.boolean(),
+    threadId: z.number(),
+    title: z.string(),
+    channelId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    creator: z.number(),
+    created: z.string(),
+    threadUrl: z.string(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -334,6 +350,7 @@ export const StructuredOutputSchema = z.union([
     GetUsersOutputSchema,
     UserInfoOutputSchema,
     BuildLinkOutputSchema,
+    CreateThreadOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -342,6 +359,7 @@ export const StructuredOutputSchema = z.union([
 /**
  * Type definitions for the structured outputs
  */
+export type CreateThreadOutput = z.infer<typeof CreateThreadOutputSchema>
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>

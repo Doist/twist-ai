@@ -113,7 +113,7 @@ async function main() {
         }
         try {
             jsonArgs = readFileSync(args[2], 'utf-8')
-        } catch (e) {
+        } catch {
             console.error(`Failed to read file: ${args[2]}`)
             process.exit(1)
         }

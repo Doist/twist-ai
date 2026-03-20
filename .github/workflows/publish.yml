@@ -2,6 +2,15 @@ name: Release @doist/twist-ai package
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag created by release-please
+        required: true
+        type: string
+      release_sha:
+        description: Release commit SHA created by release-please
+        required: true
+        type: string
 
 permissions:
   # Enable reading repository contents (allows checkout without token)
@@ -17,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.release_sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -79,3 +90,119 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         continue-on-error: true
+
+      - name: Announce release in Twist
+        continue-on-error: true
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          TWIST_RELEASE_INSTALL_ID: ${{ secrets.TWIST_RELEASE_INSTALL_ID }}
+          TWIST_RELEASE_INSTALL_TOKEN: ${{ secrets.TWIST_RELEASE_INSTALL_TOKEN }}
+        run: |
+          node <<'EOF'
+          const { readFileSync } = require('node:fs')
+
+          function getRequiredEnv(name) {
+            const value = process.env[name]
+            if (!value) {
+              throw new Error(`${name} is required`)
+            }
+            return value
+          }
+
+          function formatUtc(date) {
+            return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC')
+          }
+
+          async function fetchGitHubRelease({ repository, releaseTag, githubToken }) {
+            const response = await fetch(
+              `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(releaseTag)}`,
+              {
+                headers: {
+                  Accept: 'application/vnd.github+json',
+                  Authorization: `Bearer ${githubToken}`,
+                  'User-Agent': 'twist-ai-release-announcer',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                },
+              },
+            )
+
+            if (!response.ok) {
+              const errorText = await response.text()
+              throw new Error(
+                `GitHub release lookup failed with ${response.status}: ${errorText}`,
+              )
+            }
+
+            return response.json()
+          }
+
+          async function postToTwist({ installId, installToken, message }) {
+            const url = new URL('https://twist.com/api/v3/integration_incoming/post_data')
+            url.searchParams.set('install_id', installId)
+            url.searchParams.set('install_token', installToken)
+
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            })
+
+            if (!response.ok) {
+              const errorText = await response.text()
+              throw new Error(`Twist announcement failed with ${response.status}: ${errorText}`)
+            }
+          }
+
+          async function main() {
+            const releaseTag = getRequiredEnv('RELEASE_TAG')
+            const repository = getRequiredEnv('GITHUB_REPOSITORY')
+            const githubToken = getRequiredEnv('GITHUB_TOKEN')
+            const twistInstallId = getRequiredEnv('TWIST_RELEASE_INSTALL_ID')
+            const twistInstallToken = getRequiredEnv('TWIST_RELEASE_INSTALL_TOKEN')
+
+            const packageJson = JSON.parse(readFileSync('package.json', 'utf8'))
+            const packageName = packageJson.name
+            const packageVersion = packageJson.version
+            const releaseVersion = releaseTag.replace(/^v/, '')
+
+            if (packageVersion !== releaseVersion) {
+              throw new Error(
+                `Package version ${packageVersion} does not match release tag ${releaseTag}`,
+              )
+            }
+
+            const release = await fetchGitHubRelease({
+              repository,
+              releaseTag,
+              githubToken,
+            })
+
+            const releaseBody =
+              typeof release.body === 'string' && release.body.trim().length > 0
+                ? release.body.trim()
+                : '- No release notes provided.'
+
+            const packageUrl = `https://www.npmjs.com/package/${packageName}/v/${packageVersion}`
+            const publishedAt = formatUtc(new Date())
+            const message = [
+              `🎉 **${packageName} ${releaseTag} Published** (${publishedAt})`,
+              '',
+              releaseBody,
+              '',
+              `[GitHub release](${release.html_url}) | [npm package](${packageUrl})`,
+            ].join('\n')
+
+            await postToTwist({
+              installId: twistInstallId,
+              installToken: twistInstallToken,
+              message,
+            })
+          }
+
+          main().catch((error) => {
+            console.error(error instanceof Error ? error.message : String(error))
+            process.exit(1)
+          })
+          EOF

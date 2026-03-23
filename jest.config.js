@@ -12,12 +12,20 @@ export default {
             'ts-jest',
             {
                 useESM: true,
+                tsconfig: {
+                    moduleResolution: 'Bundler',
+                    ignoreDeprecations: '6.0',
+                },
             },
         ],
         '^.+\\.js$': [
             'ts-jest',
             {
                 useESM: true,
+                tsconfig: {
+                    moduleResolution: 'Bundler',
+                    ignoreDeprecations: '6.0',
+                },
             },
         ],
     },

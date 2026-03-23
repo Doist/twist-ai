@@ -6,7 +6,7 @@
 
         /* Modules */
         "module": "ESNext",
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
         "allowImportingTsExtensions": false,
         "rootDir": "src",
         "outDir": "dist",
@@ -22,12 +22,12 @@
         "noImplicitOverride": true,
 
         /* Interop */
-        "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "verbatimModuleSyntax": false,
         "isolatedModules": true,
 
         /* Other */
+        "types": ["node", "jest"],
         "skipLibCheck": true,
         "declaration": true,
         "declarationMap": false

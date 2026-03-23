@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.0](https://github.com/Doist/twist-ai/compare/v4.4.0...v4.5.0) (2026-03-23)
+
+
+### Features
+
+* add list-channels tool ([#146](https://github.com/Doist/twist-ai/issues/146)) ([28f87bd](https://github.com/Doist/twist-ai/commit/28f87bd48a259581014f8a2d0089b4d3c8cce18b))
+
 ## [4.4.0](https://github.com/Doist/twist-ai/compare/v4.3.2...v4.4.0) (2026-03-18)
 
 

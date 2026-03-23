@@ -275,6 +275,59 @@ describe(`${LIST_CHANNELS} tool`, () => {
         })
     })
 
+    describe('includeArchived', () => {
+        it('should only fetch active channels by default', async () => {
+            mockTwistApi.channels.getChannels.mockResolvedValue([createMockChannel()])
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({ name: 'Alice' })
+
+            await listChannels.execute({ workspaceId: TEST_IDS.WORKSPACE_1 }, mockTwistApi)
+
+            expect(mockTwistApi.channels.getChannels).toHaveBeenCalledTimes(1)
+            expect(mockTwistApi.channels.getChannels).toHaveBeenCalledWith({
+                workspaceId: TEST_IDS.WORKSPACE_1,
+            })
+        })
+
+        it('should batch-fetch active and archived channels when includeArchived is true', async () => {
+            const activeChannel = createMockChannel({ name: 'Active' })
+            const archivedChannel = createMockChannel({
+                id: 67891,
+                name: 'Archived',
+                archived: true,
+                creator: TEST_IDS.USER_1,
+            })
+
+            mockTwistApi.channels.getChannels.mockImplementation(async (args) => {
+                if ('archived' in args && args.archived === true) {
+                    return [archivedChannel]
+                }
+                return [activeChannel]
+            })
+            mockTwistApi.batch.mockResolvedValue([
+                { data: [activeChannel] },
+                { data: [archivedChannel] },
+            ] as never)
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({ name: 'Alice' })
+
+            const result = await listChannels.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, includeArchived: true },
+                mockTwistApi,
+            )
+
+            // Should use batch for the two getChannels calls
+            expect(mockTwistApi.batch).toHaveBeenCalled()
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.totalChannels).toBe(2)
+            expect(structuredContent.channels).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Active', archived: false }),
+                    expect.objectContaining({ name: 'Archived', archived: true }),
+                ]),
+            )
+        })
+    })
+
     describe('error handling', () => {
         it('should propagate API errors', async () => {
             const apiError = new Error(TEST_ERRORS.API_UNAUTHORIZED)

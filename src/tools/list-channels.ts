@@ -1,4 +1,4 @@
-import type { TwistApi } from '@doist/twist-sdk'
+import type { Channel, TwistApi } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -8,6 +8,12 @@ import { getChannelUrl } from '../utils/url-helpers.js'
 
 const ArgsSchema = {
     workspaceId: z.number().describe('The workspace ID to list channels from.'),
+    includeArchived: z
+        .boolean()
+        .optional()
+        .describe(
+            'Whether to include archived channels. If true, both active and archived channels are returned. Defaults to false (active channels only).',
+        ),
 }
 
 type ChannelData = {
@@ -33,8 +39,19 @@ type ListChannelsStructured = Record<string, unknown> & {
 async function generateChannelsList(
     client: TwistApi,
     workspaceId: number,
+    includeArchived: boolean,
 ): Promise<{ textContent: string; structuredContent: ListChannelsStructured }> {
-    const channels = await client.channels.getChannels({ workspaceId })
+    // By default only fetch active channels; optionally include archived ones too
+    let channels: Channel[]
+    if (includeArchived) {
+        const [activeResponse, archivedResponse] = await client.batch(
+            client.channels.getChannels({ workspaceId }, { batch: true }),
+            client.channels.getChannels({ workspaceId, archived: true }, { batch: true }),
+        )
+        channels = [...activeResponse.data, ...archivedResponse.data]
+    } else {
+        channels = await client.channels.getChannels({ workspaceId })
+    }
 
     if (channels.length === 0) {
         return {
@@ -127,13 +144,13 @@ async function generateChannelsList(
 const listChannels = {
     name: ToolNames.LIST_CHANNELS,
     description:
-        'List all channels in a workspace. Returns channel IDs, names, descriptions, visibility (public/private), archive status, creators, and creation dates.',
+        'List channels in a workspace. By default returns only active channels; set includeArchived to true to also include archived channels. Returns channel IDs, names, descriptions, visibility (public/private), archive status, creators, creation dates, URLs, and colors.',
     parameters: ArgsSchema,
     outputSchema: ListChannelsOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
-        const { workspaceId } = args
-        const result = await generateChannelsList(client, workspaceId)
+        const { workspaceId, includeArchived = false } = args
+        const result = await generateChannelsList(client, workspaceId, includeArchived)
 
         return getToolOutput({
             textContent: result.textContent,

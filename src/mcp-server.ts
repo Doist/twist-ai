@@ -29,7 +29,7 @@ You have access to comprehensive Twist management tools for team communication a
 
 ### Tool Usage Guidelines:
 
-(Tools will be added here as they are implemented)
+- **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
 
 ### Best Practices:
 

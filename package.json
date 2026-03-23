@@ -52,6 +52,11 @@
     "peerDependencies": {
         "@modelcontextprotocol/sdk": "^1.25.0"
     },
+    "overrides": {
+        "ts-jest": {
+            "typescript": "$typescript"
+        }
+    },
     "devDependencies": {
         "@biomejs/biome": "2.4.7",
         "@types/jest": "30.0.0",

@@ -87,7 +87,6 @@ jobs:
 
           package_url="https://www.npmjs.com/package/${package_name}/v/${package_version}"
           release_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${release_tag}"
-          published_at="$(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           previous_tag="$(git describe --tags --abbrev=0 "${release_sha}^" 2>/dev/null || true)"
 
           if [ -n "${previous_tag}" ]; then
@@ -109,9 +108,7 @@ jobs:
             echo "package_url=${package_url}"
             echo "release_url=${release_url}"
             echo "message<<EOF"
-            echo "🎉 **${package_name} ${release_tag} Published** (${published_at})"
-            echo
-            echo "📝 Changes"
+            echo "🎉 **Twist MCP & Tools ${release_tag} published** 🚀"
             echo
             printf '%s\n' "${changelog}"
             echo

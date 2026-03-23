@@ -338,6 +338,29 @@ export const MarkDoneOutputSchema = z.object({
 })
 
 /**
+ * Schema for list-channels tool output
+ */
+export const ListChannelsOutputSchema = z.object({
+    type: z.literal('list_channels'),
+    workspaceId: z.number(),
+    channels: z.array(
+        z.object({
+            id: z.number(),
+            name: z.string(),
+            description: z.string().optional(),
+            public: z.boolean(),
+            archived: z.boolean(),
+            creatorId: z.number(),
+            creatorName: z.string().optional(),
+            created: z.string(),
+            channelUrl: z.string(),
+            color: z.number().optional(),
+        }),
+    ),
+    totalChannels: z.number(),
+})
+
+/**
  * Union of all possible structured outputs for type safety
  */
 export const StructuredOutputSchema = z.union([
@@ -354,6 +377,7 @@ export const StructuredOutputSchema = z.union([
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
+    ListChannelsOutputSchema,
 ])
 
 /**
@@ -372,4 +396,5 @@ export type BuildLinkOutput = z.infer<typeof BuildLinkOutputSchema>
 export type ReplyOutput = z.infer<typeof ReplyOutputSchema>
 export type ReactOutput = z.infer<typeof ReactOutputSchema>
 export type MarkDoneOutput = z.infer<typeof MarkDoneOutputSchema>
+export type ListChannelsOutput = z.infer<typeof ListChannelsOutputSchema>
 export type StructuredOutput = z.infer<typeof StructuredOutputSchema>

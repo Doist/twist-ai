@@ -103,6 +103,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         destructiveHint: true,
         idempotentHint: true,
     },
+    {
+        name: ToolNames.LIST_CHANNELS,
+        title: 'Twist: List Channels',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
 ]
 
 describe('Tool annotations', () => {

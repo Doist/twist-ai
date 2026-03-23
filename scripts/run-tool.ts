@@ -23,6 +23,7 @@ import { createThread } from '../src/tools/create-thread.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
+import { listChannels } from '../src/tools/list-channels.js'
 import { loadConversation } from '../src/tools/load-conversation.js'
 import { loadThread } from '../src/tools/load-thread.js'
 import { markDone } from '../src/tools/mark-done.js'
@@ -59,6 +60,7 @@ const tools: Record<string, ExecutableTool> = {
     'get-workspaces': getWorkspaces,
     'get-users': getUsers,
     away: away,
+    'list-channels': listChannels,
 }
 
 function printUsage() {

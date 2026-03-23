@@ -7,6 +7,7 @@ import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
+import { listChannels } from './tools/list-channels.js'
 import { loadConversation } from './tools/load-conversation.js'
 import { loadThread } from './tools/load-thread.js'
 import { markDone } from './tools/mark-done.js'
@@ -28,7 +29,7 @@ You have access to comprehensive Twist management tools for team communication a
 
 ### Tool Usage Guidelines:
 
-(Tools will be added here as they are implemented)
+- **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
 
 ### Best Practices:
 
@@ -74,6 +75,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)
+    registerTool(listChannels, server, twist)
 
     return server
 }

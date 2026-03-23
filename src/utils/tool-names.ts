@@ -12,4 +12,5 @@ export const ToolNames = {
     GET_WORKSPACES: 'get-workspaces',
     GET_USERS: 'get-users',
     AWAY: 'away',
+    LIST_CHANNELS: 'list-channels',
 } as const

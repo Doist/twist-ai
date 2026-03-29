@@ -46,7 +46,8 @@
         "format:check": "biome format",
         "format:write": "biome format --write",
         "check": "biome check",
-        "check:fix": "biome check --fix --unsafe"
+        "check:fix": "biome check --fix --unsafe",
+        "prepublishOnly": "npm run build && npm test"
     },
     "dependencies": {
         "@doist/twist-sdk": "2.1.2",

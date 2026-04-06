@@ -63,14 +63,14 @@
         }
     },
     "devDependencies": {
-        "@biomejs/biome": "2.4.8",
+        "@biomejs/biome": "2.4.10",
         "@semantic-release/changelog": "6.0.3",
         "@semantic-release/exec": "7.1.0",
         "@semantic-release/git": "10.0.1",
         "@types/jest": "30.0.0",
         "@types/node": "22.19.15",
         "concurrently": "9.2.1",
-        "conventional-changelog-conventionalcommits": "9.3.0",
+        "conventional-changelog-conventionalcommits": "9.3.1",
         "jest": "30.3.0",
         "nodemon": "3.1.14",
         "rimraf": "6.1.3",

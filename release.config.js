@@ -9,14 +9,14 @@ export default {
         '@semantic-release/changelog',
         [
             '@semantic-release/exec',
-            { prepareCmd: 'npx @biomejs/biome format --write CHANGELOG.md' },
+            { prepareCmd: 'npx oxfmt --ignore-path /dev/null CHANGELOG.md' },
         ],
         '@semantic-release/npm',
         [
             '@semantic-release/git',
             {
                 assets: ['CHANGELOG.md', 'package.json', 'package-lock.json'],
-                // biome-ignore lint/suspicious/noTemplateCurlyInString: semantic-release template
+                // oxlint-disable-next-line no-template-curly-in-string -- semantic-release template
                 message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
             },
         ],

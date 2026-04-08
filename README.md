@@ -19,18 +19,18 @@ npm install @doist/twist-ai
 Here's an example using [Vercel's AI SDK](https://ai-sdk.dev/docs/ai-sdk-core/generating-text#streamtext).
 
 ```js
-import { fetchInbox, reply, markDone } from "@doist/twist-ai";
-import { streamText } from "ai";
+import { fetchInbox, reply, markDone } from '@doist/twist-ai'
+import { streamText } from 'ai'
 
 const result = streamText({
-  model: yourModel,
-  system: "You are a helpful Twist assistant",
-  tools: {
-    fetchInbox,
-    reply,
-    markDone,
-  },
-});
+    model: yourModel,
+    system: 'You are a helpful Twist assistant',
+    tools: {
+        fetchInbox,
+        reply,
+        markDone,
+    },
+})
 ```
 
 ## Using as an MCP server
@@ -51,15 +51,15 @@ Add to your Claude Desktop configuration file (`claude_desktop_config.json`):
 
 ```json
 {
-  "mcpServers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "mcpServers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -72,15 +72,15 @@ Create a configuration file:
 
 ```json
 {
-  "mcpServers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "mcpServers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -105,15 +105,15 @@ export TWIST_API_KEY=your-twist-api-key-here
 
 ```json
 {
-  "servers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "servers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -192,9 +192,8 @@ npm run build
 - `npm run dev` - Development mode with auto-rebuild and restart
 - `npm test` - Run all tests
 - `npm run type-check` - Run TypeScript type checking
-- `npm run lint:check` - Run linting checks
-- `npm run format:check` - Check code formatting
-- `npm run format:write` - Auto-fix formatting issues
+- `npm run format:check` - Run linting and formatting checks
+- `npm run format:fix` - Auto-fix linting and formatting issues
 
 ## Contributing
 
@@ -202,8 +201,7 @@ Contributions are welcome! Please ensure:
 
 1. All tests pass (`npm test`)
 2. Code is properly typed (`npm run type-check`)
-3. Code follows the project's linting rules (`npm run lint:check`)
-4. Code is properly formatted (`npm run format:check`)
+3. Code passes linting and formatting checks (`npm run format:check`)
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
 

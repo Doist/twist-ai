@@ -41,6 +41,7 @@ npx tsx scripts/run-tool.ts --list  # list all tools
 ```
 
 Examples:
+
 ```bash
 npx tsx scripts/run-tool.ts user-info '{}'
 npx tsx scripts/run-tool.ts search-content '{"query":"project update"}'

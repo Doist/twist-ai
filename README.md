@@ -19,18 +19,18 @@ npm install @doist/twist-ai
 Here's an example using [Vercel's AI SDK](https://ai-sdk.dev/docs/ai-sdk-core/generating-text#streamtext).
 
 ```js
-import { fetchInbox, reply, markDone } from "@doist/twist-ai";
-import { streamText } from "ai";
+import { fetchInbox, reply, markDone } from '@doist/twist-ai'
+import { streamText } from 'ai'
 
 const result = streamText({
-  model: yourModel,
-  system: "You are a helpful Twist assistant",
-  tools: {
-    fetchInbox,
-    reply,
-    markDone,
-  },
-});
+    model: yourModel,
+    system: 'You are a helpful Twist assistant',
+    tools: {
+        fetchInbox,
+        reply,
+        markDone,
+    },
+})
 ```
 
 ## Using as an MCP server
@@ -51,15 +51,15 @@ Add to your Claude Desktop configuration file (`claude_desktop_config.json`):
 
 ```json
 {
-  "mcpServers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "mcpServers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -72,15 +72,15 @@ Create a configuration file:
 
 ```json
 {
-  "mcpServers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "mcpServers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -105,15 +105,15 @@ export TWIST_API_KEY=your-twist-api-key-here
 
 ```json
 {
-  "servers": {
-    "twist": {
-      "command": "npx",
-      "args": ["-y", "@doist/twist-ai"],
-      "env": {
-        "TWIST_API_KEY": "your-twist-api-key-here"
-      }
+    "servers": {
+        "twist": {
+            "command": "npx",
+            "args": ["-y", "@doist/twist-ai"],
+            "env": {
+                "TWIST_API_KEY": "your-twist-api-key-here"
+            }
+        }
     }
-  }
 }
 ```
 

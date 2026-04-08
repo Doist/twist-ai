@@ -37,7 +37,7 @@ type ExecutableTool = {
     name: string
     description: string
     execute: (
-        // biome-ignore lint/suspicious/noExplicitAny: tools have varying parameter schemas
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- tools have varying parameter schemas
         args: any,
         client: TwistApi,
     ) => Promise<{

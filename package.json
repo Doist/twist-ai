@@ -40,17 +40,12 @@
         "start": "npm run build && npx @modelcontextprotocol/inspector node dist/main.js",
         "dev": "concurrently \"npx tsc --watch\" \"npx @modelcontextprotocol/inspector npx nodemon --quiet --watch dist --ext js --exec node dist/main.js\"",
         "type-check": "npx tsc --noEmit",
-        "biome:sort-imports": "biome check --formatter-enabled=false --linter-enabled=false --organize-imports-enabled=true --write .",
-        "lint:check": "biome lint",
-        "lint:write": "biome lint --write",
-        "format:check": "biome format",
-        "format:write": "biome format --write",
-        "check": "biome check",
-        "check:fix": "biome check --fix --unsafe",
+        "format:check": "oxlint src scripts && oxfmt --check",
+        "format:fix": "oxlint src scripts --fix && oxfmt",
         "prepublishOnly": "npm run build && npm test"
     },
     "dependencies": {
-        "@doist/twist-sdk": "2.2.0",
+        "@doist/twist-sdk": "2.1.2",
         "dotenv": "17.3.1",
         "zod": "4.1.13"
     },
@@ -63,14 +58,15 @@
         }
     },
     "devDependencies": {
-        "@biomejs/biome": "2.4.10",
+        "oxfmt": "0.43.0",
+        "oxlint": "1.58.0",
         "@semantic-release/changelog": "6.0.3",
         "@semantic-release/exec": "7.1.0",
         "@semantic-release/git": "10.0.1",
         "@types/jest": "30.0.0",
         "@types/node": "22.19.15",
         "concurrently": "9.2.1",
-        "conventional-changelog-conventionalcommits": "9.3.1",
+        "conventional-changelog-conventionalcommits": "9.3.0",
         "jest": "30.3.0",
         "nodemon": "3.1.14",
         "rimraf": "6.1.3",

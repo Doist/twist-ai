@@ -1,3 +1,12 @@
+## [4.5.1](https://github.com/Doist/twist-ai/compare/v4.5.0...v4.5.1) (2026-04-08)
+
+### Bug Fixes
+
+* add prepublishOnly script for release safety ([#154](https://github.com/Doist/twist-ai/issues/154)) ([62ef2ee](https://github.com/Doist/twist-ai/commit/62ef2eedfb358f8d6a29a744988e04d9e4c8ddc3))
+* **deps:** update dependency @doist/twist-sdk to v2.2.0 ([#159](https://github.com/Doist/twist-ai/issues/159)) ([92df923](https://github.com/Doist/twist-ai/commit/92df9231c5056f57e18ba6a7542d0ae1f24e27b6))
+* remove CHANGELOG formatting step from release pipeline ([#168](https://github.com/Doist/twist-ai/issues/168)) ([da97b19](https://github.com/Doist/twist-ai/commit/da97b192d878c2d13a060cf2c763bb00ae7aa200))
+* use individual permission inputs for create-github-app-token v3 ([#157](https://github.com/Doist/twist-ai/issues/157)) ([3298d5d](https://github.com/Doist/twist-ai/commit/3298d5dcabee330e852cf6a6d148dc9b00c91ec1))
+
 # Changelog
 
 ## [4.5.0](https://github.com/Doist/twist-ai/compare/v4.4.0...v4.5.0) (2026-03-23)

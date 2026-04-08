@@ -40,12 +40,12 @@
         "start": "npm run build && npx @modelcontextprotocol/inspector node dist/main.js",
         "dev": "concurrently \"npx tsc --watch\" \"npx @modelcontextprotocol/inspector npx nodemon --quiet --watch dist --ext js --exec node dist/main.js\"",
         "type-check": "npx tsc --noEmit",
-        "format:check": "oxlint src scripts && oxfmt --check",
-        "format:fix": "oxlint src scripts --fix && oxfmt",
+        "format:check": "oxlint src scripts *.config.js && oxfmt --check",
+        "format:fix": "oxlint src scripts *.config.js --fix && oxfmt",
         "prepublishOnly": "npm run build && npm test"
     },
     "dependencies": {
-        "@doist/twist-sdk": "2.1.2",
+        "@doist/twist-sdk": "2.2.0",
         "dotenv": "17.3.1",
         "zod": "4.1.13"
     },

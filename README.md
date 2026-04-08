@@ -192,9 +192,8 @@ npm run build
 - `npm run dev` - Development mode with auto-rebuild and restart
 - `npm test` - Run all tests
 - `npm run type-check` - Run TypeScript type checking
-- `npm run lint:check` - Run linting checks
-- `npm run format:check` - Check code formatting
-- `npm run format:write` - Auto-fix formatting issues
+- `npm run format:check` - Run linting and formatting checks
+- `npm run format:fix` - Auto-fix linting and formatting issues
 
 ## Contributing
 
@@ -202,8 +201,7 @@ Contributions are welcome! Please ensure:
 
 1. All tests pass (`npm test`)
 2. Code is properly typed (`npm run type-check`)
-3. Code follows the project's linting rules (`npm run lint:check`)
-4. Code is properly formatted (`npm run format:check`)
+3. Code passes linting and formatting checks (`npm run format:check`)
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
 

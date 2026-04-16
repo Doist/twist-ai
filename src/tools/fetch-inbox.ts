@@ -31,6 +31,16 @@ const ArgsSchema = {
         .default(50)
         .describe('Maximum number of items to return.'),
     onlyUnread: z.boolean().optional().default(false).describe('Only return unread items.'),
+    archiveFilter: z
+        .enum(['active', 'archived', 'all'])
+        .optional()
+        .default('active')
+        .describe(
+            'Filter inbox threads by archive status. ' +
+                '"active" (default) shows only current threads, ' +
+                '"archived" shows only done/archived threads, ' +
+                '"all" shows both active and done threads.',
+        ),
 }
 
 type FetchInboxStructured = {
@@ -122,12 +132,13 @@ async function loadConversationDetails(
 const fetchInbox = {
     name: ToolNames.FETCH_INBOX,
     description:
-        'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state.',
+        'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state. Use archiveFilter "all" to include threads marked as done alongside active threads.',
     parameters: ArgsSchema,
     outputSchema: FetchInboxOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
+        const archiveFilter = args.archiveFilter ?? 'active'
 
         // Call all 4 endpoints in parallel for complete inbox picture
         const [
@@ -142,6 +153,7 @@ const fetchInbox = {
                     since: sinceDate ? new Date(sinceDate) : undefined,
                     until: untilDate ? new Date(untilDate) : undefined,
                     limit,
+                    archiveFilter,
                 },
                 { batch: true },
             ),

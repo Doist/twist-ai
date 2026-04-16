@@ -117,6 +117,7 @@ describe(`${FETCH_INBOX} tool`, () => {
                     since: undefined,
                     until: undefined,
                     limit: 50,
+                    archiveFilter: 'active',
                 },
                 { batch: true },
             )
@@ -451,6 +452,67 @@ describe(`${FETCH_INBOX} tool`, () => {
             const { structuredContent } = result
             expect(structuredContent?.totalConversations).toBe(0)
             expect(structuredContent?.conversations).toHaveLength(0)
+        })
+
+        it('should pass archiveFilter "all" to SDK', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
+            mockTwistApi.inbox.getCount.mockResolvedValue(0)
+            mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+
+            await fetchInbox.execute(
+                {
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    limit: 50,
+                    onlyUnread: false,
+                    archiveFilter: 'all',
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                expect.objectContaining({ archiveFilter: 'all' }),
+                { batch: true },
+            )
+        })
+
+        it('should pass archiveFilter "archived" to SDK', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
+            mockTwistApi.inbox.getCount.mockResolvedValue(0)
+            mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+
+            await fetchInbox.execute(
+                {
+                    workspaceId: TEST_IDS.WORKSPACE_1,
+                    limit: 50,
+                    onlyUnread: false,
+                    archiveFilter: 'archived',
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                expect.objectContaining({ archiveFilter: 'archived' }),
+                { batch: true },
+            )
+        })
+
+        it('should default archiveFilter to "active"', async () => {
+            mockTwistApi.inbox.getInbox.mockResolvedValue([])
+            mockTwistApi.inbox.getCount.mockResolvedValue(0)
+            mockTwistApi.threads.getUnread.mockResolvedValue([])
+            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+
+            await fetchInbox.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                expect.objectContaining({ archiveFilter: 'active' }),
+                { batch: true },
+            )
         })
     })
 

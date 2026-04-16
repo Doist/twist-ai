@@ -1,3 +1,9 @@
+## [4.6.0](https://github.com/Doist/twist-ai/compare/v4.5.2...v4.6.0) (2026-04-16)
+
+### Features
+
+* **fetch-inbox:** add archiveFilter parameter ([#172](https://github.com/Doist/twist-ai/issues/172)) ([6d30a8e](https://github.com/Doist/twist-ai/commit/6d30a8ec50153a1ea965a813768be2c9017b62c3))
+
 ## [4.5.2](https://github.com/Doist/twist-ai/compare/v4.5.1...v4.5.2) (2026-04-13)
 
 ### Bug Fixes

@@ -5,7 +5,7 @@ import type {
     UnreadConversation,
     WorkspaceUser,
 } from '@doist/twist-sdk'
-import { getFullTwistURL } from '@doist/twist-sdk'
+import { ARCHIVE_FILTER_VALUES, getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -32,7 +32,7 @@ const ArgsSchema = {
         .describe('Maximum number of items to return.'),
     onlyUnread: z.boolean().optional().default(false).describe('Only return unread items.'),
     archiveFilter: z
-        .enum(['active', 'archived', 'all'])
+        .enum(ARCHIVE_FILTER_VALUES)
         .optional()
         .default('active')
         .describe(
@@ -53,6 +53,7 @@ type FetchInboxStructured = {
         channelName?: string
         creator: number
         isUnread: boolean
+        isArchived: boolean
         isStarred: boolean
         threadUrl: string
     }>
@@ -166,6 +167,7 @@ const fetchInbox = {
         let threads = inboxThreadsResponse.data.map((thread) => ({
             ...thread,
             isUnread: unreadThreadsDataResponse.data.some((ut) => ut.threadId === thread.id),
+            isArchived: thread.isArchived,
         }))
 
         const unreadThreads = threads.filter((t) => t.isUnread)
@@ -237,10 +239,11 @@ const fetchInbox = {
                 if (channel) {
                     thread.title = `[${channel.name}] ${thread.title}`
                 }
+                const archivedBadge = thread.isArchived ? ' [archived]' : ''
                 const unreadBadge = thread.isUnread ? ' 🔵' : ''
                 const starBadge = thread.starred ? ' ⭐' : ''
                 lines.push(
-                    `- ${thread.title}${unreadBadge}${starBadge}${channelDetails} (ID: ${thread.id})`,
+                    `- ${thread.title}${archivedBadge}${unreadBadge}${starBadge}${channelDetails} (ID: ${thread.id})`,
                 )
             }
             lines.push('')
@@ -286,6 +289,7 @@ const fetchInbox = {
                 channelName: channelInfo[t.channelId]?.name,
                 creator: t.creator,
                 isUnread: t.isUnread,
+                isArchived: t.isArchived,
                 isStarred: t.starred,
                 threadUrl:
                     t.url ??

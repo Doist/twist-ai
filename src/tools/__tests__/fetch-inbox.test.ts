@@ -454,65 +454,170 @@ describe(`${FETCH_INBOX} tool`, () => {
             expect(structuredContent?.conversations).toHaveLength(0)
         })
 
-        it('should pass archiveFilter "all" to SDK', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue([])
-            mockTwistApi.inbox.getCount.mockResolvedValue(0)
-            mockTwistApi.threads.getUnread.mockResolvedValue([])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
-
-            await fetchInbox.execute(
-                {
+        describe('archiveFilter', () => {
+            function createThread({
+                id,
+                title,
+                creator,
+                isArchived,
+            }: {
+                id: number
+                title: string
+                creator: number
+                isArchived: boolean
+            }) {
+                return {
+                    id,
+                    title,
+                    content: `${title} content`,
+                    creator,
+                    channelId: TEST_IDS.CHANNEL_1,
                     workspaceId: TEST_IDS.WORKSPACE_1,
-                    limit: 50,
-                    onlyUnread: false,
-                    archiveFilter: 'all',
-                },
-                mockTwistApi,
-            )
+                    commentCount: 1,
+                    lastUpdated: new Date(),
+                    posted: new Date(),
+                    snippet: `${title} snippet`,
+                    snippetCreator: creator,
+                    starred: false,
+                    pinned: false,
+                    isArchived,
+                    inInbox: true,
+                    closed: isArchived,
+                    url: `https://twist.com/a/${TEST_IDS.WORKSPACE_1}/ch/${TEST_IDS.CHANNEL_1}/t/${id}/`,
+                }
+            }
 
-            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
-                expect.objectContaining({ archiveFilter: 'all' }),
-                { batch: true },
-            )
-        })
-
-        it('should pass archiveFilter "archived" to SDK', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue([])
-            mockTwistApi.inbox.getCount.mockResolvedValue(0)
-            mockTwistApi.threads.getUnread.mockResolvedValue([])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
-
-            await fetchInbox.execute(
-                {
+            function mockArchiveFilterInbox(threads: Array<ReturnType<typeof createThread>>) {
+                mockTwistApi.inbox.getInbox.mockResolvedValue(threads)
+                mockTwistApi.inbox.getCount.mockResolvedValue(0)
+                mockTwistApi.threads.getUnread.mockResolvedValue([])
+                mockTwistApi.conversations.getUnread.mockResolvedValue([])
+                mockTwistApi.channels.getChannel.mockResolvedValue({
+                    id: TEST_IDS.CHANNEL_1,
+                    name: 'Test Channel',
                     workspaceId: TEST_IDS.WORKSPACE_1,
-                    limit: 50,
-                    onlyUnread: false,
-                    archiveFilter: 'archived',
-                },
-                mockTwistApi,
-            )
+                    created: new Date(),
+                    archived: false,
+                    public: true,
+                    color: 0,
+                    creator: TEST_IDS.USER_1,
+                    version: 1,
+                })
+            }
 
-            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
-                expect.objectContaining({ archiveFilter: 'archived' }),
-                { batch: true },
-            )
-        })
+            it('should default to active threads', async () => {
+                mockArchiveFilterInbox([
+                    createThread({
+                        id: TEST_IDS.THREAD_1,
+                        title: 'Active Thread',
+                        creator: TEST_IDS.USER_1,
+                        isArchived: false,
+                    }),
+                ])
 
-        it('should default archiveFilter to "active"', async () => {
-            mockTwistApi.inbox.getInbox.mockResolvedValue([])
-            mockTwistApi.inbox.getCount.mockResolvedValue(0)
-            mockTwistApi.threads.getUnread.mockResolvedValue([])
-            mockTwistApi.conversations.getUnread.mockResolvedValue([])
+                const result = await fetchInbox.execute(
+                    { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
+                    mockTwistApi,
+                )
 
-            await fetchInbox.execute(
-                { workspaceId: TEST_IDS.WORKSPACE_1, limit: 50, onlyUnread: false },
-                mockTwistApi,
-            )
+                expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                    expect.objectContaining({ archiveFilter: 'active' }),
+                    { batch: true },
+                )
+                const textContent = extractTextContent(result)
+                expect(textContent).toContain('Active Thread')
+                expect(textContent).not.toContain('Archived Thread')
+                expect(textContent).not.toContain('Active Thread [archived]')
+                expect(result.structuredContent?.threads).toEqual([
+                    expect.objectContaining({
+                        id: TEST_IDS.THREAD_1,
+                        isArchived: false,
+                    }),
+                ])
+            })
 
-            expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
-                expect.objectContaining({ archiveFilter: 'active' }),
-                { batch: true },
-            )
+            it('should return archived threads when requested', async () => {
+                mockArchiveFilterInbox([
+                    createThread({
+                        id: TEST_IDS.THREAD_2,
+                        title: 'Archived Thread',
+                        creator: TEST_IDS.USER_2,
+                        isArchived: true,
+                    }),
+                ])
+
+                const result = await fetchInbox.execute(
+                    {
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        limit: 50,
+                        onlyUnread: false,
+                        archiveFilter: 'archived',
+                    },
+                    mockTwistApi,
+                )
+
+                expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                    expect.objectContaining({ archiveFilter: 'archived' }),
+                    { batch: true },
+                )
+                const textContent = extractTextContent(result)
+                expect(textContent).toContain('Archived Thread [archived]')
+                expect(textContent).not.toContain('Active Thread')
+                expect(result.structuredContent?.threads).toEqual([
+                    expect.objectContaining({
+                        id: TEST_IDS.THREAD_2,
+                        isArchived: true,
+                    }),
+                ])
+            })
+
+            it('should return active and archived threads when requested', async () => {
+                mockArchiveFilterInbox([
+                    createThread({
+                        id: TEST_IDS.THREAD_1,
+                        title: 'Active Thread',
+                        creator: TEST_IDS.USER_1,
+                        isArchived: false,
+                    }),
+                    createThread({
+                        id: TEST_IDS.THREAD_2,
+                        title: 'Archived Thread',
+                        creator: TEST_IDS.USER_2,
+                        isArchived: true,
+                    }),
+                ])
+
+                const result = await fetchInbox.execute(
+                    {
+                        workspaceId: TEST_IDS.WORKSPACE_1,
+                        limit: 50,
+                        onlyUnread: false,
+                        archiveFilter: 'all',
+                    },
+                    mockTwistApi,
+                )
+
+                expect(mockTwistApi.inbox.getInbox).toHaveBeenCalledWith(
+                    expect.objectContaining({ archiveFilter: 'all' }),
+                    { batch: true },
+                )
+                const textContent = extractTextContent(result)
+                expect(textContent).toContain('Active Thread')
+                expect(textContent).toContain('Archived Thread [archived]')
+                expect(textContent).not.toContain('Active Thread [archived]')
+                expect(result.structuredContent?.threads).toEqual(
+                    expect.arrayContaining([
+                        expect.objectContaining({
+                            id: TEST_IDS.THREAD_1,
+                            isArchived: false,
+                        }),
+                        expect.objectContaining({
+                            id: TEST_IDS.THREAD_2,
+                            isArchived: true,
+                        }),
+                    ]),
+                )
+            })
         })
     })
 

@@ -111,6 +111,7 @@ export const FetchInboxOutputSchema = z.object({
             channelName: z.string().optional(),
             creator: z.number(),
             isUnread: z.boolean(),
+            isArchived: z.boolean(),
             isStarred: z.boolean(),
             threadUrl: z.string(),
         }),

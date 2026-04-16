@@ -5,7 +5,7 @@ import type {
     UnreadConversation,
     WorkspaceUser,
 } from '@doist/twist-sdk'
-import { getFullTwistURL } from '@doist/twist-sdk'
+import { ARCHIVE_FILTER_VALUES, getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
@@ -31,6 +31,16 @@ const ArgsSchema = {
         .default(50)
         .describe('Maximum number of items to return.'),
     onlyUnread: z.boolean().optional().default(false).describe('Only return unread items.'),
+    archiveFilter: z
+        .enum(ARCHIVE_FILTER_VALUES)
+        .optional()
+        .default('active')
+        .describe(
+            'Filter inbox threads by archive status. ' +
+                '"active" (default) shows only current threads, ' +
+                '"archived" shows only done/archived threads, ' +
+                '"all" shows both active and done threads.',
+        ),
 }
 
 type FetchInboxStructured = {
@@ -43,6 +53,7 @@ type FetchInboxStructured = {
         channelName?: string
         creator: number
         isUnread: boolean
+        isArchived: boolean
         isStarred: boolean
         threadUrl: string
     }>
@@ -122,12 +133,13 @@ async function loadConversationDetails(
 const fetchInbox = {
     name: ToolNames.FETCH_INBOX,
     description:
-        'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state.',
+        'Fetch inbox view with threads, conversations, unread counts, and unread IDs. Provides a complete picture of the inbox state. Use archiveFilter "all" to include threads marked as done alongside active threads.',
     parameters: ArgsSchema,
     outputSchema: FetchInboxOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },
     async execute(args, client) {
         const { workspaceId, sinceDate, untilDate, limit, onlyUnread } = args
+        const archiveFilter = args.archiveFilter ?? 'active'
 
         // Call all 4 endpoints in parallel for complete inbox picture
         const [
@@ -142,6 +154,7 @@ const fetchInbox = {
                     since: sinceDate ? new Date(sinceDate) : undefined,
                     until: untilDate ? new Date(untilDate) : undefined,
                     limit,
+                    archiveFilter,
                 },
                 { batch: true },
             ),
@@ -154,6 +167,7 @@ const fetchInbox = {
         let threads = inboxThreadsResponse.data.map((thread) => ({
             ...thread,
             isUnread: unreadThreadsDataResponse.data.some((ut) => ut.threadId === thread.id),
+            isArchived: thread.isArchived,
         }))
 
         const unreadThreads = threads.filter((t) => t.isUnread)
@@ -225,10 +239,11 @@ const fetchInbox = {
                 if (channel) {
                     thread.title = `[${channel.name}] ${thread.title}`
                 }
+                const archivedBadge = thread.isArchived ? ' [archived]' : ''
                 const unreadBadge = thread.isUnread ? ' 🔵' : ''
                 const starBadge = thread.starred ? ' ⭐' : ''
                 lines.push(
-                    `- ${thread.title}${unreadBadge}${starBadge}${channelDetails} (ID: ${thread.id})`,
+                    `- ${thread.title}${archivedBadge}${unreadBadge}${starBadge}${channelDetails} (ID: ${thread.id})`,
                 )
             }
             lines.push('')
@@ -274,6 +289,7 @@ const fetchInbox = {
                 channelName: channelInfo[t.channelId]?.name,
                 creator: t.creator,
                 isUnread: t.isUnread,
+                isArchived: t.isArchived,
                 isStarred: t.starred,
                 threadUrl:
                     t.url ??

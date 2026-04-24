@@ -1,3 +1,9 @@
+## [4.7.0](https://github.com/Doist/twist-ai/compare/v4.6.1...v4.7.0) (2026-04-24)
+
+### Features
+
+* add update-thread and update-comment tools ([#164](https://github.com/Doist/twist-ai/issues/164)) ([d0e4541](https://github.com/Doist/twist-ai/commit/d0e4541352c1451c96072764a47cf516aa2168fa))
+
 ## [4.6.1](https://github.com/Doist/twist-ai/compare/v4.6.0...v4.6.1) (2026-04-20)
 
 ### Bug Fixes

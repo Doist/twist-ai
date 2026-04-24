@@ -10,6 +10,8 @@ import { markDone } from './tools/mark-done.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
+import { updateComment } from './tools/update-comment.js'
+import { updateThread } from './tools/update-thread.js'
 import { userInfo } from './tools/user-info.js'
 
 const tools = {
@@ -20,6 +22,8 @@ const tools = {
     loadConversation,
     searchContent,
     createThread,
+    updateThread,
+    updateComment,
     reply,
     react,
     markDone,
@@ -37,6 +41,8 @@ export {
     loadConversation,
     searchContent,
     createThread,
+    updateThread,
+    updateComment,
     reply,
     react,
     markDone,

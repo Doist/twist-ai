@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`update-thread tool updating threads should update a thread title and content 1`] = `
+"# Thread Updated
+
+**Title:** Updated Title
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Last Edited:** 2025-02-03T12:34:56.000Z
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Updated content"
+`;
+
+exports[`update-thread tool updating threads should update only the thread content 1`] = `
+"# Thread Updated
+
+**Title:** Test Thread
+**Thread ID:** 12345
+**Channel ID:** 67890
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+New content only"
+`;
+
+exports[`update-thread tool updating threads should update only the thread title 1`] = `
+"# Thread Updated
+
+**Title:** New Title Only
+**Thread ID:** 12345
+**Channel ID:** 67890
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Test thread content"
+`;

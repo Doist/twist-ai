@@ -83,6 +83,20 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         idempotentHint: false,
     },
     {
+        name: ToolNames.UPDATE_THREAD,
+        title: 'Twist: Update Thread',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
+        name: ToolNames.UPDATE_COMMENT,
+        title: 'Twist: Update Comment',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.REPLY,
         title: 'Twist: Reply',
         readOnlyHint: false,

@@ -14,6 +14,8 @@ import { markDone } from './tools/mark-done.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
+import { updateComment } from './tools/update-comment.js'
+import { updateThread } from './tools/update-thread.js'
 import { userInfo } from './tools/user-info.js'
 
 const instructions = `
@@ -73,6 +75,8 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(searchContent, server, twist)
     registerTool(buildLink, server, twist)
     registerTool(createThread, server, twist)
+    registerTool(updateThread, server, twist)
+    registerTool(updateComment, server, twist)
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)

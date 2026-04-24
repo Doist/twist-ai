@@ -282,6 +282,36 @@ export const CreateThreadOutputSchema = z.object({
 })
 
 /**
+ * Schema for update-thread tool output
+ */
+export const UpdateThreadOutputSchema = z.object({
+    type: z.literal('update_thread_result'),
+    success: z.boolean(),
+    threadId: z.number(),
+    title: z.string(),
+    channelId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    threadUrl: z.string(),
+    lastEdited: z.string().nullable().optional(),
+})
+
+/**
+ * Schema for update-comment tool output
+ */
+export const UpdateCommentOutputSchema = z.object({
+    type: z.literal('update_comment_result'),
+    success: z.boolean(),
+    commentId: z.number(),
+    threadId: z.number(),
+    channelId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    commentUrl: z.string(),
+    lastEdited: z.string().nullable().optional(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -375,6 +405,8 @@ export const StructuredOutputSchema = z.union([
     UserInfoOutputSchema,
     BuildLinkOutputSchema,
     CreateThreadOutputSchema,
+    UpdateThreadOutputSchema,
+    UpdateCommentOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -385,6 +417,8 @@ export const StructuredOutputSchema = z.union([
  * Type definitions for the structured outputs
  */
 export type CreateThreadOutput = z.infer<typeof CreateThreadOutputSchema>
+export type UpdateThreadOutput = z.infer<typeof UpdateThreadOutputSchema>
+export type UpdateCommentOutput = z.infer<typeof UpdateCommentOutputSchema>
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>

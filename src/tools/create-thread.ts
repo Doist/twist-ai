@@ -13,7 +13,7 @@ const ArgsSchema = {
         .array(z.number())
         .optional()
         .describe(
-            'Optional array of user IDs to notify about the thread. If not provided, the channel default recipients will be used.',
+            'Optional array of user IDs to notify. If omitted, Twist defaults to notifying all current members of the channel (equivalent to the API\'s "EVERYONE" default). Note: workspace users who have not joined this channel will not be notified — add their IDs explicitly if you want to reach them.',
         ),
 }
 
@@ -61,6 +61,8 @@ const createThread = {
             '## Content',
             '',
             thread.content,
+            '',
+            '> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL.',
         ]
 
         const structuredContent: CreateThreadOutput = {

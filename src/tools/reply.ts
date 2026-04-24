@@ -15,7 +15,9 @@ const ArgsSchema = {
     recipients: z
         .array(z.number())
         .optional()
-        .describe('Optional array of user IDs to notify (only for thread replies).'),
+        .describe(
+            'Optional array of user IDs to notify (only for thread replies). If omitted, Twist defaults to notifying all current members of the channel. Add specific user IDs to limit or expand notifications beyond current channel members.',
+        ),
 }
 
 type ReplyStructured = {

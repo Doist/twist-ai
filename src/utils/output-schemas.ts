@@ -392,6 +392,34 @@ export const ListChannelsOutputSchema = z.object({
 })
 
 /**
+ * Schema for send-direct-message tool output
+ */
+export const SendDirectMessageOutputSchema = z.object({
+    type: z.literal('send_direct_message_result'),
+    success: z.boolean(),
+    conversationId: z.number(),
+    workspaceId: z.number(),
+    userIds: z.array(z.number()),
+    conversationTitle: z.string().optional(),
+    conversationUrl: z.string(),
+    messageId: z.number(),
+    content: z.string(),
+    created: z.string(),
+    messageUrl: z.string(),
+    createdConversation: z.boolean(),
+})
+
+/**
+ * Schema for delete-item tool output
+ */
+export const DeleteItemOutputSchema = z.object({
+    type: z.literal('delete_item_result'),
+    success: z.boolean(),
+    targetType: z.enum(['thread', 'comment', 'message']),
+    targetId: z.number(),
+})
+
+/**
  * Union of all possible structured outputs for type safety
  */
 export const StructuredOutputSchema = z.union([
@@ -411,6 +439,8 @@ export const StructuredOutputSchema = z.union([
     ReactOutputSchema,
     MarkDoneOutputSchema,
     ListChannelsOutputSchema,
+    SendDirectMessageOutputSchema,
+    DeleteItemOutputSchema,
 ])
 
 /**
@@ -432,4 +462,6 @@ export type ReplyOutput = z.infer<typeof ReplyOutputSchema>
 export type ReactOutput = z.infer<typeof ReactOutputSchema>
 export type MarkDoneOutput = z.infer<typeof MarkDoneOutputSchema>
 export type ListChannelsOutput = z.infer<typeof ListChannelsOutputSchema>
+export type SendDirectMessageOutput = z.infer<typeof SendDirectMessageOutputSchema>
+export type DeleteItemOutput = z.infer<typeof DeleteItemOutputSchema>
 export type StructuredOutput = z.infer<typeof StructuredOutputSchema>

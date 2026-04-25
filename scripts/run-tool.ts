@@ -20,6 +20,7 @@ import { config } from 'dotenv'
 import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'
 import { createThread } from '../src/tools/create-thread.js'
+import { deleteItem } from '../src/tools/delete-item.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
@@ -30,6 +31,7 @@ import { markDone } from '../src/tools/mark-done.js'
 import { react } from '../src/tools/react.js'
 import { reply } from '../src/tools/reply.js'
 import { searchContent } from '../src/tools/search-content.js'
+import { sendDirectMessage } from '../src/tools/send-direct-message.js'
 import { userInfo } from '../src/tools/user-info.js'
 
 // Define a minimal type for tool execution that works with any tool
@@ -61,6 +63,8 @@ const tools: Record<string, ExecutableTool> = {
     'get-users': getUsers,
     away: away,
     'list-channels': listChannels,
+    'send-direct-message': sendDirectMessage,
+    'delete-item': deleteItem,
 }
 
 function printUsage() {

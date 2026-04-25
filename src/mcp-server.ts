@@ -4,6 +4,7 @@ import { registerTool } from './mcp-helpers.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
+import { deleteItem } from './tools/delete-item.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
@@ -14,6 +15,7 @@ import { markDone } from './tools/mark-done.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
+import { sendDirectMessage } from './tools/send-direct-message.js'
 import { updateComment } from './tools/update-comment.js'
 import { updateThread } from './tools/update-thread.js'
 import { userInfo } from './tools/user-info.js'
@@ -33,6 +35,8 @@ You have access to comprehensive Twist management tools for team communication a
 
 - **fetch-inbox**: Use to fetch inbox threads for a workspace, along with unread conversations and counts. Supports archiveFilter values of active, archived, or all; use all when the user needs both open and done threads. Optionally set onlyUnread to focus on unread items.
 - **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
+- **send-direct-message**: Use when the user wants to send a private/direct message to a teammate (one or more users) — NOT in a channel. Pass the workspace ID, the recipient user IDs (do NOT include the sender), and the content. The tool finds the existing 1-on-1 or group conversation between those users or creates a new one.
+- **delete-item**: Use to permanently delete a thread, comment (thread reply), or message (conversation reply). Deletion is irreversible. The current user must be the author or a workspace admin. Use this for cleaning up posts that were sent in error.
 
 ### Best Practices:
 
@@ -81,6 +85,8 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)
     registerTool(listChannels, server, twist)
+    registerTool(sendDirectMessage, server, twist)
+    registerTool(deleteItem, server, twist)
 
     return server
 }

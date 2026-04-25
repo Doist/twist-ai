@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`send-direct-message tool should create a new DM conversation and post a message when none exists 1`] = `
+"# Direct Message Sent
+
+**Conversation ID:** 33333
+**Recipients (user IDs):** 44444
+**Conversation existed before:** No (new conversation)
+**Message ID:** 98765
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/msg/33333/m/98765
+
+## Content
+
+Hello there"
+`;

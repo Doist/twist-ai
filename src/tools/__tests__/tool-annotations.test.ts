@@ -124,6 +124,20 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         destructiveHint: false,
         idempotentHint: true,
     },
+    {
+        name: ToolNames.SEND_DIRECT_MESSAGE,
+        title: 'Twist: Send Direct Message',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+    },
+    {
+        name: ToolNames.DELETE_ITEM,
+        title: 'Twist: Delete Item',
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+    },
 ]
 
 describe('Tool annotations', () => {

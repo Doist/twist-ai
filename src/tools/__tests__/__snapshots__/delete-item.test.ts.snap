@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`delete-item tool should delete a thread 1`] = `
+"# Deleted
+
+**Type:** thread
+**ID:** 12345
+
+This action is permanent."
+`;

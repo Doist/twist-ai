@@ -13,7 +13,7 @@ exports[`create-thread tool creating threads should create a thread in a channel
 
 Let us discuss this topic
 
-> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL."
+> Thread is in your Inbox (auto-unarchived after creation)."
 `;
 
 exports[`create-thread tool creating threads should create a thread with recipients 1`] = `
@@ -29,5 +29,5 @@ exports[`create-thread tool creating threads should create a thread with recipie
 
 Important update
 
-> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL."
+> Thread is in your Inbox (auto-unarchived after creation)."
 `;

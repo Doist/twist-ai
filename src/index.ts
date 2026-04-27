@@ -11,6 +11,7 @@ import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
 import { updateComment } from './tools/update-comment.js'
+import { updateMessage } from './tools/update-message.js'
 import { updateThread } from './tools/update-thread.js'
 import { userInfo } from './tools/user-info.js'
 
@@ -24,6 +25,7 @@ const tools = {
     createThread,
     updateThread,
     updateComment,
+    updateMessage,
     reply,
     react,
     markDone,
@@ -43,6 +45,7 @@ export {
     createThread,
     updateThread,
     updateComment,
+    updateMessage,
     reply,
     react,
     markDone,

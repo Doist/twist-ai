@@ -312,6 +312,20 @@ export const UpdateCommentOutputSchema = z.object({
 })
 
 /**
+ * Schema for update-message tool output
+ */
+export const UpdateMessageOutputSchema = z.object({
+    type: z.literal('update_message_result'),
+    success: z.boolean(),
+    messageId: z.number(),
+    conversationId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    messageUrl: z.string(),
+    lastEdited: z.string().nullable().optional(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -407,6 +421,7 @@ export const StructuredOutputSchema = z.union([
     CreateThreadOutputSchema,
     UpdateThreadOutputSchema,
     UpdateCommentOutputSchema,
+    UpdateMessageOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -419,6 +434,7 @@ export const StructuredOutputSchema = z.union([
 export type CreateThreadOutput = z.infer<typeof CreateThreadOutputSchema>
 export type UpdateThreadOutput = z.infer<typeof UpdateThreadOutputSchema>
 export type UpdateCommentOutput = z.infer<typeof UpdateCommentOutputSchema>
+export type UpdateMessageOutput = z.infer<typeof UpdateMessageOutputSchema>
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>

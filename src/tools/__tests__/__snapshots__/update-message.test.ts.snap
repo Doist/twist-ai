@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`update-message tool updating messages should update a conversation message content 1`] = `
+"# Message Updated
+
+**Message ID:** 98765
+**Conversation ID:** 33333
+**Workspace ID:** 11111
+**Last Edited:** 2025-02-03T12:34:56.000Z
+**URL:** https://twist.com/a/11111/msg/33333/m/98765
+
+## Content
+
+Updated message content"
+`;

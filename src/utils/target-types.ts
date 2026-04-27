@@ -27,6 +27,13 @@ export const ReactionTargetTypeSchema = ReactionTargetType.schema
 export type ReactionTargetType = z.infer<typeof ReactionTargetTypeSchema>
 
 /**
+ * Target types for update-object
+ */
+export const UpdateTargetType = createEnumSchema(['thread', 'comment', 'message'])
+export const UpdateTargetTypeSchema = UpdateTargetType.schema
+export type UpdateTargetType = z.infer<typeof UpdateTargetTypeSchema>
+
+/**
  * Target types for replies
  */
 export const ReplyTargetType = createEnumSchema(['thread', 'conversation'])

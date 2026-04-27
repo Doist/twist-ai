@@ -14,8 +14,7 @@ import { markDone } from './tools/mark-done.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
-import { updateComment } from './tools/update-comment.js'
-import { updateThread } from './tools/update-thread.js'
+import { updateObject } from './tools/update-object.js'
 import { userInfo } from './tools/user-info.js'
 
 const instructions = `
@@ -33,6 +32,7 @@ You have access to comprehensive Twist management tools for team communication a
 
 - **fetch-inbox**: Use to fetch inbox threads for a workspace, along with unread conversations and counts. Supports archiveFilter values of active, archived, or all; use all when the user needs both open and done threads. Optionally set onlyUnread to focus on unread items.
 - **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
+- **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
 
 ### Best Practices:
 
@@ -75,8 +75,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(searchContent, server, twist)
     registerTool(buildLink, server, twist)
     registerTool(createThread, server, twist)
-    registerTool(updateThread, server, twist)
-    registerTool(updateComment, server, twist)
+    registerTool(updateObject, server, twist)
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)

@@ -312,6 +312,51 @@ export const UpdateCommentOutputSchema = z.object({
 })
 
 /**
+ * Schema for update-message tool output
+ */
+export const UpdateMessageOutputSchema = z.object({
+    type: z.literal('update_message_result'),
+    success: z.boolean(),
+    messageId: z.number(),
+    conversationId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    messageUrl: z.string(),
+    lastEdited: z.string().nullable().optional(),
+})
+
+/**
+ * Schema for update-object tool output.
+ *
+ * The MCP `outputSchema` field requires a flat `z.ZodRawShape`, so we expose a single
+ * object schema whose `type` discriminator selects which optional fields are populated:
+ *  - `update_thread_result`  → threadId, title, channelId, threadUrl
+ *  - `update_comment_result` → commentId, threadId, channelId, commentUrl
+ *  - `update_message_result` → messageId, conversationId, messageUrl
+ * Consumers should narrow on `type`. The per-variant schemas above remain authoritative
+ * for typed construction inside the tool.
+ */
+export const UpdateObjectOutputSchema = z.object({
+    type: z.enum(['update_thread_result', 'update_comment_result', 'update_message_result']),
+    success: z.boolean(),
+    content: z.string(),
+    workspaceId: z.number(),
+    lastEdited: z.string().nullable().optional(),
+    // thread fields
+    threadId: z.number().optional(),
+    title: z.string().optional(),
+    channelId: z.number().optional(),
+    threadUrl: z.string().optional(),
+    // comment fields
+    commentId: z.number().optional(),
+    commentUrl: z.string().optional(),
+    // message fields
+    messageId: z.number().optional(),
+    conversationId: z.number().optional(),
+    messageUrl: z.string().optional(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -407,6 +452,7 @@ export const StructuredOutputSchema = z.union([
     CreateThreadOutputSchema,
     UpdateThreadOutputSchema,
     UpdateCommentOutputSchema,
+    UpdateMessageOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -419,6 +465,14 @@ export const StructuredOutputSchema = z.union([
 export type CreateThreadOutput = z.infer<typeof CreateThreadOutputSchema>
 export type UpdateThreadOutput = z.infer<typeof UpdateThreadOutputSchema>
 export type UpdateCommentOutput = z.infer<typeof UpdateCommentOutputSchema>
+export type UpdateMessageOutput = z.infer<typeof UpdateMessageOutputSchema>
+export type UpdateObjectOutput = z.infer<typeof UpdateObjectOutputSchema>
+
+/**
+ * Strictly-typed union of the three per-branch update outputs. Use this in the tool
+ * to construct structured payloads — `UpdateObjectOutput` is the looser MCP-facing shape.
+ */
+export type UpdateObjectStructured = UpdateThreadOutput | UpdateCommentOutput | UpdateMessageOutput
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>

@@ -181,7 +181,7 @@ async function updateMessageBranch(args: Args, client: TwistApi): Promise<Branch
 const updateObject = {
     name: ToolNames.UPDATE_OBJECT,
     description:
-        'Update an existing Twist object\'s content. `targetType: "thread"` updates a thread\'s title and/or body; `"comment"` updates a thread comment\'s content; `"message"` updates a direct/group conversation message\'s content. Pass `targetId`, the new `content`, and optionally `title` (thread only). For threads, at least one of `title` or `content` must be provided.',
+        'Update an existing Twist object. `targetType: "thread"` updates a thread\'s title and/or body; `"comment"` updates a thread comment\'s body; `"message"` updates a direct/group conversation message\'s body. Always pass `targetId`. `content` is required for `"comment"` and `"message"`; for `"thread"` it is optional as long as `title` is provided (i.e. a thread can be renamed without re-sending the body). `title` is only valid when `targetType` is `"thread"`.',
     parameters: ArgsSchema,
     outputSchema: UpdateObjectOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },

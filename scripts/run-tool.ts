@@ -30,6 +30,7 @@ import { markDone } from '../src/tools/mark-done.js'
 import { react } from '../src/tools/react.js'
 import { reply } from '../src/tools/reply.js'
 import { searchContent } from '../src/tools/search-content.js'
+import { updateObject } from '../src/tools/update-object.js'
 import { userInfo } from '../src/tools/user-info.js'
 
 // Define a minimal type for tool execution that works with any tool
@@ -53,6 +54,7 @@ const tools: Record<string, ExecutableTool> = {
     'load-conversation': loadConversation,
     'search-content': searchContent,
     'create-thread': createThread,
+    'update-object': updateObject,
     reply: reply,
     react: react,
     'mark-done': markDone,

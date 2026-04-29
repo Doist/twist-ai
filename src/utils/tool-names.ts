@@ -7,6 +7,7 @@ export const ToolNames = {
     GET_MENTIONS: 'get-mentions',
     CREATE_THREAD: 'create-thread',
     UPDATE_OBJECT: 'update-object',
+    DELETE_OBJECT: 'delete-object',
     REPLY: 'reply',
     REACT: 'react',
     MARK_DONE: 'mark-done',

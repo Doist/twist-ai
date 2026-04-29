@@ -357,6 +357,55 @@ export const UpdateObjectOutputSchema = z.object({
 })
 
 /**
+ * Schema for delete-thread branch of delete-object output
+ */
+export const DeleteThreadOutputSchema = z.object({
+    type: z.literal('delete_thread_result'),
+    success: z.boolean(),
+    targetType: z.literal('thread'),
+    threadId: z.number(),
+})
+
+/**
+ * Schema for delete-comment branch of delete-object output
+ */
+export const DeleteCommentOutputSchema = z.object({
+    type: z.literal('delete_comment_result'),
+    success: z.boolean(),
+    targetType: z.literal('comment'),
+    commentId: z.number(),
+})
+
+/**
+ * Schema for delete-message branch of delete-object output
+ */
+export const DeleteMessageOutputSchema = z.object({
+    type: z.literal('delete_message_result'),
+    success: z.boolean(),
+    targetType: z.literal('message'),
+    messageId: z.number(),
+})
+
+/**
+ * Schema for delete-object tool output.
+ *
+ * The Twist SDK delete endpoints return no body, so the structured payload simply
+ * confirms which object was deleted. The `type` discriminator selects which
+ * id field is populated:
+ *  - `delete_thread_result`  → threadId
+ *  - `delete_comment_result` → commentId
+ *  - `delete_message_result` → messageId
+ */
+export const DeleteObjectOutputSchema = z.object({
+    type: z.enum(['delete_thread_result', 'delete_comment_result', 'delete_message_result']),
+    success: z.boolean(),
+    targetType: z.enum(['thread', 'comment', 'message']),
+    threadId: z.number().optional(),
+    commentId: z.number().optional(),
+    messageId: z.number().optional(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -453,6 +502,9 @@ export const StructuredOutputSchema = z.union([
     UpdateThreadOutputSchema,
     UpdateCommentOutputSchema,
     UpdateMessageOutputSchema,
+    DeleteThreadOutputSchema,
+    DeleteCommentOutputSchema,
+    DeleteMessageOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -473,6 +525,16 @@ export type UpdateObjectOutput = z.infer<typeof UpdateObjectOutputSchema>
  * to construct structured payloads — `UpdateObjectOutput` is the looser MCP-facing shape.
  */
 export type UpdateObjectStructured = UpdateThreadOutput | UpdateCommentOutput | UpdateMessageOutput
+export type DeleteThreadOutput = z.infer<typeof DeleteThreadOutputSchema>
+export type DeleteCommentOutput = z.infer<typeof DeleteCommentOutputSchema>
+export type DeleteMessageOutput = z.infer<typeof DeleteMessageOutputSchema>
+export type DeleteObjectOutput = z.infer<typeof DeleteObjectOutputSchema>
+
+/**
+ * Strictly-typed union of the three per-branch delete outputs. Use this in the tool
+ * to construct structured payloads — `DeleteObjectOutput` is the looser MCP-facing shape.
+ */
+export type DeleteObjectStructured = DeleteThreadOutput | DeleteCommentOutput | DeleteMessageOutput
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>

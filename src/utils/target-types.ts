@@ -34,6 +34,13 @@ export const UpdateTargetTypeSchema = UpdateTargetType.schema
 export type UpdateTargetType = z.infer<typeof UpdateTargetTypeSchema>
 
 /**
+ * Target types for delete-object
+ */
+export const DeleteTargetType = createEnumSchema(['thread', 'comment', 'message'])
+export const DeleteTargetTypeSchema = DeleteTargetType.schema
+export type DeleteTargetType = z.infer<typeof DeleteTargetTypeSchema>
+
+/**
  * Target types for replies
  */
 export const ReplyTargetType = createEnumSchema(['thread', 'conversation'])

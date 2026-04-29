@@ -4,6 +4,7 @@ import { registerTool } from './mcp-helpers.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
+import { deleteObject } from './tools/delete-object.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
@@ -33,6 +34,7 @@ You have access to comprehensive Twist management tools for team communication a
 - **fetch-inbox**: Use to fetch inbox threads for a workspace, along with unread conversations and counts. Supports archiveFilter values of active, archived, or all; use all when the user needs both open and done threads. Optionally set onlyUnread to focus on unread items.
 - **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
 - **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
+- **delete-object**: Use to permanently delete a thread, comment, or conversation message. Pass targetType ("thread", "comment", or "message") and targetId. Deletion is irreversible — confirm with the user before invoking. Deleting a thread also removes all of its comments.
 
 ### Best Practices:
 
@@ -76,6 +78,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(buildLink, server, twist)
     registerTool(createThread, server, twist)
     registerTool(updateObject, server, twist)
+    registerTool(deleteObject, server, twist)
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)

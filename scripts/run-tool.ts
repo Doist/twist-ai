@@ -20,6 +20,7 @@ import { config } from 'dotenv'
 import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'
 import { createThread } from '../src/tools/create-thread.js'
+import { deleteObject } from '../src/tools/delete-object.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
@@ -55,6 +56,7 @@ const tools: Record<string, ExecutableTool> = {
     'search-content': searchContent,
     'create-thread': createThread,
     'update-object': updateObject,
+    'delete-object': deleteObject,
     reply: reply,
     react: react,
     'mark-done': markDone,

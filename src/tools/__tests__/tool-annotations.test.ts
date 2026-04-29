@@ -117,6 +117,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         destructiveHint: false,
         idempotentHint: true,
     },
+    {
+        name: ToolNames.LIST_CONVERSATIONS,
+        title: 'Twist: List Conversations',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
 ]
 
 describe('Tool annotations', () => {

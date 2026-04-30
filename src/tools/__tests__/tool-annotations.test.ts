@@ -55,6 +55,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         idempotentHint: true,
     },
     {
+        name: ToolNames.GET_MENTIONS,
+        title: 'Twist: Get Mentions',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.GET_USERS,
         title: 'Twist: Get Users',
         readOnlyHint: true,

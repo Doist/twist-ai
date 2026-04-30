@@ -3,6 +3,7 @@ import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
+import { getMentions } from './tools/get-mentions.js'
 import { listChannels } from './tools/list-channels.js'
 import { loadConversation } from './tools/load-conversation.js'
 import { loadThread } from './tools/load-thread.js'
@@ -20,6 +21,7 @@ const tools = {
     loadThread,
     loadConversation,
     searchContent,
+    getMentions,
     createThread,
     updateObject,
     reply,
@@ -38,6 +40,7 @@ export {
     loadThread,
     loadConversation,
     searchContent,
+    getMentions,
     createThread,
     updateObject,
     reply,

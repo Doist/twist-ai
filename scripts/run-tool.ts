@@ -21,6 +21,7 @@ import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'
 import { createThread } from '../src/tools/create-thread.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
+import { getMentions } from '../src/tools/get-mentions.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
 import { listChannels } from '../src/tools/list-channels.js'
@@ -53,6 +54,7 @@ const tools: Record<string, ExecutableTool> = {
     'load-thread': loadThread,
     'load-conversation': loadConversation,
     'search-content': searchContent,
+    'get-mentions': getMentions,
     'create-thread': createThread,
     'update-object': updateObject,
     reply: reply,

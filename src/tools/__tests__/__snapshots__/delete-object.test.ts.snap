@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`delete-object tool targetType: comment should delete a comment by ID 1`] = `
+"# Comment Deleted
+
+**Comment ID:** 54321
+
+The comment has been permanently deleted."
+`;
+
+exports[`delete-object tool targetType: message should delete a conversation message by ID 1`] = `
+"# Message Deleted
+
+**Message ID:** 98765
+
+The conversation message has been permanently deleted."
+`;
+
+exports[`delete-object tool targetType: thread should delete a thread by ID 1`] = `
+"# Thread Deleted
+
+**Thread ID:** 12345
+
+The thread has been permanently deleted."
+`;

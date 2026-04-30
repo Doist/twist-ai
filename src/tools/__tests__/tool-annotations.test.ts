@@ -97,6 +97,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         idempotentHint: true,
     },
     {
+        name: ToolNames.DELETE_OBJECT,
+        title: 'Twist: Delete Object',
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.REPLY,
         title: 'Twist: Reply',
         readOnlyHint: false,

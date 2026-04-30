@@ -1,3 +1,9 @@
+## [5.1.0](https://github.com/Doist/twist-ai/compare/v5.0.0...v5.1.0) (2026-04-30)
+
+### Features
+
+* add get-mentions tool for fetching user mentions ([#185](https://github.com/Doist/twist-ai/issues/185)) ([f9c2f14](https://github.com/Doist/twist-ai/commit/f9c2f146fa83953869b1a07c3e00ac7c903a2fe4))
+
 ## [5.0.0](https://github.com/Doist/twist-ai/compare/v4.7.1...v5.0.0) (2026-04-28)
 
 ### ⚠ BREAKING CHANGES

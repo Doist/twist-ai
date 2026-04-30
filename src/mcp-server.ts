@@ -5,6 +5,7 @@ import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
+import { getMentions } from './tools/get-mentions.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
 import { listChannels } from './tools/list-channels.js'
@@ -73,6 +74,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(loadThread, server, twist)
     registerTool(loadConversation, server, twist)
     registerTool(searchContent, server, twist)
+    registerTool(getMentions, server, twist)
     registerTool(buildLink, server, twist)
     registerTool(createThread, server, twist)
     registerTool(updateObject, server, twist)

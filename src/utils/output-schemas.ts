@@ -162,6 +162,33 @@ export const SearchContentOutputSchema = z.object({
 })
 
 /**
+ * Schema for get-mentions tool output
+ */
+export const GetMentionsOutputSchema = z.object({
+    type: z.literal('mentions_results'),
+    workspaceId: z.number(),
+    results: z.array(
+        z.object({
+            id: z.string(),
+            type: z.enum(SEARCH_RESULT_TYPES),
+            content: z.string(),
+            creatorId: z.number(),
+            creatorName: z.string().optional(),
+            created: z.string(),
+            threadId: z.number().optional(),
+            conversationId: z.number().optional(),
+            channelId: z.number().optional(),
+            channelName: z.string().optional(),
+            workspaceId: z.number(),
+            url: z.string(),
+        }),
+    ),
+    totalResults: z.number(),
+    hasMore: z.boolean(),
+    cursor: z.string().optional(),
+})
+
+/**
  * Schema for get-workspaces tool output
  */
 export const GetWorkspacesOutputSchema = z.object({

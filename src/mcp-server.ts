@@ -9,6 +9,7 @@ import { getMentions } from './tools/get-mentions.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
 import { listChannels } from './tools/list-channels.js'
+import { listConversations } from './tools/list-conversations.js'
 import { loadConversation } from './tools/load-conversation.js'
 import { loadThread } from './tools/load-thread.js'
 import { markDone } from './tools/mark-done.js'
@@ -83,6 +84,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)
     registerTool(listChannels, server, twist)
+    registerTool(listConversations, server, twist)
 
     return server
 }

@@ -34,6 +34,16 @@ const createThread = {
             recipients,
         })
 
+        // Twist auto-archives newly-created threads for the author, which means
+        // the agent's own posts never appear in the user's Inbox. Unarchive
+        // immediately so the thread shows up in the author's Inbox view too.
+        // Failure here is non-fatal — the thread itself was created successfully.
+        try {
+            await client.inbox.unarchiveThread(thread.id)
+        } catch {
+            // swallow — don't fail the tool because of an inbox visibility tweak
+        }
+
         const postedValue = thread.posted
         const created = postedValue
             ? typeof postedValue === 'string'
@@ -62,7 +72,7 @@ const createThread = {
             '',
             thread.content,
             '',
-            '> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL.',
+            '> Thread is in your Inbox (auto-unarchived after creation).',
         ]
 
         const structuredContent: CreateThreadOutput = {

@@ -69,6 +69,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         idempotentHint: true,
     },
     {
+        name: ToolNames.GET_GROUPS,
+        title: 'Twist: Get Groups',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.GET_WORKSPACES,
         title: 'Twist: Get Workspaces',
         readOnlyHint: true,

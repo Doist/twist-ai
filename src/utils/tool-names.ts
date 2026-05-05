@@ -13,6 +13,7 @@ export const ToolNames = {
     BUILD_LINK: 'build-link',
     GET_WORKSPACES: 'get-workspaces',
     GET_USERS: 'get-users',
+    GET_GROUPS: 'get-groups',
     AWAY: 'away',
     LIST_CHANNELS: 'list-channels',
 } as const

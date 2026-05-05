@@ -18,6 +18,12 @@ const ArgsSchema = {
         .describe(
             'Optional array of user IDs to notify (only for thread replies). If omitted, Twist defaults to notifying all current members of the channel. Add specific user IDs to limit or expand notifications beyond current channel members.',
         ),
+    groups: z
+        .array(z.number())
+        .optional()
+        .describe(
+            'Optional array of group IDs to notify (only for thread replies). Use get-groups to discover group IDs before passing them here.',
+        ),
 }
 
 type ReplyStructured = {
@@ -29,6 +35,8 @@ type ReplyStructured = {
     content: string
     created: string
     replyUrl: string
+    recipients?: number[]
+    groups?: number[]
 }
 
 const reply = {
@@ -39,18 +47,20 @@ const reply = {
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { targetType, targetId, content, recipients } = args
+        const { targetType, targetId, content, recipients, groups } = args
 
         let replyId: number
         let created: Date
         let replyUrl: string
 
         if (targetType === 'thread') {
-            const comment = await client.comments.createComment({
+            const commentArgs = {
                 threadId: targetId,
                 content,
                 recipients,
-            })
+                groups,
+            } as Parameters<typeof client.comments.createComment>[0] & { groups?: number[] }
+            const comment = await client.comments.createComment(commentArgs)
             replyId = comment.id
             replyUrl =
                 comment.url ??
@@ -108,6 +118,8 @@ const reply = {
             content,
             created: created.toISOString(),
             replyUrl,
+            ...(targetType === 'thread' && recipients && { recipients }),
+            ...(targetType === 'thread' && groups && { groups }),
         }
 
         return getToolOutput({

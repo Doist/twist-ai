@@ -3,6 +3,7 @@ import { jest } from '@jest/globals'
 import {
     createMockComment,
     createMockConversationMessage,
+    extractStructuredContent,
     extractTextContent,
     TEST_IDS,
 } from '../../utils/test-helpers.js'
@@ -44,6 +45,7 @@ describe(`${REPLY} tool`, () => {
                 threadId: TEST_IDS.THREAD_1,
                 content: 'This is my reply',
                 recipients: undefined,
+                groups: undefined,
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
@@ -82,9 +84,67 @@ describe(`${REPLY} tool`, () => {
                 threadId: TEST_IDS.THREAD_1,
                 content: 'Notifying users',
                 recipients: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+                groups: undefined,
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1, TEST_IDS.USER_2])
+            expect(structuredContent).not.toHaveProperty('groups')
+        })
+
+        it('should post a comment with groups', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying groups',
+                    groups: [100, 200],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying groups',
+                recipients: undefined,
+                groups: [100, 200],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.groups).toEqual([100, 200])
+            expect(structuredContent).not.toHaveProperty('recipients')
+        })
+
+        it('should post a comment with recipients and groups', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying users and groups',
+                    recipients: [TEST_IDS.USER_1],
+                    groups: [100],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying users and groups',
+                recipients: [TEST_IDS.USER_1],
+                groups: [100],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
+            expect(structuredContent.groups).toEqual([100])
         })
     })
 
@@ -108,6 +168,29 @@ describe(`${REPLY} tool`, () => {
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should not pass groups to conversation messages', async () => {
+            const mockMessage = createMockConversationMessage()
+            mockTwistApi.conversationMessages.createMessage.mockResolvedValue(mockMessage)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'conversation',
+                    targetId: TEST_IDS.CONVERSATION_1,
+                    content: 'This is my message',
+                    groups: [100],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.conversationMessages.createMessage).toHaveBeenCalledWith({
+                conversationId: TEST_IDS.CONVERSATION_1,
+                content: 'This is my message',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent).not.toHaveProperty('groups')
         })
     })
 

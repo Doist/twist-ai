@@ -3,6 +3,7 @@ import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
+import { getGroups } from './tools/get-groups.js'
 import { getMentions } from './tools/get-mentions.js'
 import { listChannels } from './tools/list-channels.js'
 import { loadConversation } from './tools/load-conversation.js'
@@ -29,6 +30,7 @@ const tools = {
     markDone,
     buildLink,
     listChannels,
+    getGroups,
 }
 
 export { tools, getMcpServer }
@@ -48,4 +50,5 @@ export {
     markDone,
     buildLink,
     listChannels,
+    getGroups,
 }

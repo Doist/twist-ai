@@ -15,6 +15,12 @@ const ArgsSchema = {
         .describe(
             'Optional array of user IDs to notify. If omitted, Twist defaults to notifying all current members of the channel (equivalent to the API\'s "EVERYONE" default). Note: workspace users who have not joined this channel will not be notified — add their IDs explicitly if you want to reach them.',
         ),
+    groups: z
+        .array(z.number())
+        .optional()
+        .describe(
+            'Optional array of group IDs to notify. Use get-groups to discover group IDs before passing them here.',
+        ),
 }
 
 const createThread = {
@@ -25,13 +31,14 @@ const createThread = {
     outputSchema: CreateThreadOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { channelId, title, content, recipients } = args
+        const { channelId, title, content, recipients, groups } = args
 
         const thread = await client.threads.createThread({
             channelId,
             title,
             content,
             recipients,
+            groups,
         })
 
         const postedValue = thread.posted
@@ -76,6 +83,8 @@ const createThread = {
             creator: thread.creator,
             created: created.toISOString(),
             threadUrl,
+            ...(recipients && { recipients }),
+            ...(groups && { groups }),
         }
 
         return getToolOutput({

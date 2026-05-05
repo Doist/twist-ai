@@ -44,7 +44,7 @@ describe(`${REPLY} tool`, () => {
             expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
                 threadId: TEST_IDS.THREAD_1,
                 content: 'This is my reply',
-                recipients: undefined,
+                recipients: 'EVERYONE_IN_THREAD',
                 groups: undefined,
             })
 
@@ -64,6 +64,7 @@ describe(`${REPLY} tool`, () => {
             )
             expect(structuredContent?.replyId).toBe(mockComment.id)
             expect(structuredContent?.created).toBe('2024-01-01T00:00:00.000Z')
+            expect(structuredContent?.recipientMode).toBe('EVERYONE_IN_THREAD')
         })
 
         it('should post a comment with recipients', async () => {
@@ -92,6 +93,7 @@ describe(`${REPLY} tool`, () => {
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1, TEST_IDS.USER_2])
             expect(structuredContent).not.toHaveProperty('groups')
+            expect(structuredContent).not.toHaveProperty('recipientMode')
         })
 
         it('should post a comment with groups', async () => {
@@ -118,6 +120,33 @@ describe(`${REPLY} tool`, () => {
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.groups).toEqual([100, 200])
             expect(structuredContent).not.toHaveProperty('recipients')
+            expect(structuredContent).not.toHaveProperty('recipientMode')
+        })
+
+        it('should use the default thread reply recipient mode when groups are empty', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying default recipients',
+                    groups: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying default recipients',
+                recipients: 'EVERYONE_IN_THREAD',
+                groups: undefined,
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipientMode).toBe('EVERYONE_IN_THREAD')
+            expect(structuredContent).not.toHaveProperty('groups')
         })
 
         it('should post a comment with recipients and groups', async () => {
@@ -145,6 +174,7 @@ describe(`${REPLY} tool`, () => {
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
             expect(structuredContent.groups).toEqual([100])
+            expect(structuredContent).not.toHaveProperty('recipientMode')
         })
     })
 

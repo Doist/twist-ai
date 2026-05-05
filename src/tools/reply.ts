@@ -6,6 +6,8 @@ import { ReplyOutputSchema } from '../utils/output-schemas.js'
 import { type ReplyTargetType, ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
+const DEFAULT_THREAD_REPLY_RECIPIENTS = 'EVERYONE_IN_THREAD' as const
+
 const ArgsSchema = {
     targetType: ReplyTargetTypeSchema.describe(
         'The type of object to reply to: thread (posts a comment) or conversation (posts a message).',
@@ -16,7 +18,7 @@ const ArgsSchema = {
         .array(z.number())
         .optional()
         .describe(
-            'Optional array of user IDs to notify (only for thread replies). If omitted, Twist defaults to notifying all current members of the channel. Add specific user IDs to limit or expand notifications beyond current channel members.',
+            'Optional array of user IDs to notify (only for thread replies). If omitted with no groups, thread replies notify everyone who has interacted with the thread.',
         ),
     groups: z
         .array(z.number())
@@ -36,13 +38,14 @@ type ReplyStructured = {
     created: string
     replyUrl: string
     recipients?: number[]
+    recipientMode?: typeof DEFAULT_THREAD_REPLY_RECIPIENTS
     groups?: number[]
 }
 
 const reply = {
     name: ToolNames.REPLY,
     description:
-        'Post a reply to a thread (as a comment) or conversation (as a message). Use targetType to specify thread or conversation, and targetId for the ID.',
+        'Post a reply to a thread (as a comment) or conversation (as a message). Thread replies notify everyone who has interacted with the thread by default unless specific user recipients or groups are provided.',
     parameters: ArgsSchema,
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
@@ -52,14 +55,21 @@ const reply = {
         let replyId: number
         let created: Date
         let replyUrl: string
+        const groupsToNotify =
+            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
 
         if (targetType === 'thread') {
+            const resolvedRecipients =
+                recipients ?? (groupsToNotify ? undefined : DEFAULT_THREAD_REPLY_RECIPIENTS)
             const commentArgs = {
                 threadId: targetId,
                 content,
-                recipients,
-                groups,
-            } as Parameters<typeof client.comments.createComment>[0] & { groups?: number[] }
+                recipients: resolvedRecipients,
+                groups: groupsToNotify,
+            } as Parameters<typeof client.comments.createComment>[0] & {
+                recipients?: number[] | typeof DEFAULT_THREAD_REPLY_RECIPIENTS
+                groups?: number[]
+            }
             const comment = await client.comments.createComment(commentArgs)
             replyId = comment.id
             replyUrl =
@@ -119,7 +129,10 @@ const reply = {
             created: created.toISOString(),
             replyUrl,
             ...(targetType === 'thread' && recipients && { recipients }),
-            ...(targetType === 'thread' && groups && { groups }),
+            ...(targetType === 'thread' &&
+                !recipients &&
+                !groupsToNotify && { recipientMode: DEFAULT_THREAD_REPLY_RECIPIENTS }),
+            ...(targetType === 'thread' && groupsToNotify && { groups: groupsToNotify }),
         }
 
         return getToolOutput({

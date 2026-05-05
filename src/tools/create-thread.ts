@@ -26,7 +26,7 @@ const ArgsSchema = {
 const createThread = {
     name: ToolNames.CREATE_THREAD,
     description:
-        'Create a new thread in a workspace channel. Requires a channel ID, title, and content. Optionally notify specific users.',
+        'Create a new thread in a workspace channel. Requires a channel ID, title, and content. Optionally notify specific users or groups.',
     parameters: ArgsSchema,
     outputSchema: CreateThreadOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },

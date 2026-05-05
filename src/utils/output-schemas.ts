@@ -419,6 +419,7 @@ export const ReplyOutputSchema = z.object({
     created: z.string(),
     replyUrl: z.string(),
     recipients: z.array(z.number()).optional(),
+    recipientMode: z.literal('EVERYONE_IN_THREAD').optional(),
     groups: z.array(z.number()).optional(),
 })
 

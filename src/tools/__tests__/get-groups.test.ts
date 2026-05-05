@@ -59,6 +59,7 @@ describe(`${GET_GROUPS} tool`, () => {
             expect(textContent).toContain('## Product Automation')
             expect(textContent).toContain('## Engineering')
             expect(textContent).toContain('**Members:** 2')
+            expect(textContent).not.toContain('Automation recipients')
 
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent).toEqual({
@@ -70,18 +71,17 @@ describe(`${GET_GROUPS} tool`, () => {
                     expect.objectContaining({
                         id: 100,
                         name: 'Product Automation',
-                        description: 'Automation recipients',
-                        userIds: [TEST_IDS.USER_1, TEST_IDS.USER_2],
                         memberCount: 2,
                     }),
                     expect.objectContaining({
                         id: 200,
                         name: 'Engineering',
-                        userIds: [TEST_IDS.USER_3],
                         memberCount: 1,
                     }),
                 ]),
             })
+            expect(structuredContent.groups[0]).not.toHaveProperty('description')
+            expect(structuredContent.groups[0]).not.toHaveProperty('userIds')
         })
 
         it('should handle empty groupIds array by fetching all groups', async () => {

@@ -200,7 +200,39 @@ describe(`${REPLY} tool`, () => {
             expect(extractTextContent(result)).toMatchSnapshot()
         })
 
-        it('should not pass groups to conversation messages', async () => {
+        it('should reject groups for conversation messages', async () => {
+            await expect(
+                reply.execute(
+                    {
+                        targetType: 'conversation',
+                        targetId: TEST_IDS.CONVERSATION_1,
+                        content: 'This is my message',
+                        groups: [100],
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('groups can only be used when replying to a thread.')
+
+            expect(mockTwistApi.conversationMessages.createMessage).not.toHaveBeenCalled()
+        })
+
+        it('should reject empty groups for conversation messages', async () => {
+            await expect(
+                reply.execute(
+                    {
+                        targetType: 'conversation',
+                        targetId: TEST_IDS.CONVERSATION_1,
+                        content: 'This is my message',
+                        groups: [],
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('groups can only be used when replying to a thread.')
+
+            expect(mockTwistApi.conversationMessages.createMessage).not.toHaveBeenCalled()
+        })
+
+        it('should ignore recipients for conversation messages', async () => {
             const mockMessage = createMockConversationMessage()
             mockTwistApi.conversationMessages.createMessage.mockResolvedValue(mockMessage)
 
@@ -209,7 +241,7 @@ describe(`${REPLY} tool`, () => {
                     targetType: 'conversation',
                     targetId: TEST_IDS.CONVERSATION_1,
                     content: 'This is my message',
-                    groups: [100],
+                    recipients: [TEST_IDS.USER_1],
                 },
                 mockTwistApi,
             )

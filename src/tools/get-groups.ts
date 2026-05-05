@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
-import { GetGroupsOutputSchema } from '../utils/output-schemas.js'
+import { type GetGroupsOutput, GetGroupsOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -18,23 +18,7 @@ const ArgsSchema = {
         .describe('Optional search text to filter groups by name (case-insensitive).'),
 }
 
-type GroupData = {
-    id: number
-    name: string
-    description?: string
-    workspaceId: number
-    userIds: number[]
-    memberCount: number
-    version: number
-}
-
-type GetGroupsStructured = Record<string, unknown> & {
-    type: 'get_groups'
-    workspaceId: number
-    groups: GroupData[]
-    totalGroups: number
-    filteredGroups: number
-}
+type GetGroupsStructured = GetGroupsOutput
 
 const getGroups = {
     name: ToolNames.GET_GROUPS,
@@ -77,9 +61,6 @@ const getGroups = {
                 lines.push(`## ${group.name}`)
                 lines.push(`**ID:** ${group.id}`)
                 lines.push(`**Members:** ${group.userIds.length}`)
-                if (group.description) {
-                    lines.push(`**Description:** ${group.description}`)
-                }
                 lines.push('')
             }
         }
@@ -92,9 +73,7 @@ const getGroups = {
             groups: filteredGroups.map((group) => ({
                 id: group.id,
                 name: group.name,
-                ...(group.description && { description: group.description }),
                 workspaceId: group.workspaceId,
-                userIds: group.userIds,
                 memberCount: group.userIds.length,
                 version: group.version,
             })),

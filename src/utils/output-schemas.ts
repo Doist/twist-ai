@@ -253,9 +253,7 @@ export const GetGroupsOutputSchema = z.object({
         z.object({
             id: z.number(),
             name: z.string(),
-            description: z.string().optional(),
             workspaceId: z.number(),
-            userIds: z.array(z.number()),
             memberCount: z.number(),
             version: z.number(),
         }),

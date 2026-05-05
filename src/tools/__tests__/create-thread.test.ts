@@ -126,6 +126,36 @@ describe(`${CREATE_THREAD} tool`, () => {
             expect(structuredContent).not.toHaveProperty('recipients')
         })
 
+        it('should preserve empty groups when creating a thread', async () => {
+            const mockThread = createMockThread({
+                title: 'Empty Groups',
+                content: 'No group recipients',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+
+            const result = await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Empty Groups',
+                    content: 'No group recipients',
+                    groups: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.createThread).toHaveBeenCalledWith({
+                channelId: TEST_IDS.CHANNEL_1,
+                title: 'Empty Groups',
+                content: 'No group recipients',
+                recipients: undefined,
+                groups: [],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.groups).toEqual([])
+            expect(structuredContent).not.toHaveProperty('recipients')
+        })
+
         it('should create a thread with recipients and groups', async () => {
             const mockThread = createMockThread({
                 title: 'Notify Users and Groups',

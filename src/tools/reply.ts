@@ -1,9 +1,14 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
+import {
+    getFullTwistURL,
+    type Comment,
+    type CreateCommentArgs,
+    type TwistApi,
+} from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
-import { ReplyOutputSchema } from '../utils/output-schemas.js'
-import { type ReplyTargetType, ReplyTargetTypeSchema } from '../utils/target-types.js'
+import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
+import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const DEFAULT_THREAD_REPLY_RECIPIENTS = 'EVERYONE_IN_THREAD' as const
@@ -28,18 +33,23 @@ const ArgsSchema = {
         ),
 }
 
-type ReplyStructured = {
-    type: 'reply_result'
-    success: boolean
-    targetType: ReplyTargetType
-    targetId: number
-    replyId: number
-    content: string
-    created: string
-    replyUrl: string
-    recipients?: number[]
-    recipientMode?: typeof DEFAULT_THREAD_REPLY_RECIPIENTS
+type ReplyStructured = ReplyOutput
+type ThreadReplyRecipients = number[] | typeof DEFAULT_THREAD_REPLY_RECIPIENTS
+type CreateThreadReplyCommentArgs = Omit<CreateCommentArgs, 'recipients'> & {
+    recipients?: ThreadReplyRecipients
     groups?: number[]
+}
+type CommentsClientWithGroupRecipients = {
+    createComment(args: CreateThreadReplyCommentArgs): Promise<Comment>
+}
+
+async function createThreadReplyComment(
+    client: TwistApi,
+    args: CreateThreadReplyCommentArgs,
+): Promise<Comment> {
+    // The Twist API accepts comment groups, but twist-sdk has not typed that field yet.
+    const comments = client.comments as unknown as CommentsClientWithGroupRecipients
+    return comments.createComment(args)
 }
 
 const reply = {
@@ -58,19 +68,19 @@ const reply = {
         const groupsToNotify =
             targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
 
+        if (targetType === 'conversation' && groups !== undefined) {
+            throw new Error('groups can only be used when replying to a thread.')
+        }
+
         if (targetType === 'thread') {
             const resolvedRecipients =
                 recipients ?? (groupsToNotify ? undefined : DEFAULT_THREAD_REPLY_RECIPIENTS)
-            const commentArgs = {
+            const comment = await createThreadReplyComment(client, {
                 threadId: targetId,
                 content,
                 recipients: resolvedRecipients,
                 groups: groupsToNotify,
-            } as Parameters<typeof client.comments.createComment>[0] & {
-                recipients?: number[] | typeof DEFAULT_THREAD_REPLY_RECIPIENTS
-                groups?: number[]
-            }
-            const comment = await client.comments.createComment(commentArgs)
+            })
             replyId = comment.id
             replyUrl =
                 comment.url ??

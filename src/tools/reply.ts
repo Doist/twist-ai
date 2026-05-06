@@ -11,6 +11,7 @@ import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
 import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
+// TODO: import this from twist-sdk once Doist/twist-sdk-typescript#125 ships.
 const DEFAULT_THREAD_REPLY_RECIPIENTS = 'EVERYONE_IN_THREAD' as const
 
 const ArgsSchema = {
@@ -47,7 +48,7 @@ async function createThreadReplyComment(
     client: TwistApi,
     args: CreateThreadReplyCommentArgs,
 ): Promise<Comment> {
-    // The Twist API accepts comment groups, but twist-sdk has not typed that field yet.
+    // The Twist API accepts comment groups; replace this wrapper after Doist/twist-sdk-typescript#124.
     const comments = client.comments as unknown as CommentsClientWithGroupRecipients
     return comments.createComment(args)
 }
@@ -138,11 +139,11 @@ const reply = {
             content,
             created: created.toISOString(),
             replyUrl,
-            ...(targetType === 'thread' && recipients && { recipients }),
-            ...(targetType === 'thread' &&
-                !recipients &&
-                !groupsToNotify && { recipientMode: DEFAULT_THREAD_REPLY_RECIPIENTS }),
-            ...(targetType === 'thread' && groupsToNotify && { groups: groupsToNotify }),
+            ...(targetType === 'thread' && recipients ? { recipients } : {}),
+            ...(targetType === 'thread' && !recipients && !groupsToNotify
+                ? { recipientMode: DEFAULT_THREAD_REPLY_RECIPIENTS }
+                : {}),
+            ...(targetType === 'thread' && groupsToNotify ? { groups: groupsToNotify } : {}),
         }
 
         return getToolOutput({

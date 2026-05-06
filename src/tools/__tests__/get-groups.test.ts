@@ -12,7 +12,9 @@ import { getGroups } from '../get-groups.js'
 const mockTwistApi = {
     groups: {
         getGroups: jest.fn(),
+        getGroup: jest.fn(),
     },
+    batch: jest.fn(),
 } as unknown as jest.Mocked<TwistApi>
 
 const { GET_GROUPS } = ToolNames
@@ -30,6 +32,14 @@ const createMockGroup = (overrides: Partial<Group> = {}): Group => ({
 describe(`${GET_GROUPS} tool`, () => {
     beforeEach(() => {
         jest.clearAllMocks()
+        mockTwistApi.batch.mockImplementation(async (...args: readonly unknown[]) => {
+            const results = []
+            for (const arg of args) {
+                const result = await arg
+                results.push({ data: result })
+            }
+            return results as never
+        })
     })
 
     describe('fetching groups', () => {
@@ -52,6 +62,7 @@ describe(`${GET_GROUPS} tool`, () => {
             )
 
             expect(mockTwistApi.groups.getGroups).toHaveBeenCalledWith(TEST_IDS.WORKSPACE_1)
+            expect(mockTwistApi.batch).not.toHaveBeenCalled()
 
             const textContent = extractTextContent(result)
             expect(textContent).toContain(`**Workspace ID:** ${TEST_IDS.WORKSPACE_1}`)
@@ -82,6 +93,7 @@ describe(`${GET_GROUPS} tool`, () => {
             })
             expect(structuredContent.groups[0]).not.toHaveProperty('description')
             expect(structuredContent.groups[0]).not.toHaveProperty('userIds')
+            expect(structuredContent.groups[0]).not.toHaveProperty('version')
         })
 
         it('should handle empty groupIds array by fetching all groups', async () => {
@@ -99,18 +111,29 @@ describe(`${GET_GROUPS} tool`, () => {
 
     describe('filtering groups', () => {
         it('should filter groups by ID', async () => {
-            const mockGroups = [
-                createMockGroup({ id: 100, name: 'Product Automation' }),
-                createMockGroup({ id: 200, name: 'Engineering' }),
-                createMockGroup({ id: 300, name: 'Marketing' }),
-            ]
-
-            mockTwistApi.groups.getGroups.mockResolvedValue(mockGroups)
+            mockTwistApi.groups.getGroup.mockImplementation(async (id: number) => {
+                if (id === 100) {
+                    return createMockGroup({ id: 100, name: 'Product Automation' })
+                }
+                if (id === 300) {
+                    return createMockGroup({ id: 300, name: 'Marketing' })
+                }
+                throw new Error('Group not found')
+            })
 
             const result = await getGroups.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, groupIds: [100, 300] },
                 mockTwistApi,
             )
+
+            expect(mockTwistApi.groups.getGroups).not.toHaveBeenCalled()
+            expect(mockTwistApi.groups.getGroup).toHaveBeenNthCalledWith(1, 100, {
+                batch: true,
+            })
+            expect(mockTwistApi.groups.getGroup).toHaveBeenNthCalledWith(2, 300, {
+                batch: true,
+            })
+            expect(mockTwistApi.batch).toHaveBeenCalledTimes(1)
 
             const textContent = extractTextContent(result)
             expect(textContent).toContain('**Total Groups:** 2')
@@ -150,18 +173,23 @@ describe(`${GET_GROUPS} tool`, () => {
         })
 
         it('should combine ID and search filters', async () => {
-            const mockGroups = [
-                createMockGroup({ id: 100, name: 'Product Automation' }),
-                createMockGroup({ id: 200, name: 'Engineering Automation' }),
-                createMockGroup({ id: 300, name: 'Marketing' }),
-            ]
-
-            mockTwistApi.groups.getGroups.mockResolvedValue(mockGroups)
+            mockTwistApi.groups.getGroup.mockImplementation(async (id: number) => {
+                if (id === 100) {
+                    return createMockGroup({ id: 100, name: 'Product Automation' })
+                }
+                if (id === 300) {
+                    return createMockGroup({ id: 300, name: 'Marketing' })
+                }
+                throw new Error('Group not found')
+            })
 
             const result = await getGroups.execute(
                 { workspaceId: TEST_IDS.WORKSPACE_1, groupIds: [100, 300], searchText: 'auto' },
                 mockTwistApi,
             )
+
+            expect(mockTwistApi.groups.getGroups).not.toHaveBeenCalled()
+            expect(mockTwistApi.batch).toHaveBeenCalledTimes(1)
 
             const textContent = extractTextContent(result)
             expect(textContent).toContain('**Total Groups:** 2 (1 matching search)')

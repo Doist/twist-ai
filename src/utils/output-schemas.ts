@@ -255,7 +255,6 @@ export const GetGroupsOutputSchema = z.object({
             name: z.string(),
             workspaceId: z.number(),
             memberCount: z.number(),
-            version: z.number(),
         }),
     ),
     totalGroups: z.number(),

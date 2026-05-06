@@ -30,12 +30,19 @@ const getGroups = {
     async execute(args, client) {
         const { workspaceId, groupIds, searchText } = args
 
-        const workspaceGroups = await client.groups.getGroups(workspaceId)
-        const requestedGroupIds = groupIds && groupIds.length > 0 ? new Set(groupIds) : undefined
-
+        const requestedGroupIds =
+            groupIds && groupIds.length > 0 ? [...new Set(groupIds)] : undefined
         const groups = requestedGroupIds
-            ? workspaceGroups.filter((group) => requestedGroupIds.has(group.id))
-            : workspaceGroups
+            ? await (async () => {
+                  const groupRequests = requestedGroupIds.map((groupId) =>
+                      client.groups.getGroup(groupId, { batch: true }),
+                  )
+                  const groupResponses = await client.batch(...groupRequests)
+                  return groupResponses
+                      .map((response) => response.data)
+                      .filter((group) => group.workspaceId === workspaceId)
+              })()
+            : await client.groups.getGroups(workspaceId)
         const totalGroups = groups.length
 
         let filteredGroups = groups
@@ -75,7 +82,6 @@ const getGroups = {
                 name: group.name,
                 workspaceId: group.workspaceId,
                 memberCount: group.userIds.length,
-                version: group.version,
             })),
             totalGroups,
             filteredGroups: filteredGroups.length,

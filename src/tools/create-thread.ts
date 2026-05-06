@@ -83,8 +83,8 @@ const createThread = {
             creator: thread.creator,
             created: created.toISOString(),
             threadUrl,
-            ...(recipients && { recipients }),
-            ...(groups && { groups }),
+            ...(recipients ? { recipients } : {}),
+            ...(groups ? { groups } : {}),
         }
 
         return getToolOutput({

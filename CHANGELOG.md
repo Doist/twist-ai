@@ -1,3 +1,9 @@
+## [5.2.0](https://github.com/Doist/twist-ai/compare/v5.1.0...v5.2.0) (2026-05-06)
+
+### Features
+
+* add Twist group recipients support ([#188](https://github.com/Doist/twist-ai/issues/188)) ([f094482](https://github.com/Doist/twist-ai/commit/f094482eb4e5614b19143e842014ee2d96a61f29))
+
 ## [5.1.0](https://github.com/Doist/twist-ai/compare/v5.0.0...v5.1.0) (2026-04-30)
 
 ### Features

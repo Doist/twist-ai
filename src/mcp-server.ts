@@ -5,6 +5,7 @@ import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
 import { createThread } from './tools/create-thread.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
+import { getGroups } from './tools/get-groups.js'
 import { getMentions } from './tools/get-mentions.js'
 import { getUsers } from './tools/get-users.js'
 import { getWorkspaces } from './tools/get-workspaces.js'
@@ -33,6 +34,9 @@ You have access to comprehensive Twist management tools for team communication a
 
 - **fetch-inbox**: Use to fetch inbox threads for a workspace, along with unread conversations and counts. Supports archiveFilter values of active, archived, or all; use all when the user needs both open and done threads. Optionally set onlyUnread to focus on unread items.
 - **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
+- **get-groups**: Use to discover group IDs in a workspace before notifying groups from tools that support group notifications. Requires a workspace ID. Optionally filter by group IDs or search text. Returns group IDs, names, and member counts without member lists or descriptions.
+- **create-thread**: Use to create a new channel thread. Optionally pass recipients for user IDs and groups for group IDs; call get-users or get-groups first when resolving names.
+- **reply**: Use to reply to a thread or conversation. Thread replies notify everyone who has interacted with the thread by default. Optionally pass recipients for user IDs or groups for group IDs to override that default. Passing groups to a conversation reply is rejected.
 - **get-mentions**: Use to fetch threads, comments, and messages that mention the current user. Prefer this over search-content when no keyword query is needed (search-content requires a non-empty query). Supports filtering by channel, author, and date range, and exposes a cursor for pagination.
 - **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
 
@@ -71,6 +75,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(away, server, twist)
     registerTool(getWorkspaces, server, twist)
     registerTool(getUsers, server, twist)
+    registerTool(getGroups, server, twist)
     registerTool(fetchInbox, server, twist)
     registerTool(loadThread, server, twist)
     registerTool(loadConversation, server, twist)

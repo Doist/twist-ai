@@ -21,6 +21,7 @@ import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'
 import { createThread } from '../src/tools/create-thread.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
+import { getGroups } from '../src/tools/get-groups.js'
 import { getMentions } from '../src/tools/get-mentions.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
@@ -63,6 +64,7 @@ const tools: Record<string, ExecutableTool> = {
     'build-link': buildLink,
     'get-workspaces': getWorkspaces,
     'get-users': getUsers,
+    'get-groups': getGroups,
     away: away,
     'list-channels': listChannels,
 }

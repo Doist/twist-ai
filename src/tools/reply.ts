@@ -1,10 +1,18 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
+import {
+    getFullTwistURL,
+    type Comment,
+    type CreateCommentArgs,
+    type TwistApi,
+} from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
-import { ReplyOutputSchema } from '../utils/output-schemas.js'
-import { type ReplyTargetType, ReplyTargetTypeSchema } from '../utils/target-types.js'
+import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
+import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
+
+// TODO: import this from twist-sdk once Doist/twist-sdk-typescript#125 ships.
+const DEFAULT_THREAD_REPLY_RECIPIENTS = 'EVERYONE_IN_THREAD' as const
 
 const ArgsSchema = {
     targetType: ReplyTargetTypeSchema.describe(
@@ -16,40 +24,63 @@ const ArgsSchema = {
         .array(z.number())
         .optional()
         .describe(
-            'Optional array of user IDs to notify (only for thread replies). If omitted, Twist defaults to notifying all current members of the channel. Add specific user IDs to limit or expand notifications beyond current channel members.',
+            'Optional array of user IDs to notify (only for thread replies). If omitted with no groups, thread replies notify everyone who has interacted with the thread.',
+        ),
+    groups: z
+        .array(z.number())
+        .optional()
+        .describe(
+            'Optional array of group IDs to notify (only for thread replies). Use get-groups to discover group IDs before passing them here.',
         ),
 }
 
-type ReplyStructured = {
-    type: 'reply_result'
-    success: boolean
-    targetType: ReplyTargetType
-    targetId: number
-    replyId: number
-    content: string
-    created: string
-    replyUrl: string
+type ReplyStructured = ReplyOutput
+type ThreadReplyRecipients = number[] | typeof DEFAULT_THREAD_REPLY_RECIPIENTS
+type CreateThreadReplyCommentArgs = Omit<CreateCommentArgs, 'recipients'> & {
+    recipients?: ThreadReplyRecipients
+    groups?: number[]
+}
+type CommentsClientWithGroupRecipients = {
+    createComment(args: CreateThreadReplyCommentArgs): Promise<Comment>
+}
+
+async function createThreadReplyComment(
+    client: TwistApi,
+    args: CreateThreadReplyCommentArgs,
+): Promise<Comment> {
+    // The Twist API accepts comment groups; replace this wrapper after Doist/twist-sdk-typescript#124.
+    const comments = client.comments as unknown as CommentsClientWithGroupRecipients
+    return comments.createComment(args)
 }
 
 const reply = {
     name: ToolNames.REPLY,
     description:
-        'Post a reply to a thread (as a comment) or conversation (as a message). Use targetType to specify thread or conversation, and targetId for the ID.',
+        'Post a reply to a thread (as a comment) or conversation (as a message). Thread replies notify everyone who has interacted with the thread by default unless specific user recipients or groups are provided.',
     parameters: ArgsSchema,
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { targetType, targetId, content, recipients } = args
+        const { targetType, targetId, content, recipients, groups } = args
 
         let replyId: number
         let created: Date
         let replyUrl: string
+        const groupsToNotify =
+            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
+
+        if (targetType === 'conversation' && groups !== undefined) {
+            throw new Error('groups can only be used when replying to a thread.')
+        }
 
         if (targetType === 'thread') {
-            const comment = await client.comments.createComment({
+            const resolvedRecipients =
+                recipients ?? (groupsToNotify ? undefined : DEFAULT_THREAD_REPLY_RECIPIENTS)
+            const comment = await createThreadReplyComment(client, {
                 threadId: targetId,
                 content,
-                recipients,
+                recipients: resolvedRecipients,
+                groups: groupsToNotify,
             })
             replyId = comment.id
             replyUrl =
@@ -108,6 +139,11 @@ const reply = {
             content,
             created: created.toISOString(),
             replyUrl,
+            ...(targetType === 'thread' && recipients ? { recipients } : {}),
+            ...(targetType === 'thread' && !recipients && !groupsToNotify
+                ? { recipientMode: DEFAULT_THREAD_REPLY_RECIPIENTS }
+                : {}),
+            ...(targetType === 'thread' && groupsToNotify ? { groups: groupsToNotify } : {}),
         }
 
         return getToolOutput({

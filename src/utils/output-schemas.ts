@@ -243,6 +243,24 @@ export const GetUsersOutputSchema = z.object({
     filteredUsers: z.number(),
 })
 
+/**
+ * Schema for get-groups tool output
+ */
+export const GetGroupsOutputSchema = z.object({
+    type: z.literal('get_groups'),
+    workspaceId: z.number(),
+    groups: z.array(
+        z.object({
+            id: z.number(),
+            name: z.string(),
+            workspaceId: z.number(),
+            memberCount: z.number(),
+        }),
+    ),
+    totalGroups: z.number(),
+    filteredGroups: z.number(),
+})
+
 export const AWAY_ACTIONS = ['get', 'set', 'clear'] as const
 export type AwayAction = (typeof AWAY_ACTIONS)[number]
 
@@ -306,6 +324,8 @@ export const CreateThreadOutputSchema = z.object({
     creator: z.number(),
     created: z.string(),
     threadUrl: z.string(),
+    recipients: z.array(z.number()).optional(),
+    groups: z.array(z.number()).optional(),
 })
 
 /**
@@ -395,6 +415,9 @@ export const ReplyOutputSchema = z.object({
     content: z.string(),
     created: z.string(),
     replyUrl: z.string(),
+    recipients: z.array(z.number()).optional(),
+    recipientMode: z.literal('EVERYONE_IN_THREAD').optional(),
+    groups: z.array(z.number()).optional(),
 })
 
 /**
@@ -474,6 +497,7 @@ export const StructuredOutputSchema = z.union([
     SearchContentOutputSchema,
     GetWorkspacesOutputSchema,
     GetUsersOutputSchema,
+    GetGroupsOutputSchema,
     UserInfoOutputSchema,
     BuildLinkOutputSchema,
     CreateThreadOutputSchema,
@@ -507,6 +531,7 @@ export type FetchInboxOutput = z.infer<typeof FetchInboxOutputSchema>
 export type SearchContentOutput = z.infer<typeof SearchContentOutputSchema>
 export type GetWorkspacesOutput = z.infer<typeof GetWorkspacesOutputSchema>
 export type GetUsersOutput = z.infer<typeof GetUsersOutputSchema>
+export type GetGroupsOutput = z.infer<typeof GetGroupsOutputSchema>
 export type UserInfoOutput = z.infer<typeof UserInfoOutputSchema>
 export type BuildLinkOutput = z.infer<typeof BuildLinkOutputSchema>
 export type ReplyOutput = z.infer<typeof ReplyOutputSchema>

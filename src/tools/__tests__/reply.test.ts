@@ -208,27 +208,62 @@ describe(`${REPLY} tool`, () => {
             expect(structuredContent.notifyAudience).toBe('channel')
         })
 
-        it('should not default notifyAudience when recipients are provided', async () => {
+        it('should combine an explicit notifyAudience with recipients and groups', async () => {
             const mockComment = createMockComment()
             mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
 
-            await reply.execute(
+            const result = await reply.execute(
                 {
                     targetType: 'thread',
                     targetId: TEST_IDS.THREAD_1,
-                    content: 'Only specific users',
+                    content: 'Notifying users, groups, and the whole channel',
                     recipients: [TEST_IDS.USER_1],
+                    groups: [100],
+                    notifyAudience: 'channel',
                 },
                 mockTwistApi,
             )
 
             expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
                 threadId: TEST_IDS.THREAD_1,
-                content: 'Only specific users',
+                content: 'Notifying users, groups, and the whole channel',
                 recipients: [TEST_IDS.USER_1],
+                groups: [100],
+                notifyAudience: 'channel',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
+            expect(structuredContent.groups).toEqual([100])
+            expect(structuredContent.notifyAudience).toBe('channel')
+        })
+
+        it('should treat an explicit empty recipients array as user-provided and skip the default audience', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'No one to notify explicitly',
+                    recipients: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'No one to notify explicitly',
+                recipients: [],
                 groups: undefined,
                 notifyAudience: undefined,
             })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([])
+            expect(structuredContent).not.toHaveProperty('groups')
+            expect(structuredContent).not.toHaveProperty('notifyAudience')
         })
     })
 

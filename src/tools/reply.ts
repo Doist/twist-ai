@@ -49,17 +49,19 @@ const reply = {
             throw new Error('notifyAudience can only be used when replying to a thread.')
         }
 
+        const groupsToNotify =
+            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
+        const appliedAudience: NotifyAudience | undefined =
+            targetType === 'thread'
+                ? (notifyAudience ??
+                  (recipients === undefined && !groupsToNotify ? 'thread' : undefined))
+                : undefined
+
         let replyId: number
         let created: Date
         let replyUrl: string
-        let appliedAudience: NotifyAudience | undefined
 
         if (targetType === 'thread') {
-            const groupsToNotify = groups && groups.length > 0 ? groups : undefined
-            const hasRecipients = recipients !== undefined && recipients.length > 0
-            appliedAudience =
-                notifyAudience ?? (!hasRecipients && !groupsToNotify ? 'thread' : undefined)
-
             const comment = await client.comments.createComment({
                 threadId: targetId,
                 content,
@@ -115,9 +117,6 @@ const reply = {
             content,
         ]
 
-        const groupsToEcho =
-            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
-
         const structuredContent: ReplyStructured = {
             type: 'reply_result',
             success: true,
@@ -128,7 +127,7 @@ const reply = {
             created: created.toISOString(),
             replyUrl,
             ...(targetType === 'thread' && recipients ? { recipients } : {}),
-            ...(groupsToEcho ? { groups: groupsToEcho } : {}),
+            ...(groupsToNotify ? { groups: groupsToNotify } : {}),
             ...(appliedAudience ? { notifyAudience: appliedAudience } : {}),
         }
 

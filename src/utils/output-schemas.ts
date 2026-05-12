@@ -4,6 +4,7 @@ import {
     ConversationMessageSchema,
     ConversationSchema,
     InboxThreadSchema,
+    NOTIFY_AUDIENCES,
     SEARCH_RESULT_TYPES,
     SearchResultSchema,
     ThreadSchema,
@@ -416,7 +417,7 @@ export const ReplyOutputSchema = z.object({
     created: z.string(),
     replyUrl: z.string(),
     recipients: z.array(z.number()).optional(),
-    recipientMode: z.literal('EVERYONE_IN_THREAD').optional(),
+    notifyAudience: z.enum(NOTIFY_AUDIENCES).optional(),
     groups: z.array(z.number()).optional(),
 })
 

@@ -1,18 +1,10 @@
-import {
-    getFullTwistURL,
-    type Comment,
-    type CreateCommentArgs,
-    type TwistApi,
-} from '@doist/twist-sdk'
+import { getFullTwistURL, NOTIFY_AUDIENCES, type NotifyAudience } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
 import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
 import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
-
-// TODO: import this from twist-sdk once Doist/twist-sdk-typescript#125 ships.
-const DEFAULT_THREAD_REPLY_RECIPIENTS = 'EVERYONE_IN_THREAD' as const
 
 const ArgsSchema = {
     targetType: ReplyTargetTypeSchema.describe(
@@ -24,7 +16,7 @@ const ArgsSchema = {
         .array(z.number())
         .optional()
         .describe(
-            'Optional array of user IDs to notify (only for thread replies). If omitted with no groups, thread replies notify everyone who has interacted with the thread.',
+            'Optional array of user IDs to notify (only for thread replies). If omitted with no groups and no notifyAudience, thread replies default to notifying everyone who has interacted with the thread.',
         ),
     groups: z
         .array(z.number())
@@ -32,55 +24,48 @@ const ArgsSchema = {
         .describe(
             'Optional array of group IDs to notify (only for thread replies). Use get-groups to discover group IDs before passing them here.',
         ),
-}
-
-type ReplyStructured = ReplyOutput
-type ThreadReplyRecipients = number[] | typeof DEFAULT_THREAD_REPLY_RECIPIENTS
-type CreateThreadReplyCommentArgs = Omit<CreateCommentArgs, 'recipients'> & {
-    recipients?: ThreadReplyRecipients
-    groups?: number[]
-}
-type CommentsClientWithGroupRecipients = {
-    createComment(args: CreateThreadReplyCommentArgs): Promise<Comment>
-}
-
-async function createThreadReplyComment(
-    client: TwistApi,
-    args: CreateThreadReplyCommentArgs,
-): Promise<Comment> {
-    // The Twist API accepts comment groups; replace this wrapper after Doist/twist-sdk-typescript#124.
-    const comments = client.comments as unknown as CommentsClientWithGroupRecipients
-    return comments.createComment(args)
+    notifyAudience: z
+        .enum(NOTIFY_AUDIENCES)
+        .optional()
+        .describe(
+            "Optional broader audience to notify in addition to recipients and groups (only for thread replies). 'channel' notifies everyone in the channel; 'thread' notifies everyone who has interacted with the thread.",
+        ),
 }
 
 const reply = {
     name: ToolNames.REPLY,
     description:
-        'Post a reply to a thread (as a comment) or conversation (as a message). Thread replies notify everyone who has interacted with the thread by default unless specific user recipients or groups are provided.',
+        'Post a reply to a thread (as a comment) or conversation (as a message). Thread replies notify everyone who has interacted with the thread by default unless specific user recipients, groups, or a notifyAudience are provided.',
     parameters: ArgsSchema,
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { targetType, targetId, content, recipients, groups } = args
-
-        let replyId: number
-        let created: Date
-        let replyUrl: string
-        const groupsToNotify =
-            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
+        const { targetType, targetId, content, recipients, groups, notifyAudience } = args
 
         if (targetType === 'conversation' && groups !== undefined) {
             throw new Error('groups can only be used when replying to a thread.')
         }
+        if (targetType === 'conversation' && notifyAudience !== undefined) {
+            throw new Error('notifyAudience can only be used when replying to a thread.')
+        }
+
+        let replyId: number
+        let created: Date
+        let replyUrl: string
+        let appliedAudience: NotifyAudience | undefined
 
         if (targetType === 'thread') {
-            const resolvedRecipients =
-                recipients ?? (groupsToNotify ? undefined : DEFAULT_THREAD_REPLY_RECIPIENTS)
-            const comment = await createThreadReplyComment(client, {
+            const groupsToNotify = groups && groups.length > 0 ? groups : undefined
+            const hasRecipients = recipients !== undefined && recipients.length > 0
+            appliedAudience =
+                notifyAudience ?? (!hasRecipients && !groupsToNotify ? 'thread' : undefined)
+
+            const comment = await client.comments.createComment({
                 threadId: targetId,
                 content,
-                recipients: resolvedRecipients,
+                recipients,
                 groups: groupsToNotify,
+                notifyAudience: appliedAudience,
             })
             replyId = comment.id
             replyUrl =
@@ -130,6 +115,9 @@ const reply = {
             content,
         ]
 
+        const groupsToEcho =
+            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
+
         const structuredContent: ReplyStructured = {
             type: 'reply_result',
             success: true,
@@ -140,10 +128,8 @@ const reply = {
             created: created.toISOString(),
             replyUrl,
             ...(targetType === 'thread' && recipients ? { recipients } : {}),
-            ...(targetType === 'thread' && !recipients && !groupsToNotify
-                ? { recipientMode: DEFAULT_THREAD_REPLY_RECIPIENTS }
-                : {}),
-            ...(targetType === 'thread' && groupsToNotify ? { groups: groupsToNotify } : {}),
+            ...(groupsToEcho ? { groups: groupsToEcho } : {}),
+            ...(appliedAudience ? { notifyAudience: appliedAudience } : {}),
         }
 
         return getToolOutput({
@@ -152,5 +138,7 @@ const reply = {
         })
     },
 } satisfies TwistTool<typeof ArgsSchema, typeof ReplyOutputSchema.shape>
+
+type ReplyStructured = ReplyOutput
 
 export { reply, type ReplyStructured }

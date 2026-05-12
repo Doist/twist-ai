@@ -1,3 +1,9 @@
+## [5.3.0](https://github.com/Doist/twist-ai/compare/v5.2.0...v5.3.0) (2026-05-12)
+
+### Features
+
+* adopt twist-sdk 2.6.0 native groups + notifyAudience for replies ([#193](https://github.com/Doist/twist-ai/issues/193)) ([ee1956b](https://github.com/Doist/twist-ai/commit/ee1956bc64bc03c6d0fa5461a891021dcd3c5e02)), closes [#188](https://github.com/Doist/twist-ai/issues/188)
+
 ## [5.2.0](https://github.com/Doist/twist-ai/compare/v5.1.0...v5.2.0) (2026-05-06)
 
 ### Features

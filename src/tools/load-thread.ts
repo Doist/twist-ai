@@ -30,6 +30,8 @@ const ArgsSchema = {
         .describe('Include participant user IDs in the response.'),
 }
 
+type Attachment = Record<string, unknown>
+
 type LoadThreadStructured = {
     type: 'thread_data'
     thread: {
@@ -48,6 +50,7 @@ type LoadThreadStructured = {
         participants?: number[]
         participantNames?: string[]
         threadUrl: string
+        attachments?: Attachment[]
     }
     comments: Array<{
         id: number
@@ -57,8 +60,35 @@ type LoadThreadStructured = {
         threadId: number
         posted: string
         commentUrl: string
+        attachments?: Attachment[]
     }>
     totalComments: number
+}
+
+function normalizeAttachments(value: unknown): Attachment[] | undefined {
+    if (!Array.isArray(value) || value.length === 0) {
+        return undefined
+    }
+    return value.filter(
+        (item): item is Attachment =>
+            typeof item === 'object' && item !== null && !Array.isArray(item),
+    )
+}
+
+function formatAttachmentsLine(attachments: Attachment[] | undefined): string | undefined {
+    if (!attachments || attachments.length === 0) {
+        return undefined
+    }
+    const items = attachments
+        .map((a) => {
+            const name =
+                typeof a.fileName === 'string' ? a.fileName : (a.title as string | undefined)
+            const size = typeof a.fileSize === 'number' ? ` (${a.fileSize} bytes)` : ''
+            const url = typeof a.url === 'string' ? ` — ${a.url}` : ''
+            return name ? `${name}${size}${url}` : url ? url.slice(3) : '(unnamed attachment)'
+        })
+        .join('; ')
+    return `**Attachments (${attachments.length}):** ${items}`
 }
 
 const loadThread = {
@@ -138,9 +168,18 @@ const loadThread = {
             '',
             thread.content,
             '',
-            `## Comments (${comments.length})`,
-            '',
         ]
+
+        const threadAttachmentsLine = formatAttachmentsLine(
+            normalizeAttachments(thread.attachments),
+        )
+        if (threadAttachmentsLine) {
+            lines.push(threadAttachmentsLine)
+            lines.push('')
+        }
+
+        lines.push(`## Comments (${comments.length})`)
+        lines.push('')
 
         for (const comment of comments) {
             const commentDate = comment.posted.toISOString()
@@ -151,6 +190,13 @@ const loadThread = {
             )
             lines.push('')
             lines.push(comment.content)
+            const commentAttachmentsLine = formatAttachmentsLine(
+                normalizeAttachments(comment.attachments),
+            )
+            if (commentAttachmentsLine) {
+                lines.push('')
+                lines.push(commentAttachmentsLine)
+            }
             lines.push('')
         }
 
@@ -192,6 +238,7 @@ const loadThread = {
                         channelId: thread.channelId,
                         threadId: thread.id,
                     }),
+                attachments: normalizeAttachments(thread.attachments),
             },
             comments: comments.map((c) => ({
                 id: c.id,
@@ -208,6 +255,7 @@ const loadThread = {
                         threadId: c.threadId,
                         commentId: c.id,
                     }),
+                attachments: normalizeAttachments(c.attachments),
             })),
             totalComments: thread.commentCount,
         }

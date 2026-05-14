@@ -30,6 +30,8 @@ const ArgsSchema = {
         .describe('Include participant user IDs in the response.'),
 }
 
+type Attachment = Record<string, unknown>
+
 type LoadConversationStructured = {
     type: 'conversation_data'
     conversation: {
@@ -49,8 +51,35 @@ type LoadConversationStructured = {
         conversationId: number
         posted: string
         messageUrl: string
+        attachments?: Attachment[]
     }>
     totalMessages: number
+}
+
+function normalizeAttachments(value: unknown): Attachment[] | undefined {
+    if (!Array.isArray(value) || value.length === 0) {
+        return undefined
+    }
+    return value.filter(
+        (item): item is Attachment =>
+            typeof item === 'object' && item !== null && !Array.isArray(item),
+    )
+}
+
+function formatAttachmentsLine(attachments: Attachment[] | undefined): string | undefined {
+    if (!attachments || attachments.length === 0) {
+        return undefined
+    }
+    const items = attachments
+        .map((a) => {
+            const name =
+                typeof a.fileName === 'string' ? a.fileName : (a.title as string | undefined)
+            const size = typeof a.fileSize === 'number' ? ` (${a.fileSize} bytes)` : ''
+            const url = typeof a.url === 'string' ? ` — ${a.url}` : ''
+            return name ? `${name}${size}${url}` : url ? url.slice(3) : '(unnamed attachment)'
+        })
+        .join('; ')
+    return `**Attachments (${attachments.length}):** ${items}`
 }
 
 const loadConversation = {
@@ -127,6 +156,11 @@ const loadConversation = {
             )
             lines.push('')
             lines.push(message.content)
+            const attachmentsLine = formatAttachmentsLine(normalizeAttachments(message.attachments))
+            if (attachmentsLine) {
+                lines.push('')
+                lines.push(attachmentsLine)
+            }
             lines.push('')
         }
 
@@ -160,6 +194,7 @@ const loadConversation = {
                         conversationId: m.conversationId,
                         messageId: m.id,
                     }),
+                attachments: normalizeAttachments(m.attachments),
             })),
             totalMessages: conversation.messageCount ?? 0,
         }

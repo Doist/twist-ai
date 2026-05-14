@@ -231,6 +231,63 @@ describe(`${LOAD_CONVERSATION} tool`, () => {
         })
     })
 
+    describe('attachments', () => {
+        it('surfaces message attachments in structured + text output', async () => {
+            const mockConversation = createMockConversation({
+                userIds: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+            })
+            const sampleAttachment = {
+                attachmentId: 'abc-123',
+                fileName: 'report.pdf',
+                fileSize: 4096,
+                title: 'report.pdf',
+                underlyingType: 'application/pdf',
+                uploadState: 'uploaded',
+                url: 'https://files.twist.com/abc/as/22222/report.pdf',
+                urlType: 'file',
+            }
+            const mockMessage = createMockConversationMessage({
+                id: TEST_IDS.MESSAGE_1,
+                attachments: [sampleAttachment],
+            })
+
+            mockTwistApi.conversations.getConversation.mockResolvedValue(mockConversation)
+            mockTwistApi.conversationMessages.getMessages.mockResolvedValue([mockMessage])
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue({
+                id: TEST_IDS.USER_1,
+                name: 'Test User 1',
+                shortName: 'TU1',
+                email: 'user1@test.com',
+                userType: 'USER' as const,
+                bot: false,
+                removed: false,
+                timezone: 'UTC',
+                version: 1,
+            })
+
+            const result = await loadConversation.execute(
+                {
+                    conversationId: TEST_IDS.CONVERSATION_1,
+                    limit: 50,
+                    includeParticipants: true,
+                },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.messages[0]?.attachments).toHaveLength(1)
+            expect(structuredContent?.messages[0]?.attachments?.[0]).toMatchObject({
+                fileName: 'report.pdf',
+                url: sampleAttachment.url,
+            })
+
+            const text = extractTextContent(result)
+            expect(text).toContain('**Attachments (1):**')
+            expect(text).toContain('report.pdf')
+            expect(text).toContain(sampleAttachment.url)
+        })
+    })
+
     describe('error handling', () => {
         it('should propagate conversation not found error', async () => {
             const apiError = new Error('Conversation not found')

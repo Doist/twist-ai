@@ -35,6 +35,20 @@ export {
 // Custom schemas for tool-specific structured outputs
 
 /**
+ * Schema for a Twist attachment as returned by the API.
+ *
+ * Typical fields include `attachmentId`, `fileName`, `fileSize`, `title`,
+ * `underlyingType` (mime type), `uploadState`, `url` (download URL), and
+ * `urlType`. The shape is kept permissive to forward-pass any fields the API
+ * adds without an MCP release.
+ *
+ * Note: the `url` points at `files.twist.com/...` and currently requires a
+ * browser session cookie to download — there is no OAuth-authenticated
+ * attachment download endpoint on the public Twist REST API today.
+ */
+const AttachmentSchema = z.record(z.string(), z.unknown())
+
+/**
  * Schema for load-thread tool output
  */
 export const LoadThreadOutputSchema = z.object({
@@ -55,6 +69,7 @@ export const LoadThreadOutputSchema = z.object({
         participants: z.array(z.number()).optional(),
         participantNames: z.array(z.string()).optional(),
         threadUrl: z.string(),
+        attachments: z.array(AttachmentSchema).optional(),
     }),
     comments: z.array(
         z.object({
@@ -65,6 +80,7 @@ export const LoadThreadOutputSchema = z.object({
             threadId: z.number(),
             posted: z.string(),
             commentUrl: z.string(),
+            attachments: z.array(AttachmentSchema).optional(),
         }),
     ),
     totalComments: z.number(),
@@ -93,6 +109,7 @@ export const LoadConversationOutputSchema = z.object({
             conversationId: z.number(),
             posted: z.string(),
             messageUrl: z.string(),
+            attachments: z.array(AttachmentSchema).optional(),
         }),
     ),
     totalMessages: z.number(),

@@ -1,3 +1,9 @@
+## [5.4.0](https://github.com/Doist/twist-ai/compare/v5.3.0...v5.4.0) (2026-05-20)
+
+### Features
+
+* add delete-object tool ([#183](https://github.com/Doist/twist-ai/issues/183)) ([084c2b4](https://github.com/Doist/twist-ai/commit/084c2b4fba439c21e6b27b3bae4abef8249a87fc))
+
 ## [5.3.0](https://github.com/Doist/twist-ai/compare/v5.2.0...v5.3.0) (2026-05-12)
 
 ### Features

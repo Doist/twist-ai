@@ -40,7 +40,7 @@ You have access to comprehensive Twist management tools for team communication a
 - **reply**: Use to reply to a thread or conversation. Thread replies notify everyone who has interacted with the thread by default. Optionally pass recipients for user IDs or groups for group IDs to override that default, and/or notifyAudience ("channel" | "thread") to add a broader audience on top of recipients/groups. Passing groups or notifyAudience to a conversation reply is rejected.
 - **get-mentions**: Use to fetch threads, comments, and messages that mention the current user. Prefer this over search-content when no keyword query is needed (search-content requires a non-empty query). Supports filtering by channel, author, and date range, and exposes a cursor for pagination.
 - **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
-- **delete-object**: Use to permanently delete a thread, comment, or conversation message. Pass targetType ("thread", "comment", or "message") and targetId. Deletion is irreversible — confirm with the user before invoking. Deleting a thread also removes all of its comments.
+- **delete-object**: Use to permanently delete a thread, comment, or conversation message. Pass targetType ("thread", "comment", or "message") and targetId. Deletion is irreversible — confirm with the user before invoking. Deleting a thread also removes all of its comments. Only the object's creator or a workspace admin can delete; the Twist API will reject the call otherwise.
 
 ### Best Practices:
 

@@ -96,7 +96,7 @@ async function deleteMessageBranch(args: Args, client: TwistApi): Promise<Branch
 const deleteObject = {
     name: ToolNames.DELETE_OBJECT,
     description:
-        'Permanently delete a Twist object. `targetType: "thread"` deletes a thread (and all of its comments); `"comment"` deletes a single thread comment; `"message"` deletes a direct/group conversation message. Always pass `targetId`. Deletion is irreversible — confirm with the user before invoking.',
+        'Permanently delete a Twist object. `targetType: "thread"` deletes a thread (and all of its comments); `"comment"` deletes a single thread comment; `"message"` deletes a direct/group conversation message. Always pass `targetId`. Deletion is irreversible — confirm with the user before invoking. Note: the Twist API only allows deletion by the object\'s creator or a workspace admin; the call will be rejected otherwise.',
     parameters: ArgsSchema,
     outputSchema: DeleteObjectOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },

@@ -153,23 +153,49 @@ describe(`${DELETE_OBJECT} tool`, () => {
     })
 
     describe('routing', () => {
-        it('should only call the matching SDK method for each targetType', async () => {
-            ;(mockTwistApi.threads.deleteThread as jest.Mock).mockResolvedValue(undefined as never)
-            ;(mockTwistApi.comments.deleteComment as jest.Mock).mockResolvedValue(
-                undefined as never,
-            )
-            ;(mockTwistApi.conversationMessages.deleteMessage as jest.Mock).mockResolvedValue(
-                undefined as never,
-            )
+        const routingCases = [
+            {
+                targetType: 'thread' as const,
+                targetId: TEST_IDS.THREAD_1,
+                expectedMethod: 'threads.deleteThread',
+            },
+            {
+                targetType: 'comment' as const,
+                targetId: TEST_IDS.COMMENT_1,
+                expectedMethod: 'comments.deleteComment',
+            },
+            {
+                targetType: 'message' as const,
+                targetId: TEST_IDS.MESSAGE_1,
+                expectedMethod: 'conversationMessages.deleteMessage',
+            },
+        ]
 
-            await deleteObject.execute(
-                { targetType: 'thread', targetId: TEST_IDS.THREAD_1 },
-                mockTwistApi,
-            )
+        it.each(routingCases)(
+            'should only call $expectedMethod when targetType is $targetType',
+            async ({ targetType, targetId }) => {
+                ;(mockTwistApi.threads.deleteThread as jest.Mock).mockResolvedValue(
+                    undefined as never,
+                )
+                ;(mockTwistApi.comments.deleteComment as jest.Mock).mockResolvedValue(
+                    undefined as never,
+                )
+                ;(mockTwistApi.conversationMessages.deleteMessage as jest.Mock).mockResolvedValue(
+                    undefined as never,
+                )
 
-            expect(mockTwistApi.threads.deleteThread).toHaveBeenCalledTimes(1)
-            expect(mockTwistApi.comments.deleteComment).not.toHaveBeenCalled()
-            expect(mockTwistApi.conversationMessages.deleteMessage).not.toHaveBeenCalled()
-        })
+                await deleteObject.execute({ targetType, targetId }, mockTwistApi)
+
+                expect(mockTwistApi.threads.deleteThread).toHaveBeenCalledTimes(
+                    targetType === 'thread' ? 1 : 0,
+                )
+                expect(mockTwistApi.comments.deleteComment).toHaveBeenCalledTimes(
+                    targetType === 'comment' ? 1 : 0,
+                )
+                expect(mockTwistApi.conversationMessages.deleteMessage).toHaveBeenCalledTimes(
+                    targetType === 'message' ? 1 : 0,
+                )
+            },
+        )
     })
 })

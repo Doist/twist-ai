@@ -27,16 +27,23 @@ export const ReactionTargetTypeSchema = ReactionTargetType.schema
 export type ReactionTargetType = z.infer<typeof ReactionTargetTypeSchema>
 
 /**
+ * Targets that can be both updated and deleted (mutating-object tools).
+ * Kept as a shared const so update-object and delete-object stay in lockstep
+ * if/when the supported surface changes.
+ */
+const objectTargets = ['thread', 'comment', 'message'] as const
+
+/**
  * Target types for update-object
  */
-export const UpdateTargetType = createEnumSchema(['thread', 'comment', 'message'])
+export const UpdateTargetType = createEnumSchema(objectTargets)
 export const UpdateTargetTypeSchema = UpdateTargetType.schema
 export type UpdateTargetType = z.infer<typeof UpdateTargetTypeSchema>
 
 /**
  * Target types for delete-object
  */
-export const DeleteTargetType = createEnumSchema(['thread', 'comment', 'message'])
+export const DeleteTargetType = createEnumSchema(objectTargets)
 export const DeleteTargetTypeSchema = DeleteTargetType.schema
 export type DeleteTargetType = z.infer<typeof DeleteTargetTypeSchema>
 

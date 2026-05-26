@@ -139,12 +139,20 @@ Nevertheless, our goal is to provide a small set of tools that enable complete w
 - **loadThread** - Load a specific thread with its comments
 - **loadConversation** - Load a specific conversation with its messages
 - **searchContent** - Search across a workspace for threads, comments, and messages
+- **createThread** - Create a new thread in a channel. Accepts an optional `displayInInbox` boolean (default `false`). When `true`, the thread is unarchived after creation so it appears in the author's Inbox. See also [TWIST_CREATE_THREAD_DISPLAY_IN_INBOX](#environment-variables).
 - **reply** - Reply to threads or conversations
 - **react** - Add reactions to threads, comments, conversations, or messages
 - **markDone** - Mark threads or conversations as done (read and/or archived)
 - **buildLink** - Build URLs to Twist resources
 
 For more details on each tool, see the [src/tools](src/tools) directory.
+
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `TWIST_API_KEY` | _(required)_ | Your Twist API key. |
+| `TWIST_CREATE_THREAD_DISPLAY_IN_INBOX` | `false` | Set to `true` to unarchive every newly-created thread so it appears in the author's Inbox, without needing to pass `displayInInbox: true` on each call. **Only takes effect when running the MCP locally.** The remote/hosted MCP does not have this variable set and will use the per-call `displayInInbox` parameter only. |
 
 ## Dependencies
 

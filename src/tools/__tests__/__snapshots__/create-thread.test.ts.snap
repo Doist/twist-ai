@@ -13,7 +13,7 @@ exports[`create-thread tool creating threads should create a thread in a channel
 
 Let us discuss this topic
 
-> Thread is in your Inbox (auto-unarchived after creation)."
+> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL."
 `;
 
 exports[`create-thread tool creating threads should create a thread with recipients 1`] = `
@@ -28,6 +28,38 @@ exports[`create-thread tool creating threads should create a thread with recipie
 ## Content
 
 Important update
+
+> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL."
+`;
+
+exports[`create-thread tool creating threads should unarchive the thread when displayInInbox is true 1`] = `
+"# Thread Created
+
+**Title:** Inbox Thread
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Should appear in Inbox
+
+> Thread is in your Inbox (auto-unarchived after creation)."
+`;
+
+exports[`create-thread tool creating threads should unarchive the thread when TWIST_CREATE_THREAD_DISPLAY_IN_INBOX env var is set 1`] = `
+"# Thread Created
+
+**Title:** Env Var Thread
+**Thread ID:** 12345
+**Channel ID:** 67890
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/ch/67890/t/12345/
+
+## Content
+
+Should appear in Inbox via env var
 
 > Thread is in your Inbox (auto-unarchived after creation)."
 `;

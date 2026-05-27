@@ -15,6 +15,12 @@ const ArgsSchema = {
         .describe(
             'Optional array of user IDs to notify. If omitted, Twist defaults to notifying all current members of the channel (equivalent to the API\'s "EVERYONE" default). Note: workspace users who have not joined this channel will not be notified — add their IDs explicitly if you want to reach them.',
         ),
+    displayInInbox: z
+        .boolean()
+        .optional()
+        .describe(
+            "If true, unarchives the thread after creation so it appears in the author's Inbox. Defaults to false. Can also be enabled for all calls by setting the TWIST_CREATE_THREAD_DISPLAY_IN_INBOX=true environment variable (local MCP only).",
+        ),
     groups: z
         .array(z.number())
         .optional()
@@ -31,7 +37,7 @@ const createThread = {
     outputSchema: CreateThreadOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { channelId, title, content, recipients, groups } = args
+        const { channelId, title, content, recipients, groups, displayInInbox } = args
 
         const thread = await client.threads.createThread({
             channelId,
@@ -40,6 +46,21 @@ const createThread = {
             recipients,
             groups,
         })
+
+        const shouldDisplayInInbox =
+            displayInInbox === true ||
+            (displayInInbox === undefined &&
+                process.env.TWIST_CREATE_THREAD_DISPLAY_IN_INBOX === 'true')
+
+        if (shouldDisplayInInbox) {
+            // Unarchive so the thread appears in the author's Inbox.
+            // Failure here is non-fatal — the thread itself was created successfully.
+            try {
+                await client.inbox.unarchiveThread(thread.id)
+            } catch {
+                // swallow — don't fail the tool because of an inbox visibility tweak
+            }
+        }
 
         const postedValue = thread.posted
         const created = postedValue
@@ -56,6 +77,10 @@ const createThread = {
                 threadId: thread.id,
             })
 
+        const inboxNote = shouldDisplayInInbox
+            ? '> Thread is in your Inbox (auto-unarchived after creation).'
+            : '> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL.'
+
         const lines: string[] = [
             `# Thread Created`,
             '',
@@ -69,7 +94,7 @@ const createThread = {
             '',
             thread.content,
             '',
-            '> Note: Threads you create do not appear in your own Inbox by default — only recipients see them there. Find the thread in the channel view or via its URL.',
+            inboxNote,
         ]
 
         const structuredContent: CreateThreadOutput = {

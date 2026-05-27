@@ -1,3 +1,9 @@
+## [5.4.2](https://github.com/Doist/twist-ai/compare/v5.4.1...v5.4.2) (2026-05-27)
+
+### Bug Fixes
+
+* **create-thread:** unarchive thread after creation so it lands in author's Inbox ([#178](https://github.com/Doist/twist-ai/issues/178)) ([ef45019](https://github.com/Doist/twist-ai/commit/ef45019adeb831b1a03d71d750a1391630922138))
+
 ## [5.4.1](https://github.com/Doist/twist-ai/compare/v5.4.0...v5.4.1) (2026-05-25)
 
 ### Bug Fixes

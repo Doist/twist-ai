@@ -1,3 +1,49 @@
+## [5.4.1](https://github.com/Doist/twist-ai/compare/v5.4.0...v5.4.1) (2026-05-25)
+
+### Bug Fixes
+
+* **deps:** update dependency @doist/twist-sdk to v2.7.0 ([#197](https://github.com/Doist/twist-ai/issues/197)) ([8e99178](https://github.com/Doist/twist-ai/commit/8e991785dbcac9b279ebb897fdc2584d30cd905b))
+
+## [5.4.0](https://github.com/Doist/twist-ai/compare/v5.3.0...v5.4.0) (2026-05-20)
+
+### Features
+
+* add delete-object tool ([#183](https://github.com/Doist/twist-ai/issues/183)) ([084c2b4](https://github.com/Doist/twist-ai/commit/084c2b4fba439c21e6b27b3bae4abef8249a87fc))
+
+## [5.3.0](https://github.com/Doist/twist-ai/compare/v5.2.0...v5.3.0) (2026-05-12)
+
+### Features
+
+* adopt twist-sdk 2.6.0 native groups + notifyAudience for replies ([#193](https://github.com/Doist/twist-ai/issues/193)) ([ee1956b](https://github.com/Doist/twist-ai/commit/ee1956bc64bc03c6d0fa5461a891021dcd3c5e02)), closes [#188](https://github.com/Doist/twist-ai/issues/188)
+
+## [5.2.0](https://github.com/Doist/twist-ai/compare/v5.1.0...v5.2.0) (2026-05-06)
+
+### Features
+
+* add Twist group recipients support ([#188](https://github.com/Doist/twist-ai/issues/188)) ([f094482](https://github.com/Doist/twist-ai/commit/f094482eb4e5614b19143e842014ee2d96a61f29))
+
+## [5.1.0](https://github.com/Doist/twist-ai/compare/v5.0.0...v5.1.0) (2026-04-30)
+
+### Features
+
+* add get-mentions tool for fetching user mentions ([#185](https://github.com/Doist/twist-ai/issues/185)) ([f9c2f14](https://github.com/Doist/twist-ai/commit/f9c2f146fa83953869b1a07c3e00ac7c903a2fe4))
+
+## [5.0.0](https://github.com/Doist/twist-ai/compare/v4.7.1...v5.0.0) (2026-04-28)
+
+### ⚠ BREAKING CHANGES
+
+* replace update-thread/update-comment with unified update-object tool (#182)
+
+### Features
+
+* replace update-thread/update-comment with unified update-object tool ([#182](https://github.com/Doist/twist-ai/issues/182)) ([82e04c0](https://github.com/Doist/twist-ai/commit/82e04c0076e55649ded85691419798e7709048ef))
+
+## [4.7.1](https://github.com/Doist/twist-ai/compare/v4.7.0...v4.7.1) (2026-04-27)
+
+### Bug Fixes
+
+* **deps:** update dependency @doist/twist-sdk to v2.4.1 ([#179](https://github.com/Doist/twist-ai/issues/179)) ([26305c7](https://github.com/Doist/twist-ai/commit/26305c7c276013ba3a55f497f770d32f4afd9cb6))
+
 ## [4.7.0](https://github.com/Doist/twist-ai/compare/v4.6.1...v4.7.0) (2026-04-24)
 
 ### Features

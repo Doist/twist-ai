@@ -20,7 +20,10 @@ import { config } from 'dotenv'
 import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'
 import { createThread } from '../src/tools/create-thread.js'
+import { deleteObject } from '../src/tools/delete-object.js'
 import { fetchInbox } from '../src/tools/fetch-inbox.js'
+import { getGroups } from '../src/tools/get-groups.js'
+import { getMentions } from '../src/tools/get-mentions.js'
 import { getUsers } from '../src/tools/get-users.js'
 import { getWorkspaces } from '../src/tools/get-workspaces.js'
 import { listChannels } from '../src/tools/list-channels.js'
@@ -30,6 +33,7 @@ import { markDone } from '../src/tools/mark-done.js'
 import { react } from '../src/tools/react.js'
 import { reply } from '../src/tools/reply.js'
 import { searchContent } from '../src/tools/search-content.js'
+import { updateObject } from '../src/tools/update-object.js'
 import { userInfo } from '../src/tools/user-info.js'
 
 // Define a minimal type for tool execution that works with any tool
@@ -52,13 +56,17 @@ const tools: Record<string, ExecutableTool> = {
     'load-thread': loadThread,
     'load-conversation': loadConversation,
     'search-content': searchContent,
+    'get-mentions': getMentions,
     'create-thread': createThread,
+    'update-object': updateObject,
+    'delete-object': deleteObject,
     reply: reply,
     react: react,
     'mark-done': markDone,
     'build-link': buildLink,
     'get-workspaces': getWorkspaces,
     'get-users': getUsers,
+    'get-groups': getGroups,
     away: away,
     'list-channels': listChannels,
 }

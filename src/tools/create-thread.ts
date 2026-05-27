@@ -21,23 +21,30 @@ const ArgsSchema = {
         .describe(
             'If true, unarchives the thread after creation so it appears in the author\'s Inbox. Defaults to false. Can also be enabled for all calls by setting the TWIST_CREATE_THREAD_DISPLAY_IN_INBOX=true environment variable (local MCP only).',
         ),
+    groups: z
+        .array(z.number())
+        .optional()
+        .describe(
+            'Optional array of group IDs to notify. Use get-groups to discover group IDs before passing them here.',
+        ),
 }
 
 const createThread = {
     name: ToolNames.CREATE_THREAD,
     description:
-        'Create a new thread in a workspace channel. Requires a channel ID, title, and content. Optionally notify specific users.',
+        'Create a new thread in a workspace channel. Requires a channel ID, title, and content. Optionally notify specific users or groups.',
     parameters: ArgsSchema,
     outputSchema: CreateThreadOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { channelId, title, content, recipients, displayInInbox } = args
+        const { channelId, title, content, recipients, groups, displayInInbox } = args
 
         const thread = await client.threads.createThread({
             channelId,
             title,
             content,
             recipients,
+            groups,
         })
 
         const shouldDisplayInInbox =
@@ -101,6 +108,8 @@ const createThread = {
             creator: thread.creator,
             created: created.toISOString(),
             threadUrl,
+            ...(recipients ? { recipients } : {}),
+            ...(groups ? { groups } : {}),
         }
 
         return getToolOutput({

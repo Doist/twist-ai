@@ -4,6 +4,7 @@ import {
     ConversationMessageSchema,
     ConversationSchema,
     InboxThreadSchema,
+    NOTIFY_AUDIENCES,
     SEARCH_RESULT_TYPES,
     SearchResultSchema,
     ThreadSchema,
@@ -162,6 +163,33 @@ export const SearchContentOutputSchema = z.object({
 })
 
 /**
+ * Schema for get-mentions tool output
+ */
+export const GetMentionsOutputSchema = z.object({
+    type: z.literal('mentions_results'),
+    workspaceId: z.number(),
+    results: z.array(
+        z.object({
+            id: z.string(),
+            type: z.enum(SEARCH_RESULT_TYPES),
+            content: z.string(),
+            creatorId: z.number(),
+            creatorName: z.string().optional(),
+            created: z.string(),
+            threadId: z.number().optional(),
+            conversationId: z.number().optional(),
+            channelId: z.number().optional(),
+            channelName: z.string().optional(),
+            workspaceId: z.number(),
+            url: z.string(),
+        }),
+    ),
+    totalResults: z.number(),
+    hasMore: z.boolean(),
+    cursor: z.string().optional(),
+})
+
+/**
  * Schema for get-workspaces tool output
  */
 export const GetWorkspacesOutputSchema = z.object({
@@ -214,6 +242,24 @@ export const GetUsersOutputSchema = z.object({
     ),
     totalUsers: z.number(),
     filteredUsers: z.number(),
+})
+
+/**
+ * Schema for get-groups tool output
+ */
+export const GetGroupsOutputSchema = z.object({
+    type: z.literal('get_groups'),
+    workspaceId: z.number(),
+    groups: z.array(
+        z.object({
+            id: z.number(),
+            name: z.string(),
+            workspaceId: z.number(),
+            memberCount: z.number(),
+        }),
+    ),
+    totalGroups: z.number(),
+    filteredGroups: z.number(),
 })
 
 export const AWAY_ACTIONS = ['get', 'set', 'clear'] as const
@@ -279,6 +325,8 @@ export const CreateThreadOutputSchema = z.object({
     creator: z.number(),
     created: z.string(),
     threadUrl: z.string(),
+    recipients: z.array(z.number()).optional(),
+    groups: z.array(z.number()).optional(),
 })
 
 /**
@@ -312,6 +360,100 @@ export const UpdateCommentOutputSchema = z.object({
 })
 
 /**
+ * Schema for update-message tool output
+ */
+export const UpdateMessageOutputSchema = z.object({
+    type: z.literal('update_message_result'),
+    success: z.boolean(),
+    messageId: z.number(),
+    conversationId: z.number(),
+    workspaceId: z.number(),
+    content: z.string(),
+    messageUrl: z.string(),
+    lastEdited: z.string().nullable().optional(),
+})
+
+/**
+ * Schema for update-object tool output.
+ *
+ * The MCP `outputSchema` field requires a flat `z.ZodRawShape`, so we expose a single
+ * object schema whose `type` discriminator selects which optional fields are populated:
+ *  - `update_thread_result`  → threadId, title, channelId, threadUrl
+ *  - `update_comment_result` → commentId, threadId, channelId, commentUrl
+ *  - `update_message_result` → messageId, conversationId, messageUrl
+ * Consumers should narrow on `type`. The per-variant schemas above remain authoritative
+ * for typed construction inside the tool.
+ */
+export const UpdateObjectOutputSchema = z.object({
+    type: z.enum(['update_thread_result', 'update_comment_result', 'update_message_result']),
+    success: z.boolean(),
+    content: z.string(),
+    workspaceId: z.number(),
+    lastEdited: z.string().nullable().optional(),
+    // thread fields
+    threadId: z.number().optional(),
+    title: z.string().optional(),
+    channelId: z.number().optional(),
+    threadUrl: z.string().optional(),
+    // comment fields
+    commentId: z.number().optional(),
+    commentUrl: z.string().optional(),
+    // message fields
+    messageId: z.number().optional(),
+    conversationId: z.number().optional(),
+    messageUrl: z.string().optional(),
+})
+
+/**
+ * Schema for delete-thread branch of delete-object output
+ */
+export const DeleteThreadOutputSchema = z.object({
+    type: z.literal('delete_thread_result'),
+    success: z.boolean(),
+    targetType: z.literal('thread'),
+    threadId: z.number(),
+})
+
+/**
+ * Schema for delete-comment branch of delete-object output
+ */
+export const DeleteCommentOutputSchema = z.object({
+    type: z.literal('delete_comment_result'),
+    success: z.boolean(),
+    targetType: z.literal('comment'),
+    commentId: z.number(),
+})
+
+/**
+ * Schema for delete-message branch of delete-object output
+ */
+export const DeleteMessageOutputSchema = z.object({
+    type: z.literal('delete_message_result'),
+    success: z.boolean(),
+    targetType: z.literal('message'),
+    messageId: z.number(),
+})
+
+/**
+ * Schema for delete-object tool output.
+ *
+ * The Twist SDK delete endpoints return no body, so the structured payload simply
+ * confirms which object was deleted. The `type` discriminator selects which
+ * id field is populated:
+ *  - `delete_thread_result`  → threadId
+ *  - `delete_comment_result` → commentId
+ *  - `delete_message_result` → messageId
+ */
+export const DeleteObjectOutputSchema = z.object({
+    type: z.enum(['delete_thread_result', 'delete_comment_result', 'delete_message_result']),
+    success: z.boolean(),
+    targetType: z.enum(['thread', 'comment', 'message']),
+    threadId: z.number().optional(),
+    commentId: z.number().optional(),
+    messageId: z.number().optional(),
+})
+
+/**
  * Schema for reply tool output
  */
 export const ReplyOutputSchema = z.object({
@@ -323,6 +465,9 @@ export const ReplyOutputSchema = z.object({
     content: z.string(),
     created: z.string(),
     replyUrl: z.string(),
+    recipients: z.array(z.number()).optional(),
+    notifyAudience: z.enum(NOTIFY_AUDIENCES).optional(),
+    groups: z.array(z.number()).optional(),
 })
 
 /**
@@ -402,11 +547,16 @@ export const StructuredOutputSchema = z.union([
     SearchContentOutputSchema,
     GetWorkspacesOutputSchema,
     GetUsersOutputSchema,
+    GetGroupsOutputSchema,
     UserInfoOutputSchema,
     BuildLinkOutputSchema,
     CreateThreadOutputSchema,
     UpdateThreadOutputSchema,
     UpdateCommentOutputSchema,
+    UpdateMessageOutputSchema,
+    DeleteThreadOutputSchema,
+    DeleteCommentOutputSchema,
+    DeleteMessageOutputSchema,
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
@@ -419,6 +569,24 @@ export const StructuredOutputSchema = z.union([
 export type CreateThreadOutput = z.infer<typeof CreateThreadOutputSchema>
 export type UpdateThreadOutput = z.infer<typeof UpdateThreadOutputSchema>
 export type UpdateCommentOutput = z.infer<typeof UpdateCommentOutputSchema>
+export type UpdateMessageOutput = z.infer<typeof UpdateMessageOutputSchema>
+export type UpdateObjectOutput = z.infer<typeof UpdateObjectOutputSchema>
+
+/**
+ * Strictly-typed union of the three per-branch update outputs. Use this in the tool
+ * to construct structured payloads — `UpdateObjectOutput` is the looser MCP-facing shape.
+ */
+export type UpdateObjectStructured = UpdateThreadOutput | UpdateCommentOutput | UpdateMessageOutput
+export type DeleteThreadOutput = z.infer<typeof DeleteThreadOutputSchema>
+export type DeleteCommentOutput = z.infer<typeof DeleteCommentOutputSchema>
+export type DeleteMessageOutput = z.infer<typeof DeleteMessageOutputSchema>
+export type DeleteObjectOutput = z.infer<typeof DeleteObjectOutputSchema>
+
+/**
+ * Strictly-typed union of the three per-branch delete outputs. Use this in the tool
+ * to construct structured payloads — `DeleteObjectOutput` is the looser MCP-facing shape.
+ */
+export type DeleteObjectStructured = DeleteThreadOutput | DeleteCommentOutput | DeleteMessageOutput
 export type AwayOutput = z.infer<typeof AwayOutputSchema>
 export type LoadThreadOutput = z.infer<typeof LoadThreadOutputSchema>
 export type LoadConversationOutput = z.infer<typeof LoadConversationOutputSchema>
@@ -426,6 +594,7 @@ export type FetchInboxOutput = z.infer<typeof FetchInboxOutputSchema>
 export type SearchContentOutput = z.infer<typeof SearchContentOutputSchema>
 export type GetWorkspacesOutput = z.infer<typeof GetWorkspacesOutputSchema>
 export type GetUsersOutput = z.infer<typeof GetUsersOutputSchema>
+export type GetGroupsOutput = z.infer<typeof GetGroupsOutputSchema>
 export type UserInfoOutput = z.infer<typeof UserInfoOutputSchema>
 export type BuildLinkOutput = z.infer<typeof BuildLinkOutputSchema>
 export type ReplyOutput = z.infer<typeof ReplyOutputSchema>

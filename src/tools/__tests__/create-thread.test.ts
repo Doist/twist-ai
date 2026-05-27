@@ -1,6 +1,11 @@
 import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
-import { createMockThread, extractTextContent, TEST_IDS } from '../../utils/test-helpers.js'
+import {
+    createMockThread,
+    extractStructuredContent,
+    extractTextContent,
+    TEST_IDS,
+} from '../../utils/test-helpers.js'
 import { ToolNames } from '../../utils/tool-names.js'
 import { createThread } from '../create-thread.js'
 
@@ -43,6 +48,7 @@ describe(`${CREATE_THREAD} tool`, () => {
                 title: 'New Discussion',
                 content: 'Let us discuss this topic',
                 recipients: undefined,
+                groups: undefined,
             })
             expect(mockTwistApi.inbox.unarchiveThread).not.toHaveBeenCalled()
 
@@ -85,10 +91,106 @@ describe(`${CREATE_THREAD} tool`, () => {
                 title: 'Notify Users',
                 content: 'Important update',
                 recipients: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+                groups: undefined,
             })
             expect(mockTwistApi.inbox.unarchiveThread).not.toHaveBeenCalled()
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1, TEST_IDS.USER_2])
+            expect(structuredContent).not.toHaveProperty('groups')
+        })
+
+        it('should create a thread with groups', async () => {
+            const mockThread = createMockThread({
+                title: 'Notify Groups',
+                content: 'Important group update',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+
+            const result = await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Notify Groups',
+                    content: 'Important group update',
+                    groups: [100, 200],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.createThread).toHaveBeenCalledWith({
+                channelId: TEST_IDS.CHANNEL_1,
+                title: 'Notify Groups',
+                content: 'Important group update',
+                recipients: undefined,
+                groups: [100, 200],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.groups).toEqual([100, 200])
+            expect(structuredContent).not.toHaveProperty('recipients')
+        })
+
+        it('should preserve empty groups when creating a thread', async () => {
+            const mockThread = createMockThread({
+                title: 'Empty Groups',
+                content: 'No group recipients',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+
+            const result = await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Empty Groups',
+                    content: 'No group recipients',
+                    groups: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.createThread).toHaveBeenCalledWith({
+                channelId: TEST_IDS.CHANNEL_1,
+                title: 'Empty Groups',
+                content: 'No group recipients',
+                recipients: undefined,
+                groups: [],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.groups).toEqual([])
+            expect(structuredContent).not.toHaveProperty('recipients')
+        })
+
+        it('should create a thread with recipients and groups', async () => {
+            const mockThread = createMockThread({
+                title: 'Notify Users and Groups',
+                content: 'Important broad update',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+
+            const result = await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Notify Users and Groups',
+                    content: 'Important broad update',
+                    recipients: [TEST_IDS.USER_1],
+                    groups: [100],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.threads.createThread).toHaveBeenCalledWith({
+                channelId: TEST_IDS.CHANNEL_1,
+                title: 'Notify Users and Groups',
+                content: 'Important broad update',
+                recipients: [TEST_IDS.USER_1],
+                groups: [100],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
+            expect(structuredContent.groups).toEqual([100])
         })
 
         it('should unarchive the thread when displayInInbox is true', async () => {

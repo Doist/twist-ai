@@ -1,9 +1,9 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
+import { getFullTwistURL, NOTIFY_AUDIENCES, type NotifyAudience } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
-import { ReplyOutputSchema } from '../utils/output-schemas.js'
-import { type ReplyTargetType, ReplyTargetTypeSchema } from '../utils/target-types.js'
+import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
+import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
 
 const ArgsSchema = {
@@ -16,30 +16,46 @@ const ArgsSchema = {
         .array(z.number())
         .optional()
         .describe(
-            'Optional array of user IDs to notify (only for thread replies). If omitted, Twist defaults to notifying all current members of the channel. Add specific user IDs to limit or expand notifications beyond current channel members.',
+            'Optional array of user IDs to notify (only for thread replies). If omitted with no groups and no notifyAudience, thread replies default to notifying everyone who has interacted with the thread.',
         ),
-}
-
-type ReplyStructured = {
-    type: 'reply_result'
-    success: boolean
-    targetType: ReplyTargetType
-    targetId: number
-    replyId: number
-    content: string
-    created: string
-    replyUrl: string
+    groups: z
+        .array(z.number())
+        .optional()
+        .describe(
+            'Optional array of group IDs to notify (only for thread replies). Use get-groups to discover group IDs before passing them here.',
+        ),
+    notifyAudience: z
+        .enum(NOTIFY_AUDIENCES)
+        .optional()
+        .describe(
+            "Optional broader audience to notify in addition to recipients and groups (only for thread replies). 'channel' notifies everyone in the channel; 'thread' notifies everyone who has interacted with the thread.",
+        ),
 }
 
 const reply = {
     name: ToolNames.REPLY,
     description:
-        'Post a reply to a thread (as a comment) or conversation (as a message). Use targetType to specify thread or conversation, and targetId for the ID.',
+        'Post a reply to a thread (as a comment) or conversation (as a message). Thread replies notify everyone who has interacted with the thread by default unless specific user recipients, groups, or a notifyAudience are provided.',
     parameters: ArgsSchema,
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { targetType, targetId, content, recipients } = args
+        const { targetType, targetId, content, recipients, groups, notifyAudience } = args
+
+        if (targetType === 'conversation' && groups !== undefined) {
+            throw new Error('groups can only be used when replying to a thread.')
+        }
+        if (targetType === 'conversation' && notifyAudience !== undefined) {
+            throw new Error('notifyAudience can only be used when replying to a thread.')
+        }
+
+        const groupsToNotify =
+            targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
+        const appliedAudience: NotifyAudience | undefined =
+            targetType === 'thread'
+                ? (notifyAudience ??
+                  (recipients === undefined && !groupsToNotify ? 'thread' : undefined))
+                : undefined
 
         let replyId: number
         let created: Date
@@ -50,6 +66,8 @@ const reply = {
                 threadId: targetId,
                 content,
                 recipients,
+                groups: groupsToNotify,
+                notifyAudience: appliedAudience,
             })
             replyId = comment.id
             replyUrl =
@@ -108,6 +126,9 @@ const reply = {
             content,
             created: created.toISOString(),
             replyUrl,
+            ...(targetType === 'thread' && recipients ? { recipients } : {}),
+            ...(groupsToNotify ? { groups: groupsToNotify } : {}),
+            ...(appliedAudience ? { notifyAudience: appliedAudience } : {}),
         }
 
         return getToolOutput({
@@ -116,5 +137,7 @@ const reply = {
         })
     },
 } satisfies TwistTool<typeof ArgsSchema, typeof ReplyOutputSchema.shape>
+
+type ReplyStructured = ReplyOutput
 
 export { reply, type ReplyStructured }

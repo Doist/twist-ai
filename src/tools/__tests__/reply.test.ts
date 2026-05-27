@@ -3,6 +3,7 @@ import { jest } from '@jest/globals'
 import {
     createMockComment,
     createMockConversationMessage,
+    extractStructuredContent,
     extractTextContent,
     TEST_IDS,
 } from '../../utils/test-helpers.js'
@@ -44,6 +45,8 @@ describe(`${REPLY} tool`, () => {
                 threadId: TEST_IDS.THREAD_1,
                 content: 'This is my reply',
                 recipients: undefined,
+                groups: undefined,
+                notifyAudience: 'thread',
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
@@ -62,6 +65,7 @@ describe(`${REPLY} tool`, () => {
             )
             expect(structuredContent?.replyId).toBe(mockComment.id)
             expect(structuredContent?.created).toBe('2024-01-01T00:00:00.000Z')
+            expect(structuredContent?.notifyAudience).toBe('thread')
         })
 
         it('should post a comment with recipients', async () => {
@@ -82,9 +86,184 @@ describe(`${REPLY} tool`, () => {
                 threadId: TEST_IDS.THREAD_1,
                 content: 'Notifying users',
                 recipients: [TEST_IDS.USER_1, TEST_IDS.USER_2],
+                groups: undefined,
+                notifyAudience: undefined,
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1, TEST_IDS.USER_2])
+            expect(structuredContent).not.toHaveProperty('groups')
+            expect(structuredContent).not.toHaveProperty('notifyAudience')
+        })
+
+        it('should post a comment with groups', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying groups',
+                    groups: [100, 200],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying groups',
+                recipients: undefined,
+                groups: [100, 200],
+                notifyAudience: undefined,
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.groups).toEqual([100, 200])
+            expect(structuredContent).not.toHaveProperty('recipients')
+            expect(structuredContent).not.toHaveProperty('notifyAudience')
+        })
+
+        it('should default to notifyAudience: thread when groups are empty', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying default recipients',
+                    groups: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying default recipients',
+                recipients: undefined,
+                groups: undefined,
+                notifyAudience: 'thread',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.notifyAudience).toBe('thread')
+            expect(structuredContent).not.toHaveProperty('groups')
+        })
+
+        it('should post a comment with recipients and groups', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying users and groups',
+                    recipients: [TEST_IDS.USER_1],
+                    groups: [100],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying users and groups',
+                recipients: [TEST_IDS.USER_1],
+                groups: [100],
+                notifyAudience: undefined,
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
+            expect(structuredContent.groups).toEqual([100])
+            expect(structuredContent).not.toHaveProperty('notifyAudience')
+        })
+
+        it('should pass through an explicit notifyAudience', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying the whole channel',
+                    notifyAudience: 'channel',
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying the whole channel',
+                recipients: undefined,
+                groups: undefined,
+                notifyAudience: 'channel',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.notifyAudience).toBe('channel')
+        })
+
+        it('should combine an explicit notifyAudience with recipients and groups', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'Notifying users, groups, and the whole channel',
+                    recipients: [TEST_IDS.USER_1],
+                    groups: [100],
+                    notifyAudience: 'channel',
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'Notifying users, groups, and the whole channel',
+                recipients: [TEST_IDS.USER_1],
+                groups: [100],
+                notifyAudience: 'channel',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([TEST_IDS.USER_1])
+            expect(structuredContent.groups).toEqual([100])
+            expect(structuredContent.notifyAudience).toBe('channel')
+        })
+
+        it('should treat an explicit empty recipients array as user-provided and skip the default audience', async () => {
+            const mockComment = createMockComment()
+            mockTwistApi.comments.createComment.mockResolvedValue(mockComment)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'No one to notify explicitly',
+                    recipients: [],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'No one to notify explicitly',
+                recipients: [],
+                groups: undefined,
+                notifyAudience: undefined,
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.recipients).toEqual([])
+            expect(structuredContent).not.toHaveProperty('groups')
+            expect(structuredContent).not.toHaveProperty('notifyAudience')
         })
     })
 
@@ -108,6 +287,77 @@ describe(`${REPLY} tool`, () => {
             })
 
             expect(extractTextContent(result)).toMatchSnapshot()
+        })
+
+        it('should reject groups for conversation messages', async () => {
+            await expect(
+                reply.execute(
+                    {
+                        targetType: 'conversation',
+                        targetId: TEST_IDS.CONVERSATION_1,
+                        content: 'This is my message',
+                        groups: [100],
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('groups can only be used when replying to a thread.')
+
+            expect(mockTwistApi.conversationMessages.createMessage).not.toHaveBeenCalled()
+        })
+
+        it('should reject notifyAudience for conversation messages', async () => {
+            await expect(
+                reply.execute(
+                    {
+                        targetType: 'conversation',
+                        targetId: TEST_IDS.CONVERSATION_1,
+                        content: 'This is my message',
+                        notifyAudience: 'channel',
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('notifyAudience can only be used when replying to a thread.')
+
+            expect(mockTwistApi.conversationMessages.createMessage).not.toHaveBeenCalled()
+        })
+
+        it('should reject empty groups for conversation messages', async () => {
+            await expect(
+                reply.execute(
+                    {
+                        targetType: 'conversation',
+                        targetId: TEST_IDS.CONVERSATION_1,
+                        content: 'This is my message',
+                        groups: [],
+                    },
+                    mockTwistApi,
+                ),
+            ).rejects.toThrow('groups can only be used when replying to a thread.')
+
+            expect(mockTwistApi.conversationMessages.createMessage).not.toHaveBeenCalled()
+        })
+
+        it('should ignore recipients for conversation messages', async () => {
+            const mockMessage = createMockConversationMessage()
+            mockTwistApi.conversationMessages.createMessage.mockResolvedValue(mockMessage)
+
+            const result = await reply.execute(
+                {
+                    targetType: 'conversation',
+                    targetId: TEST_IDS.CONVERSATION_1,
+                    content: 'This is my message',
+                    recipients: [TEST_IDS.USER_1],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.conversationMessages.createMessage).toHaveBeenCalledWith({
+                conversationId: TEST_IDS.CONVERSATION_1,
+                content: 'This is my message',
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent).not.toHaveProperty('groups')
         })
     })
 

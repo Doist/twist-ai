@@ -149,10 +149,10 @@ For more details on each tool, see the [src/tools](src/tools) directory.
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `TWIST_API_KEY` | _(required)_ | Your Twist API key. |
-| `TWIST_CREATE_THREAD_DISPLAY_IN_INBOX` | `false` | Set to `true` to unarchive every newly-created thread so it appears in the author's Inbox, without needing to pass `displayInInbox: true` on each call. **Only takes effect when running the MCP locally.** The remote/hosted MCP does not have this variable set and will use the per-call `displayInInbox` parameter only. |
+| Variable                               | Default      | Description                                                                                                                                                                                                                                                                                                                  |
+| -------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TWIST_API_KEY`                        | _(required)_ | Your Twist API key.                                                                                                                                                                                                                                                                                                          |
+| `TWIST_CREATE_THREAD_DISPLAY_IN_INBOX` | `false`      | Set to `true` to unarchive every newly-created thread so it appears in the author's Inbox, without needing to pass `displayInInbox: true` on each call. **Only takes effect when running the MCP locally.** The remote/hosted MCP does not have this variable set and will use the per-call `displayInInbox` parameter only. |
 
 ## Dependencies
 

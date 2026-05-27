@@ -19,7 +19,7 @@ const ArgsSchema = {
         .boolean()
         .optional()
         .describe(
-            'If true, unarchives the thread after creation so it appears in the author\'s Inbox. Defaults to false. Can also be enabled for all calls by setting the TWIST_CREATE_THREAD_DISPLAY_IN_INBOX=true environment variable (local MCP only).',
+            "If true, unarchives the thread after creation so it appears in the author's Inbox. Defaults to false. Can also be enabled for all calls by setting the TWIST_CREATE_THREAD_DISPLAY_IN_INBOX=true environment variable (local MCP only).",
         ),
     groups: z
         .array(z.number())

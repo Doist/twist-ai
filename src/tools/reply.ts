@@ -2,6 +2,7 @@ import { getFullTwistURL, NOTIFY_AUDIENCES, type NotifyAudience } from '@doist/t
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import { uploadAttachments } from '../utils/attachments.js'
 import { type ReplyOutput, ReplyOutputSchema } from '../utils/output-schemas.js'
 import { ReplyTargetTypeSchema } from '../utils/target-types.js'
 import { ToolNames } from '../utils/tool-names.js'
@@ -30,6 +31,12 @@ const ArgsSchema = {
         .describe(
             "Optional broader audience to notify in addition to recipients and groups (only for thread replies). 'channel' notifies everyone in the channel; 'thread' notifies everyone who has interacted with the thread.",
         ),
+    attachments: z
+        .array(z.string())
+        .optional()
+        .describe(
+            'Optional local filesystem paths to upload and attach to the reply. Works for both thread comments and conversation messages.',
+        ),
 }
 
 const reply = {
@@ -40,7 +47,8 @@ const reply = {
     outputSchema: ReplyOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     async execute(args, client) {
-        const { targetType, targetId, content, recipients, groups, notifyAudience } = args
+        const { targetType, targetId, content, recipients, groups, notifyAudience, attachments } =
+            args
 
         if (targetType === 'conversation' && groups !== undefined) {
             throw new Error('groups can only be used when replying to a thread.')
@@ -48,6 +56,11 @@ const reply = {
         if (targetType === 'conversation' && notifyAudience !== undefined) {
             throw new Error('notifyAudience can only be used when replying to a thread.')
         }
+
+        const uploaded =
+            attachments && attachments.length > 0
+                ? await uploadAttachments(client, attachments)
+                : []
 
         const groupsToNotify =
             targetType === 'thread' && groups && groups.length > 0 ? groups : undefined
@@ -68,6 +81,7 @@ const reply = {
                 recipients,
                 groups: groupsToNotify,
                 notifyAudience: appliedAudience,
+                ...(uploaded.length > 0 ? { attachments: uploaded } : {}),
             })
             replyId = comment.id
             replyUrl =
@@ -88,6 +102,7 @@ const reply = {
             const message = await client.conversationMessages.createMessage({
                 conversationId: targetId,
                 content,
+                ...(uploaded.length > 0 ? { attachments: uploaded } : {}),
             })
             replyId = message.id
             replyUrl =
@@ -105,17 +120,22 @@ const reply = {
                 : new Date()
         }
 
+        const attachmentNames =
+            attachments && attachments.length > 0
+                ? attachments.map((path) => path.split('/').pop() ?? path)
+                : undefined
+
         const lines: string[] = [
             `# Reply Posted`,
             '',
             `**Target:** ${targetType === 'thread' ? `Thread ${targetId}` : `Conversation ${targetId}`}`,
             `**Reply ID:** ${replyId}`,
             `**Created:** ${created.toISOString()}`,
-            '',
-            '## Content',
-            '',
-            content,
         ]
+        if (attachmentNames) {
+            lines.push(`**Attachments:** ${attachmentNames.join(', ')}`)
+        }
+        lines.push('', '## Content', '', content)
 
         const structuredContent: ReplyStructured = {
             type: 'reply_result',
@@ -129,6 +149,9 @@ const reply = {
             ...(targetType === 'thread' && recipients ? { recipients } : {}),
             ...(groupsToNotify ? { groups: groupsToNotify } : {}),
             ...(appliedAudience ? { notifyAudience: appliedAudience } : {}),
+            ...(attachmentNames
+                ? { attachmentCount: attachmentNames.length, attachmentNames }
+                : {}),
         }
 
         return getToolOutput({

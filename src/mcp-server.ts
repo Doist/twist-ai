@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerTool } from './mcp-helpers.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
+import { createConversation } from './tools/create-conversation.js'
 import { createThread } from './tools/create-thread.js'
 import { deleteObject } from './tools/delete-object.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
@@ -37,7 +38,9 @@ You have access to comprehensive Twist management tools for team communication a
 - **list-channels**: Use to discover channels in a workspace. Requires a workspace ID. Optionally set includeArchived to true to also list archived channels. Returns channel names, IDs, descriptions, visibility, archive status, and URLs.
 - **get-groups**: Use to discover group IDs in a workspace before notifying groups from tools that support group notifications. Requires a workspace ID. Optionally filter by group IDs or search text. Returns group IDs, names, and member counts without member lists or descriptions.
 - **create-thread**: Use to create a new channel thread. Optionally pass recipients for user IDs and groups for group IDs; call get-users or get-groups first when resolving names.
+- **create-conversation**: Use to start a direct or group conversation and post the first message. Pass workspaceId, recipients (user IDs, excluding yourself), and content; call get-users first when resolving names. Reuses an existing conversation when the same set of users already has one.
 - **reply**: Use to reply to a thread or conversation. Thread replies notify everyone who has interacted with the thread by default. Optionally pass recipients for user IDs or groups for group IDs to override that default, and/or notifyAudience ("channel" | "thread") to add a broader audience on top of recipients/groups. Passing groups or notifyAudience to a conversation reply is rejected.
+- **Attachments**: create-conversation and reply accept an optional attachments array of local filesystem paths. Each file is uploaded to Twist and attached to the message or comment before it is posted. Thread creation (create-thread) does not support attachments.
 - **get-mentions**: Use to fetch threads, comments, and messages that mention the current user. Prefer this over search-content when no keyword query is needed (search-content requires a non-empty query). Supports filtering by channel, author, and date range, and exposes a cursor for pagination.
 - **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
 - **delete-object**: Use to permanently delete a thread, comment, or conversation message. Pass targetType ("thread", "comment", or "message") and targetId. Deletion is irreversible — confirm with the user before invoking. Deleting a thread also removes all of its comments. Only the object's creator or a workspace admin can delete; the Twist API will reject the call otherwise.
@@ -85,6 +88,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(getMentions, server, twist)
     registerTool(buildLink, server, twist)
     registerTool(createThread, server, twist)
+    registerTool(createConversation, server, twist)
     registerTool(updateObject, server, twist)
     registerTool(deleteObject, server, twist)
     registerTool(reply, server, twist)

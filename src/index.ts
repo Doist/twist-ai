@@ -1,6 +1,7 @@
 import { getMcpServer } from './mcp-server.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'
+import { createConversation } from './tools/create-conversation.js'
 import { createThread } from './tools/create-thread.js'
 import { deleteObject } from './tools/delete-object.js'
 import { fetchInbox } from './tools/fetch-inbox.js'
@@ -25,6 +26,7 @@ const tools = {
     searchContent,
     getMentions,
     createThread,
+    createConversation,
     updateObject,
     deleteObject,
     reply,
@@ -46,6 +48,7 @@ export {
     searchContent,
     getMentions,
     createThread,
+    createConversation,
     updateObject,
     deleteObject,
     reply,

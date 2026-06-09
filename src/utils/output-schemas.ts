@@ -327,6 +327,8 @@ export const CreateThreadOutputSchema = z.object({
     threadUrl: z.string(),
     recipients: z.array(z.number()).optional(),
     groups: z.array(z.number()).optional(),
+    attachmentCount: z.number().optional(),
+    attachmentNames: z.array(z.string()).optional(),
 })
 
 /**

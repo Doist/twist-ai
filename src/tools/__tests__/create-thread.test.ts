@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
 import {
@@ -10,8 +13,12 @@ import { ToolNames } from '../../utils/tool-names.js'
 import { createThread } from '../create-thread.js'
 
 const mockTwistApi = {
+    authToken: 'oauth2:test-token',
     threads: {
         createThread: jest.fn(),
+    },
+    comments: {
+        createComment: jest.fn(),
     },
     inbox: {
         unarchiveThread: jest.fn(),
@@ -258,6 +265,82 @@ describe(`${CREATE_THREAD} tool`, () => {
             )
 
             expect(mockTwistApi.inbox.unarchiveThread).not.toHaveBeenCalled()
+        })
+    })
+
+    describe('with attachments', () => {
+        let tmpDir: string
+        const originalFetch = globalThis.fetch
+
+        beforeEach(async () => {
+            tmpDir = await mkdtemp(join(tmpdir(), 'twist-ct-'))
+        })
+
+        afterEach(async () => {
+            globalThis.fetch = originalFetch
+            await rm(tmpDir, { recursive: true, force: true })
+        })
+
+        it('uploads files and posts them as a follow-up comment on the thread', async () => {
+            const filePath = join(tmpDir, 'screenshot.png')
+            await writeFile(filePath, 'binary')
+
+            const uploaded = { attachmentId: 'att-1', fileName: 'screenshot.png', urlType: 'file' }
+            globalThis.fetch = jest.fn<typeof fetch>().mockResolvedValue({
+                ok: true,
+                status: 200,
+                json: async () => uploaded,
+                text: async () => JSON.stringify(uploaded),
+            } as unknown as Response)
+
+            const mockThread = createMockThread({
+                title: 'Thread With Attachment',
+                content: 'See the screenshot',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+            mockTwistApi.comments.createComment.mockResolvedValue({} as never)
+
+            const result = await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Thread With Attachment',
+                    content: 'See the screenshot',
+                    attachments: [filePath],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: mockThread.id,
+                content: '',
+                attachments: [uploaded],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.attachmentCount).toBe(1)
+            expect(structuredContent.attachmentNames).toEqual(['screenshot.png'])
+
+            const text = extractTextContent(result)
+            expect(text).toContain('**Attachments:** screenshot.png')
+        })
+
+        it('does not call createComment when no attachments are provided', async () => {
+            const mockThread = createMockThread({
+                title: 'Plain Thread',
+                content: 'No attachments here',
+            })
+            mockTwistApi.threads.createThread.mockResolvedValue(mockThread)
+
+            await createThread.execute(
+                {
+                    channelId: TEST_IDS.CHANNEL_1,
+                    title: 'Plain Thread',
+                    content: 'No attachments here',
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).not.toHaveBeenCalled()
         })
     })
 

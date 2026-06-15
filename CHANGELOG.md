@@ -1,3 +1,9 @@
+## [5.4.4](https://github.com/Doist/twist-ai/compare/v5.4.3...v5.4.4) (2026-06-15)
+
+### Bug Fixes
+
+* **deps:** update production dependencies to v2.9.3 ([#204](https://github.com/Doist/twist-ai/issues/204)) ([c7f19eb](https://github.com/Doist/twist-ai/commit/c7f19eb25fd23ad1390282107d830321711919e0))
+
 ## [5.4.3](https://github.com/Doist/twist-ai/compare/v5.4.2...v5.4.3) (2026-06-08)
 
 ### Bug Fixes

@@ -2,6 +2,11 @@ import { getFullTwistURL } from '@doist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
+import {
+    type Attachment,
+    formatAttachmentsLine,
+    normalizeAttachments,
+} from '../utils/attachments.js'
 import { LoadThreadOutputSchema } from '../utils/output-schemas.js'
 import { ToolNames } from '../utils/tool-names.js'
 
@@ -29,8 +34,6 @@ const ArgsSchema = {
         .default(true)
         .describe('Include participant user IDs in the response.'),
 }
-
-type Attachment = Record<string, unknown>
 
 type LoadThreadStructured = {
     type: 'thread_data'
@@ -63,32 +66,6 @@ type LoadThreadStructured = {
         attachments?: Attachment[]
     }>
     totalComments: number
-}
-
-function normalizeAttachments(value: unknown): Attachment[] | undefined {
-    if (!Array.isArray(value) || value.length === 0) {
-        return undefined
-    }
-    return value.filter(
-        (item): item is Attachment =>
-            typeof item === 'object' && item !== null && !Array.isArray(item),
-    )
-}
-
-function formatAttachmentsLine(attachments: Attachment[] | undefined): string | undefined {
-    if (!attachments || attachments.length === 0) {
-        return undefined
-    }
-    const items = attachments
-        .map((a) => {
-            const name =
-                typeof a.fileName === 'string' ? a.fileName : (a.title as string | undefined)
-            const size = typeof a.fileSize === 'number' ? ` (${a.fileSize} bytes)` : ''
-            const url = typeof a.url === 'string' ? ` — ${a.url}` : ''
-            return name ? `${name}${size}${url}` : url ? url.slice(3) : '(unnamed attachment)'
-        })
-        .join('; ')
-    return `**Attachments (${attachments.length}):** ${items}`
 }
 
 const loadThread = {

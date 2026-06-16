@@ -34,6 +34,41 @@ type ListConversationsStructured = Record<string, unknown> & {
     totalConversations: number
 }
 
+// Only resolve names for the first few participants of each conversation. A large
+// group DM would otherwise produce an unbounded participant string; callers that
+// need every participant should load the conversation directly.
+const MAX_DISPLAYED_PARTICIPANTS = 5
+
+// The Twist API accepts at most this many requests in a single batch call.
+const BATCH_REQUEST_LIMIT = 10
+
+// Resolve user IDs to names, splitting the lookups into batches that respect the
+// API's per-batch request limit. IDs whose lookup fails are simply absent from
+// the returned map.
+async function resolveParticipantNames(
+    client: TwistApi,
+    workspaceId: number,
+    userIds: number[],
+): Promise<Record<number, string>> {
+    const lookup: Record<number, string> = {}
+    for (let i = 0; i < userIds.length; i += BATCH_REQUEST_LIMIT) {
+        const chunk = userIds.slice(i, i + BATCH_REQUEST_LIMIT)
+        const responses = await client.batch(
+            ...chunk.map((userId) =>
+                client.workspaceUsers.getUserById({ workspaceId, userId }, { batch: true }),
+            ),
+        )
+        responses.forEach((response, j) => {
+            const userId = chunk[j]
+            const user = response?.data
+            if (userId !== undefined && user) {
+                lookup[userId] = user.name
+            }
+        })
+    }
+    return lookup
+}
+
 async function generateConversationsList(
     client: TwistApi,
     workspaceId: number,
@@ -63,32 +98,24 @@ async function generateConversationsList(
         }
     }
 
-    // Collect unique participant IDs across all conversations and batch-fetch their names
-    const participantIds = new Set<number>()
+    // For each conversation, only the first few participants are shown, so we only
+    // need names for those. Collect them into a deduplicated set and resolve in
+    // batches that respect the API's per-batch request limit.
+    const displayUserIdsByConversation = new Map<number, number[]>()
+    const idsToResolve = new Set<number>()
     for (const conversation of conversations) {
-        for (const userId of conversation.userIds) {
-            participantIds.add(userId)
+        const displayIds = conversation.userIds.slice(0, MAX_DISPLAYED_PARTICIPANTS)
+        displayUserIdsByConversation.set(conversation.id, displayIds)
+        for (const userId of displayIds) {
+            idsToResolve.add(userId)
         }
     }
 
-    const participantLookup: Record<number, string> = {}
-    if (participantIds.size > 0) {
-        const userRequests = Array.from(participantIds).map((userId) =>
-            client.workspaceUsers.getUserById({ workspaceId, userId }, { batch: true }),
-        )
-        const userResponses = await client.batch(...userRequests)
-
-        const participantIdArray = Array.from(participantIds)
-        for (let i = 0; i < participantIdArray.length; i++) {
-            const userId = participantIdArray[i]
-            if (userId !== undefined) {
-                const user = userResponses[i]?.data
-                if (user) {
-                    participantLookup[userId] = user.name
-                }
-            }
-        }
-    }
+    const participantLookup = await resolveParticipantNames(
+        client,
+        workspaceId,
+        Array.from(idsToResolve),
+    )
 
     const lines: string[] = ['# Conversations', '']
     lines.push(
@@ -108,10 +135,14 @@ async function generateConversationsList(
         lines.push(`**Archived:** ${conversation.archived ? 'Yes' : 'No'}`)
         lines.push(`**Last Active:** ${conversation.lastActive.toISOString()}`)
 
-        const participantNames = conversation.userIds.map(
-            (id) => participantLookup[id] ?? String(id),
-        )
-        lines.push(`**Participants:** ${participantNames.join(', ')}`)
+        const displayIds = displayUserIdsByConversation.get(conversation.id) ?? []
+        const displayNames = displayIds.map((id) => participantLookup[id] ?? String(id))
+        const remaining = conversation.userIds.length - displayIds.length
+        const participantsSummary =
+            remaining > 0
+                ? `${displayNames.join(', ')}, and ${remaining} more`
+                : displayNames.join(', ')
+        lines.push(`**Participants:** ${participantsSummary}`)
 
         if (conversation.snippet) {
             lines.push(`**Snippet:** ${conversation.snippet}`)
@@ -126,7 +157,8 @@ async function generateConversationsList(
         type: 'list_conversations',
         workspaceId,
         conversations: conversations.map((conversation) => {
-            const resolvedNames = conversation.userIds
+            const displayIds = displayUserIdsByConversation.get(conversation.id) ?? []
+            const resolvedNames = displayIds
                 .map((id) => participantLookup[id])
                 .filter((name): name is string => name !== undefined)
 
@@ -134,7 +166,7 @@ async function generateConversationsList(
                 id: conversation.id,
                 workspaceId: conversation.workspaceId,
                 ...(conversation.title && { title: conversation.title }),
-                userIds: conversation.userIds,
+                userIds: displayIds,
                 ...(resolvedNames.length > 0 && { participantNames: resolvedNames }),
                 archived: conversation.archived,
                 lastActive: conversation.lastActive.toISOString(),
@@ -153,7 +185,7 @@ async function generateConversationsList(
 const listConversations = {
     name: ToolNames.LIST_CONVERSATIONS,
     description:
-        'List conversations (direct messages) in a workspace. By default returns only active conversations; set includeArchived to true to also include archived conversations. Returns conversation IDs, titles, participant user IDs and names, archive status, last-active timestamps, snippets, and URLs.',
+        'List conversations (direct messages) in a workspace. By default returns only active conversations; set includeArchived to true to also include archived conversations. Returns conversation IDs, titles, partial list of participant user IDs and names, archive status, last-active timestamps, snippets, and URLs.',
     parameters: ArgsSchema,
     outputSchema: ListConversationsOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true },

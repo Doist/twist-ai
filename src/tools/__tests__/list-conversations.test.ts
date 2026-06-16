@@ -296,6 +296,64 @@ describe(`${LIST_CONVERSATIONS} tool`, () => {
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent.conversations[0]).not.toHaveProperty('participantNames')
         })
+
+        it('should cap displayed participants at five and summarize the rest', async () => {
+            const userIds = [101, 102, 103, 104, 105, 106, 107]
+            mockTwistApi.conversations.getConversations.mockResolvedValue([
+                createMockConversation({ id: TEST_IDS.CONVERSATION_1, userIds }),
+            ])
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation(
+                async (args: { workspaceId: number; userId: number }) => ({
+                    name: `User ${args.userId}`,
+                }),
+            )
+
+            const result = await listConversations.execute(
+                { workspaceId: TEST_IDS.WORKSPACE_1 },
+                mockTwistApi,
+            )
+
+            const textContent = extractTextContent(result)
+            expect(textContent).toContain(
+                '**Participants:** User 101, User 102, User 103, User 104, User 105, and 2 more',
+            )
+            expect(textContent).not.toContain('User 106')
+
+            const structuredContent = extractStructuredContent(result)
+            const conversation = structuredContent.conversations[0] as {
+                userIds: number[]
+                participantNames: string[]
+            }
+            expect(conversation.userIds).toEqual([101, 102, 103, 104, 105])
+            expect(conversation.participantNames).toEqual([
+                'User 101',
+                'User 102',
+                'User 103',
+                'User 104',
+                'User 105',
+            ])
+        })
+
+        it('should split participant lookups into batches of at most ten', async () => {
+            const conversations = [
+                createMockConversation({ id: 1, userIds: [1, 2, 3, 4, 5] }),
+                createMockConversation({ id: 2, userIds: [6, 7, 8, 9, 10] }),
+                createMockConversation({ id: 3, userIds: [11, 12, 13, 14, 15] }),
+            ]
+            mockTwistApi.conversations.getConversations.mockResolvedValue(conversations)
+            mockTwistApi.workspaceUsers.getUserById.mockImplementation(
+                async (args: { workspaceId: number; userId: number }) => ({
+                    name: `User ${args.userId}`,
+                }),
+            )
+
+            await listConversations.execute({ workspaceId: TEST_IDS.WORKSPACE_1 }, mockTwistApi)
+
+            // 15 unique display participants → two batches (10 + 5)
+            expect(mockTwistApi.batch).toHaveBeenCalledTimes(2)
+            expect(mockTwistApi.batch.mock.calls[0]).toHaveLength(10)
+            expect(mockTwistApi.batch.mock.calls[1]).toHaveLength(5)
+        })
     })
 
     describe('includeArchived', () => {

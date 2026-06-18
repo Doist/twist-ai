@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
 import {
@@ -12,6 +15,7 @@ import { reply } from '../reply.js'
 
 // Mock the Twist API
 const mockTwistApi = {
+    authToken: 'oauth2:test-token',
     comments: {
         createComment: jest.fn(),
     },
@@ -358,6 +362,91 @@ describe(`${REPLY} tool`, () => {
 
             const structuredContent = extractStructuredContent(result)
             expect(structuredContent).not.toHaveProperty('groups')
+        })
+    })
+
+    describe('with attachments', () => {
+        let tmpDir: string
+        const originalFetch = globalThis.fetch
+
+        beforeEach(async () => {
+            tmpDir = await mkdtemp(join(tmpdir(), 'twist-reply-'))
+        })
+
+        afterEach(async () => {
+            globalThis.fetch = originalFetch
+            await rm(tmpDir, { recursive: true, force: true })
+        })
+
+        function mockUpload(attachment: Record<string, unknown>) {
+            globalThis.fetch = jest.fn<typeof fetch>().mockResolvedValue({
+                ok: true,
+                status: 200,
+                json: async () => attachment,
+                text: async () => JSON.stringify(attachment),
+            } as unknown as Response)
+        }
+
+        it('uploads and attaches files to a thread comment', async () => {
+            const filePath = join(tmpDir, 'notes.txt')
+            await writeFile(filePath, 'notes')
+            const uploaded = { attachmentId: 'a-1', fileName: 'notes.txt', urlType: 'file' }
+            mockUpload(uploaded)
+
+            mockTwistApi.comments.createComment.mockResolvedValue(createMockComment())
+
+            const result = await reply.execute(
+                {
+                    targetType: 'thread',
+                    targetId: TEST_IDS.THREAD_1,
+                    content: 'With attachment',
+                    attachments: [filePath],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.comments.createComment).toHaveBeenCalledWith({
+                threadId: TEST_IDS.THREAD_1,
+                content: 'With attachment',
+                recipients: undefined,
+                groups: undefined,
+                notifyAudience: 'thread',
+                attachments: [uploaded],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.attachmentCount).toBe(1)
+            expect(structuredContent.attachmentNames).toEqual(['notes.txt'])
+        })
+
+        it('uploads and attaches files to a conversation message', async () => {
+            const filePath = join(tmpDir, 'image.png')
+            await writeFile(filePath, 'png')
+            const uploaded = { attachmentId: 'a-2', fileName: 'image.png', urlType: 'file' }
+            mockUpload(uploaded)
+
+            mockTwistApi.conversationMessages.createMessage.mockResolvedValue(
+                createMockConversationMessage(),
+            )
+
+            const result = await reply.execute(
+                {
+                    targetType: 'conversation',
+                    targetId: TEST_IDS.CONVERSATION_1,
+                    content: 'Here is the image',
+                    attachments: [filePath],
+                },
+                mockTwistApi,
+            )
+
+            expect(mockTwistApi.conversationMessages.createMessage).toHaveBeenCalledWith({
+                conversationId: TEST_IDS.CONVERSATION_1,
+                content: 'Here is the image',
+                attachments: [uploaded],
+            })
+
+            const structuredContent = extractStructuredContent(result)
+            expect(structuredContent.attachmentNames).toEqual(['image.png'])
         })
     })
 

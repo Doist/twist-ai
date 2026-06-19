@@ -1,4 +1,5 @@
 import {
+    type Attachment,
     ChannelSchema,
     CommentSchema,
     ConversationMessageSchema,
@@ -35,6 +36,41 @@ export {
 // Custom schemas for tool-specific structured outputs
 
 /**
+ * Schema for a Twist attachment as returned by the API, mirroring the SDK's
+ * `AttachmentSchema` field-for-field.
+ *
+ * The SDK ships its own bundled copy of zod, so composing the SDK's
+ * `AttachmentSchema` directly into the output schemas below trips TypeScript's
+ * portable-type-name check (TS2883). To keep the real field types in structured
+ * output we model the same shape here in the project's zod, and bind it to the
+ * SDK's `Attachment` type so the two can't silently drift. `looseObject`
+ * preserves the SDK's `$loose` behaviour: fields the API adds forward-pass
+ * untouched without an MCP release.
+ *
+ * Note: an attachment's `url` points at `files.twist.com/...` and currently
+ * requires a browser session cookie to download — there is no OAuth-authenticated
+ * attachment download endpoint on the public Twist REST API today.
+ */
+const AttachmentSchema = z.looseObject({
+    attachmentId: z.string(),
+    urlType: z.string(),
+    title: z.string().nullish(),
+    url: z.string().nullish(),
+    fileName: z.string().nullish(),
+    fileSize: z.number().nullish(),
+    underlyingType: z.string().nullish(),
+    description: z.string().nullish(),
+    image: z.string().nullish(),
+    imageWidth: z.number().nullish(),
+    imageHeight: z.number().nullish(),
+    duration: z.string().nullish(),
+    uploadState: z.string().nullish(),
+    video: z.string().nullish(),
+    videoType: z.string().nullish(),
+    videoAutoPlay: z.boolean().nullish(),
+}) satisfies z.ZodType<Attachment>
+
+/**
  * Schema for load-thread tool output
  */
 export const LoadThreadOutputSchema = z.object({
@@ -55,6 +91,7 @@ export const LoadThreadOutputSchema = z.object({
         participants: z.array(z.number()).optional(),
         participantNames: z.array(z.string()).optional(),
         threadUrl: z.string(),
+        attachments: z.array(AttachmentSchema).optional(),
     }),
     comments: z.array(
         z.object({
@@ -65,6 +102,7 @@ export const LoadThreadOutputSchema = z.object({
             threadId: z.number(),
             posted: z.string(),
             commentUrl: z.string(),
+            attachments: z.array(AttachmentSchema).optional(),
         }),
     ),
     totalComments: z.number(),
@@ -93,6 +131,7 @@ export const LoadConversationOutputSchema = z.object({
             conversationId: z.number(),
             posted: z.string(),
             messageUrl: z.string(),
+            attachments: z.array(AttachmentSchema).optional(),
         }),
     ),
     totalMessages: z.number(),

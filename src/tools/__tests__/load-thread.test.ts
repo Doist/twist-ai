@@ -273,6 +273,116 @@ describe(`${LOAD_THREAD} tool`, () => {
         })
     })
 
+    describe('attachments', () => {
+        const baseChannel = {
+            id: 67890,
+            name: 'Test Channel',
+            workspaceId: TEST_IDS.WORKSPACE_1,
+            archived: false,
+            public: true,
+            color: 0,
+            creator: TEST_IDS.USER_1,
+            version: 1,
+        }
+        const baseUser = {
+            id: TEST_IDS.USER_1,
+            name: 'Test User 1',
+            shortName: 'TU1',
+            email: 'user1@test.com',
+            userType: 'USER' as const,
+            bot: false,
+            removed: false,
+            timezone: 'UTC',
+            version: 1,
+        }
+        const sampleAttachment = {
+            attachmentId: 'abc-123',
+            fileName: 'ssh-public-key.md',
+            fileSize: 580,
+            title: 'ssh-public-key.md',
+            underlyingType: 'application/octet-stream',
+            uploadState: 'uploaded',
+            url: 'https://files.twist.com/abc/as/22222/ssh-public-key.md',
+            urlType: 'file',
+        }
+
+        it('surfaces comment attachments in structured + text output', async () => {
+            const mockThread = createMockThread()
+            const mockComment = createMockComment({
+                id: TEST_IDS.COMMENT_1,
+                creator: TEST_IDS.USER_1,
+                attachments: [sampleAttachment],
+            })
+
+            mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
+            mockTwistApi.comments.getComments.mockResolvedValue([mockComment])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                ...baseChannel,
+                created: new Date(),
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue(baseUser)
+
+            const result = await loadThread.execute(
+                { threadId: TEST_IDS.THREAD_1, limit: 50, includeParticipants: true },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.comments[0]?.attachments).toHaveLength(1)
+            expect(structuredContent?.comments[0]?.attachments?.[0]).toMatchObject({
+                fileName: 'ssh-public-key.md',
+                url: sampleAttachment.url,
+            })
+
+            const text = extractTextContent(result)
+            expect(text).toContain('**Attachments (1):**')
+            expect(text).toContain('ssh-public-key.md')
+            expect(text).toContain(sampleAttachment.url)
+        })
+
+        it('surfaces thread-body attachments', async () => {
+            const mockThread = createMockThread({ attachments: [sampleAttachment] })
+            mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
+            mockTwistApi.comments.getComments.mockResolvedValue([])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                ...baseChannel,
+                created: new Date(),
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue(baseUser)
+
+            const result = await loadThread.execute(
+                { threadId: TEST_IDS.THREAD_1, limit: 50, includeParticipants: true },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.thread.attachments).toHaveLength(1)
+            expect(extractTextContent(result)).toContain('**Attachments (1):**')
+        })
+
+        it('omits attachments field when there are none', async () => {
+            const mockThread = createMockThread()
+            const mockComment = createMockComment({ attachments: [] })
+            mockTwistApi.threads.getThread.mockResolvedValue(mockThread)
+            mockTwistApi.comments.getComments.mockResolvedValue([mockComment])
+            mockTwistApi.channels.getChannel.mockResolvedValue({
+                ...baseChannel,
+                created: new Date(),
+            })
+            mockTwistApi.workspaceUsers.getUserById.mockResolvedValue(baseUser)
+
+            const result = await loadThread.execute(
+                { threadId: TEST_IDS.THREAD_1, limit: 50, includeParticipants: true },
+                mockTwistApi,
+            )
+
+            const { structuredContent } = result
+            expect(structuredContent?.thread.attachments).toBeUndefined()
+            expect(structuredContent?.comments[0]?.attachments).toBeUndefined()
+            expect(extractTextContent(result)).not.toContain('**Attachments')
+        })
+    })
+
     describe('error handling', () => {
         it('should propagate thread not found error', async () => {
             const apiError = new Error('Thread not found')

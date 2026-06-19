@@ -1,3 +1,9 @@
+## [5.5.0](https://github.com/Doist/twist-ai/compare/v5.4.4...v5.5.0) (2026-06-19)
+
+### Features
+
+* expose attachments in load-thread and load-conversation output ([#194](https://github.com/Doist/twist-ai/issues/194)) ([ad0896b](https://github.com/Doist/twist-ai/commit/ad0896b0a98b575475ac0ad30db3f832d3ad57e6))
+
 ## [5.4.4](https://github.com/Doist/twist-ai/compare/v5.4.3...v5.4.4) (2026-06-15)
 
 ### Bug Fixes

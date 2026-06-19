@@ -1,3 +1,9 @@
+## [5.5.1](https://github.com/Doist/twist-ai/compare/v5.5.0...v5.5.1) (2026-06-19)
+
+### Bug Fixes
+
+* **release:** send client_payload as a JSON object in the integrations dispatch ([#209](https://github.com/Doist/twist-ai/issues/209)) ([fbce491](https://github.com/Doist/twist-ai/commit/fbce4919175bf74af924bb5b8315afd80106ddca))
+
 ## [5.5.0](https://github.com/Doist/twist-ai/compare/v5.4.4...v5.5.0) (2026-06-19)
 
 ### Features

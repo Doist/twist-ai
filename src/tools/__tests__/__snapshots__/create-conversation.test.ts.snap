@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`create-conversation tool creates (or reuses) a conversation and posts the first message 1`] = `
+"# Conversation Started
+
+**Conversation ID:** 33333
+**Message ID:** 98765
+**Participants:** 22222, 44444
+**Created:** 2024-01-01T00:00:00.000Z
+**URL:** https://twist.com/a/11111/msg/33333/
+
+## Message
+
+Kickoff message"
+`;

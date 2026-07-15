@@ -1,3 +1,5 @@
+## [5.6.0](https://github.com/Doist/twist-ai/compare/v5.5.1...v5.6.0) (2026-07-15)
+
 ## [5.5.1](https://github.com/Doist/twist-ai/compare/v5.5.0...v5.5.1) (2026-06-19)
 
 ### Bug Fixes

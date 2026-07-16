@@ -65,16 +65,16 @@
         "@semantic-release/changelog": "6.0.3",
         "@semantic-release/git": "10.0.1",
         "@types/jest": "30.0.0",
-        "@types/node": "24.13.2",
+        "@types/node": "24.13.3",
         "concurrently": "10.0.3",
-        "conventional-changelog-conventionalcommits": "10.2.0",
-        "jest": "30.3.0",
+        "conventional-changelog-conventionalcommits": "10.2.1",
+        "jest": "30.4.2",
         "nodemon": "3.1.14",
-        "oxfmt": "0.48.0",
-        "oxlint": "1.63.0",
+        "oxfmt": "0.58.0",
+        "oxlint": "1.73.0",
         "rimraf": "6.1.3",
-        "semantic-release": "25.0.3",
-        "ts-jest": "29.4.9",
+        "semantic-release": "25.0.6",
+        "ts-jest": "29.4.11",
         "typescript": "6.0.3"
     }
 }

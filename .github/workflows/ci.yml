@@ -16,6 +16,10 @@ jobs:
         timeout-minutes: 60
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                node-version: [24, 26]
+
         env:
             NODE_ENV: test
             CI: true
@@ -26,7 +30,7 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v6
               with:
-                  node-version-file: '.nvmrc'
+                  node-version: ${{ matrix.node-version }}
                   cache: 'npm'
 
             - name: Install dependencies

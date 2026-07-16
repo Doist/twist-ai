@@ -12,7 +12,7 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    test:
+    test-matrix:
         timeout-minutes: 60
         runs-on: ubuntu-latest
 
@@ -44,3 +44,18 @@ jobs:
 
             - name: Run linting and formatting checks
               run: npm run format:check
+
+    # Aggregate gate: reports a single stable `test` status regardless of the
+    # node-version matrix, so branch protection can require one context that
+    # doesn't change when the matrix does.
+    test:
+        needs: test-matrix
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - name: Verify the test matrix succeeded
+              run: |
+                  if [ "${{ needs.test-matrix.result }}" != "success" ]; then
+                      echo "test-matrix result: ${{ needs.test-matrix.result }}"
+                      exit 1
+                  fi

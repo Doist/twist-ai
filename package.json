@@ -49,7 +49,7 @@
         "prepublishOnly": "npm run build && npm test"
     },
     "dependencies": {
-        "@doist/twist-sdk": "2.9.3",
+        "@doist/twist-sdk": "2.9.4",
         "dotenv": "17.4.2",
         "zod": "4.1.13"
     },

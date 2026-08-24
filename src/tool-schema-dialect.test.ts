@@ -18,6 +18,7 @@ describe('advertised tool schema dialects', () => {
             expect(tools).toHaveLength(Object.values(ToolNames).length)
             for (const tool of tools) {
                 expect(tool.inputSchema.$schema).toBe(JSON_SCHEMA_2020_12)
+                expect(tool.outputSchema).toBeDefined()
                 expect(tool.outputSchema?.$schema).toBe(JSON_SCHEMA_2020_12)
             }
         } finally {

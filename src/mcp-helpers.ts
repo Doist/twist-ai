@@ -55,9 +55,8 @@ function getToolOutput<StructuredContent extends Record<string, unknown>>({
         const json = JSON.stringify(sanitizedContent)
         result.content.push({
             type: 'text',
-            mimeType: 'application/json',
             text: json,
-        } as CallToolResult['content'][number])
+        })
     }
 
     return result

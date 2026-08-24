@@ -1,4 +1,5 @@
 import type { TwistApi } from '@doist/twist-sdk'
+import type { CallToolResult } from '@modelcontextprotocol/server'
 import type { z } from 'zod'
 import type { RequiredToolAnnotations } from './utils/required-tool-annotations.js'
 
@@ -49,7 +50,7 @@ type TwistTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape = z.Zo
      * @param client - The Twist API client used to make requests to the Twist API.
      * @returns The result of the tool.
      */
-    execute: (args: z.infer<z.ZodObject<Params>>, client: TwistApi) => Promise<unknown>
+    execute: (args: z.infer<z.ZodObject<Params>>, client: TwistApi) => Promise<CallToolResult>
 }
 
 export type { TwistTool }

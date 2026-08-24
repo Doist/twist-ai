@@ -1,6 +1,10 @@
 import type { TwistApi } from '@doist/twist-sdk'
-import type { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+import type {
+    CallToolResult,
+    McpServer,
+    ToolAnnotations,
+    ToolCallback,
+} from '@modelcontextprotocol/server'
 import { z } from 'zod'
 import type { TwistTool } from './twist-tool.js'
 import { formatToolTitle } from './utils/required-tool-annotations.js'
@@ -36,12 +40,12 @@ function getToolOutput<StructuredContent extends Record<string, unknown>>({
 }: {
     textContent: string
     structuredContent: StructuredContent
-}) {
+}): CallToolResult {
     // Remove null fields from structured content before returning
     const sanitizedContent = removeNullFields(structuredContent)
 
     // Always include structuredContent when available since all tools have outputSchema
-    const result: Record<string, unknown> = {
+    const result: CallToolResult = {
         content: [{ type: 'text' as const, text: textContent }],
         structuredContent: sanitizedContent,
     }
@@ -49,17 +53,17 @@ function getToolOutput<StructuredContent extends Record<string, unknown>>({
     // Legacy support: also include JSON in content when USE_STRUCTURED_CONTENT is false
     if (!USE_STRUCTURED_CONTENT) {
         const json = JSON.stringify(sanitizedContent)
-        ;(result.content as Array<{ type: 'text'; text: string; mimeType?: string }>).push({
+        result.content.push({
             type: 'text',
             mimeType: 'application/json',
             text: json,
-        })
+        } as CallToolResult['content'][number])
     }
 
     return result
 }
 
-function getErrorOutput(error: string) {
+function getErrorOutput(error: string): CallToolResult {
     return {
         content: [{ type: 'text' as const, text: error }],
         isError: true,
@@ -91,10 +95,12 @@ function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape
     server: McpServer,
     client: TwistApi,
 ) {
-    // @ts-expect-error I give up
-    const cb: ToolCallback<Params> = async (args: z.infer<z.ZodObject<Params>>, _context) => {
+    const inputSchema = z.object(tool.parameters)
+    const outputSchema = z.object(tool.outputSchema)
+
+    const cb: ToolCallback<typeof inputSchema> = async (args, _context) => {
         try {
-            const result = await tool.execute(args as z.infer<z.ZodObject<Params>>, client)
+            const result = await tool.execute(args, client)
             return result
         } catch (error) {
             console.error(`Error executing tool ${tool.name}:`, {
@@ -110,8 +116,8 @@ function registerTool<Params extends z.ZodRawShape, Output extends z.ZodRawShape
         tool.name,
         {
             description: tool.description,
-            inputSchema: tool.parameters,
-            outputSchema: tool.outputSchema as Output,
+            inputSchema,
+            outputSchema,
             annotations: getMcpAnnotations(tool),
         },
         cb,

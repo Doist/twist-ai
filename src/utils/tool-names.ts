@@ -12,6 +12,7 @@ export const ToolNames = {
     REPLY: 'reply',
     REACT: 'react',
     MARK_DONE: 'mark-done',
+    MARK_READ: 'mark-read',
     BUILD_LINK: 'build-link',
     GET_WORKSPACES: 'get-workspaces',
     GET_USERS: 'get-users',

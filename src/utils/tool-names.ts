@@ -18,4 +18,5 @@ export const ToolNames = {
     GET_GROUPS: 'get-groups',
     AWAY: 'away',
     LIST_CHANNELS: 'list-channels',
+    LIST_CONVERSATIONS: 'list-conversations',
 } as const

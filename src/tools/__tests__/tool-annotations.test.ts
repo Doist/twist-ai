@@ -139,6 +139,13 @@ const TOOL_EXPECTATIONS: ToolExpectation[] = [
         idempotentHint: true,
     },
     {
+        name: ToolNames.MARK_READ,
+        title: 'Twist: Mark Read',
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+    },
+    {
         name: ToolNames.LIST_CHANNELS,
         title: 'Twist: List Channels',
         readOnlyHint: true,

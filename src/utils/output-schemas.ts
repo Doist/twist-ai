@@ -570,6 +570,32 @@ export const MarkDoneOutputSchema = z.object({
 })
 
 /**
+ * Schema for mark-read tool output
+ */
+export const MarkReadOutputSchema = z.object({
+    type: z.literal('mark_read_result'),
+    workspaceId: z.number(),
+    mode: z.enum(['individual', 'all']),
+    threads: z.object({
+        marked: z.array(z.number()),
+        alreadyRead: z.array(z.number()),
+    }),
+    conversations: z.object({
+        marked: z.array(z.number()),
+        alreadyRead: z.array(z.number()),
+    }),
+    failed: z.array(
+        z.object({
+            item: z.number(),
+            itemType: z.enum(['thread', 'conversation']),
+            error: z.string(),
+        }),
+    ),
+    markedCount: z.number(),
+    failureCount: z.number(),
+})
+
+/**
  * Schema for list-channels tool output
  */
 export const ListChannelsOutputSchema = z.object({
@@ -617,6 +643,7 @@ export const StructuredOutputSchema = z.union([
     ReplyOutputSchema,
     ReactOutputSchema,
     MarkDoneOutputSchema,
+    MarkReadOutputSchema,
     ListChannelsOutputSchema,
 ])
 

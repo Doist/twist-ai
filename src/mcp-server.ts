@@ -15,6 +15,7 @@ import { listChannels } from './tools/list-channels.js'
 import { loadConversation } from './tools/load-conversation.js'
 import { loadThread } from './tools/load-thread.js'
 import { markDone } from './tools/mark-done.js'
+import { markRead } from './tools/mark-read.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
@@ -42,6 +43,7 @@ You have access to comprehensive Twist management tools for team communication a
 - **reply**: Use to reply to a thread or conversation. Thread replies notify everyone who has interacted with the thread by default. Optionally pass recipients for user IDs or groups for group IDs to override that default, and/or notifyAudience ("channel" | "thread") to add a broader audience on top of recipients/groups. Passing groups or notifyAudience to a conversation reply is rejected.
 - **get-mentions**: Use to fetch threads, comments, and messages that mention the current user. Prefer this over search-content when no keyword query is needed (search-content requires a non-empty query). Supports filtering by channel, author, and date range, and exposes a cursor for pagination.
 - **update-object**: Use to edit something you previously sent. Pass targetType ("thread", "comment", or "message"), targetId, and the new content. For threads you may also pass title (and may pass title without content). title is only valid for threads.
+- **mark-read**: Use to mark threads and conversations as read without archiving them. Pass a workspace ID plus threadIds and/or conversationIds, or all: true to clear every unread item in that workspace. Prefer this over mark-done when the user wants items read but still in the inbox; mark-done archives by default.
 - **delete-object**: Use to permanently delete a thread, comment, or conversation message. Pass targetType ("thread", "comment", or "message") and targetId. Deletion is irreversible — confirm with the user before invoking. Deleting a thread also removes all of its comments. Only the object's creator or a workspace admin can delete; the Twist API will reject the call otherwise.
 
 ### Best Practices:
@@ -93,6 +95,7 @@ function getMcpServer({ twistApiKey, baseUrl }: { twistApiKey: string; baseUrl?:
     registerTool(reply, server, twist)
     registerTool(react, server, twist)
     registerTool(markDone, server, twist)
+    registerTool(markRead, server, twist)
     registerTool(listChannels, server, twist)
 
     return server

@@ -30,6 +30,7 @@ import { listChannels } from '../src/tools/list-channels.js'
 import { loadConversation } from '../src/tools/load-conversation.js'
 import { loadThread } from '../src/tools/load-thread.js'
 import { markDone } from '../src/tools/mark-done.js'
+import { markRead } from '../src/tools/mark-read.js'
 import { react } from '../src/tools/react.js'
 import { reply } from '../src/tools/reply.js'
 import { searchContent } from '../src/tools/search-content.js'
@@ -63,6 +64,7 @@ const tools: Record<string, ExecutableTool> = {
     reply: reply,
     react: react,
     'mark-done': markDone,
+    'mark-read': markRead,
     'build-link': buildLink,
     'get-workspaces': getWorkspaces,
     'get-users': getUsers,

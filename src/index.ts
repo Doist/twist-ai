@@ -11,6 +11,7 @@ import { listChannels } from './tools/list-channels.js'
 import { loadConversation } from './tools/load-conversation.js'
 import { loadThread } from './tools/load-thread.js'
 import { markDone } from './tools/mark-done.js'
+import { markRead } from './tools/mark-read.js'
 import { react } from './tools/react.js'
 import { reply } from './tools/reply.js'
 import { searchContent } from './tools/search-content.js'
@@ -32,6 +33,7 @@ const tools = {
     reply,
     react,
     markDone,
+    markRead,
     buildLink,
     listChannels,
     getGroups,
@@ -54,6 +56,7 @@ export {
     reply,
     react,
     markDone,
+    markRead,
     buildLink,
     listChannels,
     getGroups,

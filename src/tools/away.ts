@@ -1,4 +1,4 @@
-import { AWAY_MODE_TYPES, type AwayModeType, type TwistApi } from '@doist/twist-sdk'
+import { AWAY_MODE_TYPES, type AwayModeType, type TwistApi } from '@todoist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'

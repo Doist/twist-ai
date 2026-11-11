@@ -1,4 +1,4 @@
-import { getFullTwistURL, NOTIFY_AUDIENCES, type NotifyAudience } from '@doist/twist-sdk'
+import { getFullTwistURL, NOTIFY_AUDIENCES, type NotifyAudience } from '@todoist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'

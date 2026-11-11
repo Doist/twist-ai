@@ -5,7 +5,7 @@ import type {
     Thread,
     User,
     Workspace,
-} from '@doist/twist-sdk'
+} from '@todoist/twist-sdk'
 import type { getToolOutput } from '../mcp-helpers.js'
 
 /**

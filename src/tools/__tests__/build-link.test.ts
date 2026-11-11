@@ -1,4 +1,4 @@
-import type { TwistApi } from '@doist/twist-sdk'
+import type { TwistApi } from '@todoist/twist-sdk'
 import { extractTextContent } from '../../utils/test-helpers.js'
 import { buildLink } from '../build-link.js'
 

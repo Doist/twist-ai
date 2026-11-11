@@ -1,4 +1,4 @@
-import { type Attachment } from '@doist/twist-sdk'
+import { type Attachment } from '@todoist/twist-sdk'
 
 export type { Attachment }
 

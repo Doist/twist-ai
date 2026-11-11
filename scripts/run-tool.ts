@@ -15,7 +15,7 @@
  * Requires TWIST_API_KEY in .env file (and optionally TWIST_BASE_URL).
  */
 import { readFileSync } from 'node:fs'
-import { TwistApi } from '@doist/twist-sdk'
+import { TwistApi } from '@todoist/twist-sdk'
 import { config } from 'dotenv'
 import { away } from '../src/tools/away.js'
 import { buildLink } from '../src/tools/build-link.js'

@@ -159,7 +159,7 @@ For more details on each tool, see the [src/tools](src/tools) directory.
 ## Dependencies
 
 - MCP server using the official [@modelcontextprotocol/server](https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#installation)
-- Twist TypeScript SDK [@doist/twist-sdk](https://github.com/todoist/twist-sdk-typescript)
+- Twist TypeScript SDK [@todoist/twist-sdk](https://github.com/todoist/twist-sdk-typescript)
 
 ## Local Development Setup
 

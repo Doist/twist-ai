@@ -1,4 +1,4 @@
-import { getFullTwistURL } from '@doist/twist-sdk'
+import { getFullTwistURL } from '@todoist/twist-sdk'
 
 export function getWorkspaceUrl(workspaceId: number): string {
     return getFullTwistURL({ workspaceId })

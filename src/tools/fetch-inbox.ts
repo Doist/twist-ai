@@ -4,8 +4,8 @@ import type {
     InboxThread,
     UnreadConversation,
     WorkspaceUser,
-} from '@doist/twist-sdk'
-import { ARCHIVE_FILTER_VALUES, getFullTwistURL } from '@doist/twist-sdk'
+} from '@todoist/twist-sdk'
+import { ARCHIVE_FILTER_VALUES, getFullTwistURL } from '@todoist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'

@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/todoist/twist-ai/compare/v7.0.0...v7.0.1) (2026-11-11)
+
+### Bug Fixes
+
+* **ci:** use the todoist GitHub org after the rename ([#242](https://github.com/todoist/twist-ai/issues/242)) ([d47644a](https://github.com/todoist/twist-ai/commit/d47644ae6f59587867f957334c1a1cbdd7b3ed73))
+* publish as @todoist/twist-ai ([#243](https://github.com/todoist/twist-ai/issues/243)) ([1952e3b](https://github.com/todoist/twist-ai/commit/1952e3b5289e32a0f323238bab1ee8f942e87c9e))
+
 ## [7.0.0](https://github.com/Doist/twist-ai/compare/v6.0.1...v7.0.0) (2026-08-24)
 
 ## [6.0.1](https://github.com/Doist/twist-ai/compare/v6.0.0...v6.0.1) (2026-07-27)

@@ -1,6 +1,6 @@
 {
     "name": "@todoist/twist-ai",
-    "version": "7.0.0",
+    "version": "7.0.1",
     "type": "module",
     "engines": {
         "node": ">=24",

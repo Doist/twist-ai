@@ -1,3 +1,14 @@
+## [8.0.0](https://github.com/todoist/twist-ai/compare/v7.0.1...v8.0.0) (2026-11-11)
+
+### ⚠ BREAKING CHANGES
+
+* the package is now published as @todoist/twist-ai; replace
+@doist/twist-ai with @todoist/twist-ai in dependencies and imports.
+
+### Features
+
+* release @todoist/twist-ai as a new major version ([#244](https://github.com/todoist/twist-ai/issues/244)) ([efc1839](https://github.com/todoist/twist-ai/commit/efc18390f50438e1a25c954f2e4cdc96c421d12a))
+
 ## [7.0.1](https://github.com/todoist/twist-ai/compare/v7.0.0...v7.0.1) (2026-11-11)
 
 ### Bug Fixes

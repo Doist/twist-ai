@@ -1,5 +1,5 @@
-import { TwistApi } from '@doist/twist-sdk'
 import { McpServer } from '@modelcontextprotocol/server'
+import { TwistApi } from '@todoist/twist-sdk'
 import { registerTool } from './mcp-helpers.js'
 import { away } from './tools/away.js'
 import { buildLink } from './tools/build-link.js'

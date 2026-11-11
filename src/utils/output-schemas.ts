@@ -14,7 +14,7 @@ import {
     UserSchema,
     WorkspaceSchema,
     WorkspaceUserSchema,
-} from '@doist/twist-sdk'
+} from '@todoist/twist-sdk'
 import { z } from 'zod'
 
 // Re-export SDK schemas for direct use

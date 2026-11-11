@@ -1,4 +1,4 @@
-import { getCommentURL, getFullTwistURL, getMessageURL } from '@doist/twist-sdk'
+import { getCommentURL, getFullTwistURL, getMessageURL } from '@todoist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'

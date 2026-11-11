@@ -1,4 +1,4 @@
-import type { Channel, TwistApi } from '@doist/twist-sdk'
+import type { Channel, TwistApi } from '@todoist/twist-sdk'
 import { z } from 'zod'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'

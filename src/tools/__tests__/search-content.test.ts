@@ -1,5 +1,5 @@
-import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
+import type { TwistApi } from '@todoist/twist-sdk'
 import { extractTextContent, TEST_IDS } from '../../utils/test-helpers.js'
 import { ToolNames } from '../../utils/tool-names.js'
 import { searchContent } from '../search-content.js'

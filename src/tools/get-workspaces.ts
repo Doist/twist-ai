@@ -1,4 +1,4 @@
-import type { TwistApi, WorkspacePlan } from '@doist/twist-sdk'
+import type { TwistApi, WorkspacePlan } from '@todoist/twist-sdk'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
 import { GetWorkspacesOutputSchema } from '../utils/output-schemas.js'

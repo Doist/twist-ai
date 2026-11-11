@@ -1,5 +1,5 @@
-import { AWAY_MODE_TYPES, type AwayModeType, type TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
+import { AWAY_MODE_TYPES, type AwayModeType, type TwistApi } from '@todoist/twist-sdk'
 import {
     createMockUser,
     extractStructuredContent,

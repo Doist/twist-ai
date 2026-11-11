@@ -1,5 +1,5 @@
-import type { Group, TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
+import type { Group, TwistApi } from '@todoist/twist-sdk'
 import {
     extractStructuredContent,
     extractTextContent,

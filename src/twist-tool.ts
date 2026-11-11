@@ -1,5 +1,5 @@
-import type { TwistApi } from '@doist/twist-sdk'
 import type { CallToolResult } from '@modelcontextprotocol/server'
+import type { TwistApi } from '@todoist/twist-sdk'
 import type { z } from 'zod'
 import type { RequiredToolAnnotations } from './utils/required-tool-annotations.js'
 

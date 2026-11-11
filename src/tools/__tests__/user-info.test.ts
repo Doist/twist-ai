@@ -1,5 +1,5 @@
-import type { TwistApi } from '@doist/twist-sdk'
 import { jest } from '@jest/globals'
+import type { TwistApi } from '@todoist/twist-sdk'
 import {
     createMockUser,
     extractStructuredContent,

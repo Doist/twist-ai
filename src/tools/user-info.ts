@@ -1,4 +1,4 @@
-import type { TwistApi } from '@doist/twist-sdk'
+import type { TwistApi } from '@todoist/twist-sdk'
 import { getToolOutput } from '../mcp-helpers.js'
 import type { TwistTool } from '../twist-tool.js'
 import { UserInfoOutputSchema } from '../utils/output-schemas.js'

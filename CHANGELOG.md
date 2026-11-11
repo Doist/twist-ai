@@ -1,3 +1,9 @@
+## [8.0.1](https://github.com/todoist/twist-ai/compare/v8.0.0...v8.0.1) (2026-11-11)
+
+### Bug Fixes
+
+* **deps:** move to @todoist/twist-sdk ([#245](https://github.com/todoist/twist-ai/issues/245)) ([b3b3ef0](https://github.com/todoist/twist-ai/commit/b3b3ef045651b2c385332f347cf2a9dc6d202bac))
+
 ## [8.0.0](https://github.com/todoist/twist-ai/compare/v7.0.1...v8.0.0) (2026-11-11)
 
 ### ⚠ BREAKING CHANGES

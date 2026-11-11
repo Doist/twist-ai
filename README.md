@@ -11,15 +11,17 @@ integrate them to your own AI conversational interfaces.
 ### 1. Add this repository as a dependency
 
 ```sh
-npm install @doist/twist-ai
+npm install @todoist/twist-ai
 ```
+
+Previously published as `@doist/twist-ai`.
 
 ### 2. Import the tools and plug them to an AI
 
 Here's an example using [Vercel's AI SDK](https://ai-sdk.dev/docs/ai-sdk-core/generating-text#streamtext).
 
 ```js
-import { fetchInbox, reply, markDone } from '@doist/twist-ai'
+import { fetchInbox, reply, markDone } from '@todoist/twist-ai'
 import { streamText } from 'ai'
 
 const result = streamText({
@@ -40,7 +42,7 @@ const result = streamText({
 You can run the MCP server directly with npx:
 
 ```bash
-npx @doist/twist-ai
+npx @todoist/twist-ai
 ```
 
 ### Setup Guide
@@ -54,7 +56,7 @@ Add to your Claude Desktop configuration file (`claude_desktop_config.json`):
     "mcpServers": {
         "twist": {
             "command": "npx",
-            "args": ["-y", "@doist/twist-ai"],
+            "args": ["-y", "@todoist/twist-ai"],
             "env": {
                 "TWIST_API_KEY": "your-twist-api-key-here"
             }
@@ -75,7 +77,7 @@ Create a configuration file:
     "mcpServers": {
         "twist": {
             "command": "npx",
-            "args": ["-y", "@doist/twist-ai"],
+            "args": ["-y", "@todoist/twist-ai"],
             "env": {
                 "TWIST_API_KEY": "your-twist-api-key-here"
             }
@@ -89,7 +91,7 @@ Then enable the server in Cursor settings if prompted.
 #### Claude Code (CLI)
 
 ```bash
-claude mcp add twist npx @doist/twist-ai
+claude mcp add twist npx @todoist/twist-ai
 ```
 
 Then set your API key:
@@ -108,7 +110,7 @@ export TWIST_API_KEY=your-twist-api-key-here
     "servers": {
         "twist": {
             "command": "npx",
-            "args": ["-y", "@doist/twist-ai"],
+            "args": ["-y", "@todoist/twist-ai"],
             "env": {
                 "TWIST_API_KEY": "your-twist-api-key-here"
             }

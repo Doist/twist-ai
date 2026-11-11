@@ -14,7 +14,7 @@ integrate them to your own AI conversational interfaces.
 npm install @todoist/twist-ai
 ```
 
-Previously published as `@doist/twist-ai`.
+Previously published as `@doist/twist-ai`, which no longer receives updates. To switch, replace `@doist/twist-ai` with `@todoist/twist-ai` in your dependencies, imports and MCP client configuration.
 
 ### 2. Import the tools and plug them to an AI
 

@@ -127,7 +127,7 @@ jobs:
 
             - name: Announce release in Twist
               if: ${{ steps.announcement.outputs.should_announce == 'true' }}
-              uses: Doist/twist-post-action@74a0255b75ad93c06b9eb1009960106efe13f5ca
+              uses: todoist/twist-post-action@74a0255b75ad93c06b9eb1009960106efe13f5ca
               with:
                   message: ${{ steps.announcement.outputs.message }}
                   install_id: ${{ secrets.TWIST_RELEASE_INSTALL_ID }}
@@ -147,7 +147,7 @@ jobs:
                     --method POST \
                     -H "Accept: application/vnd.github+json" \
                     -H "X-GitHub-Api-Version: 2022-11-28" \
-                    /repos/Doist/twist-ai-integrations/dispatches \
+                    /repos/todoist/twist-ai-integrations/dispatches \
                     -f event_type='twist-ai-updated' \
                     -f "client_payload[version]=${VERSION}" \
                     -f "client_payload[npm_tag]=latest"
